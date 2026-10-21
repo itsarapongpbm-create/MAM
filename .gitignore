@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+server/email-config.json
+
+# SQLite Database Files
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Logs & Scratch
+*.log
+npm-debug.log*
+yarn-debug.log*
+scratch/
+
+# Python cache (if any)
+__pycache__/
+*.pyc
+
+# OS generated files
+.DS_Store
+Thumbs.db

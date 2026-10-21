@@ -1,0 +1,557 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap');
+
+/**
+ * FlowAccount Advance - Global Design System & Theme Stylesheet
+ * Integrates:
+ * - Font Stack: 'Inter' + 'Prompt' / Modern Sans-Serif Fallback
+ * - Primary Brand Color: #7D0A0A (rgb(125, 10, 10)) - Deep Crimson / Royal Burgundy
+ * - Dynamic Logo & Badge Theming
+ */
+
+:root {
+    /* 1. Brand Colors (Deep Crimson #7D0A0A) */
+    --primary-color: #7D0A0A;
+    --primary-rgb: 125, 10, 10;
+    --primary-hover: #630808;
+    --primary-active: #4a0606;
+    --primary-light: #fef2f2;
+    --primary-light-border: #fecaca;
+    --primary-focus-ring: rgba(125, 10, 10, 0.25);
+    --primary-gradient: linear-gradient(135deg, #7D0A0A 0%, #a81818 100%);
+    --primary-gradient-subtle: linear-gradient(135deg, rgba(125, 10, 10, 0.08) 0%, rgba(168, 24, 24, 0.03) 100%);
+
+    /* 2. Neutral Palette */
+    --bg-app: #f8fafc;
+    --bg-surface: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+
+    /* 3. Typography: Inter + Prompt + System Fallback */
+    --font-family-sans: 'Inter', 'Prompt', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-numeric: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Universal Box-Sizing & Viewport Containment */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+/* Base Font & Smooth Rendering */
+body, 
+button, 
+input, 
+select, 
+textarea {
+    font-family: var(--font-family-sans) !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tabular figures for numbers in finance & tables */
+.amount, 
+.table-standard td:nth-child(n+3), 
+.kpi-value, 
+.stat-number, 
+.metric-value {
+    font-family: var(--font-numeric) !important;
+    font-feature-settings: 'tnum' 1, 'cv05' 1;
+}
+
+/* ==========================================================================
+   Logo & Brand Identity Styles
+   ========================================================================== */
+.top-logo-svg path,
+.top-logo-svg polygon,
+.flowaccount-svg-logo path,
+.flowaccount-svg-logo polygon {
+    fill: var(--primary-color) !important;
+    transition: fill 0.3s ease;
+}
+
+.topbar-logo:hover .top-logo-svg {
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
+}
+
+/* Advance Badge */
+.badge-advance {
+    background: var(--primary-gradient) !important;
+    color: #ffffff !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    padding: 3px 8px !important;
+    border-radius: 5px !important;
+    letter-spacing: 0.08em !important;
+    box-shadow: 0 2px 6px rgba(var(--primary-rgb), 0.3) !important;
+    transition: all 0.3s ease;
+}
+
+/* Company Avatar Pill */
+.company-avatar {
+    background: var(--primary-gradient) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 4px rgba(var(--primary-rgb), 0.25) !important;
+}
+
+/* ==========================================================================
+   Buttons & Action Controls
+   ========================================================================== */
+.btn-primary,
+.btn-editor-primary,
+.btn-submit,
+.btn-create-doc,
+.btn-save-doc {
+    background-color: var(--primary-color) !important;
+    background-image: var(--primary-gradient) !important;
+    border-color: var(--primary-color) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(var(--primary-rgb), 0.25) !important;
+    transition: all 0.2s ease !important;
+}
+
+.header-controls .btn-primary,
+.header-controls .btn-secondary,
+.header-controls a,
+.header-controls button {
+    width: auto !important;
+    flex-shrink: 0 !important;
+}
+
+.btn-primary:hover,
+.btn-submit:hover,
+.btn-create-doc:hover,
+.btn-save-doc:hover {
+    background-color: var(--primary-hover) !important;
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.35) !important;
+    transform: translateY(-1px);
+}
+
+.btn-primary:active,
+.btn-submit:active {
+    background-color: var(--primary-active) !important;
+    transform: translateY(0);
+}
+
+/* Outline / Ghost Buttons with Primary Color */
+.btn-outline-primary,
+.btn-action-small:hover {
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Form Focus Rings */
+.form-control:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px var(--primary-focus-ring) !important;
+    outline: none !important;
+}
+
+/* ==========================================================================
+   Navigation & Sidebar Active States
+   ========================================================================== */
+.sidebar-menu .menu-item.active,
+.sidebar-menu .menu-item:hover {
+    color: var(--primary-color) !important;
+}
+
+.sidebar-menu .menu-item.active {
+    background-color: var(--primary-light) !important;
+    border-left: 3px solid var(--primary-color) !important;
+    font-weight: 600;
+}
+
+.sidebar-menu .menu-item.active svg {
+    stroke: var(--primary-color) !important;
+}
+
+/* Header Links & Accents */
+.link-highlight,
+.forgot-link:hover,
+.blue-link,
+a.blue-link {
+    color: var(--primary-color) !important;
+}
+
+/* Table Tabs Active Underline */
+.filter-tabs .tab-item.active,
+.inventory-tabs .inv-tab.active {
+    color: var(--primary-color) !important;
+    border-bottom: 2px solid var(--primary-color) !important;
+    font-weight: 600;
+}
+
+/* Status Badges */
+.badge-status.approved,
+.badge-role-admin {
+    background-color: var(--primary-light) !important;
+    color: var(--primary-color) !important;
+    border: 1px solid var(--primary-light-border) !important;
+}
+
+/* Dashboard KPI Card Primary Accent */
+.kpi-card.primary-accent {
+    border-top: 3px solid var(--primary-color) !important;
+}
+
+/* Quick Demo Login Admin Button */
+.btn-demo-admin {
+    border-color: var(--primary-light-border) !important;
+}
+.btn-demo-admin strong {
+    color: var(--primary-color) !important;
+}
+
+
+/* ==========================================================================
+   Modern Centered Card Layout for Login Page
+   - Ambient Glow Background (Radial Gradient)
+   - Glassmorphic Accent Border
+   - Input Icons (Email & Password)
+   - Interactive Role Demo Cards
+   ========================================================================== */
+body.auth-page,
+.auth-wrapper {
+    background: radial-gradient(circle at 50% 20%, rgba(var(--primary-rgb), 0.08) 0%, rgba(248, 250, 252, 0.95) 60%), #f8fafc !important;
+    min-height: 100vh;
+}
+
+.auth-card {
+    background: #ffffff !important;
+    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.06), 0 25px 50px -12px rgba(var(--primary-rgb), 0.12) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    padding: 44px 38px 36px !important;
+    max-width: 460px !important;
+}
+
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient) !important;
+}
+
+/* Input Icon Prefix */
+.input-wrapper.has-icon {
+    position: relative;
+}
+
+.input-wrapper.has-icon .input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition: color 0.2s ease;
+    z-index: 2;
+}
+
+.input-wrapper.has-icon .form-control {
+    padding-left: 42px !important;
+    height: 46px !important;
+    border-radius: 10px !important;
+    font-size: 14.5px !important;
+}
+
+.input-wrapper.has-icon:focus-within .input-icon {
+    color: var(--primary-color) !important;
+}
+
+/* Role Demo Login Box */
+.demo-role-box {
+    margin-top: 22px;
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.demo-role-header {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.demo-role-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    margin-bottom: 6px;
+    width: 100%;
+}
+
+.demo-role-btn:last-child {
+    margin-bottom: 0;
+}
+
+.demo-role-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.demo-role-btn.role-admin:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-light);
+}
+
+.demo-role-btn.role-accountant:hover {
+    border-color: #10b981;
+    background: #f0fdf4;
+}
+
+.demo-role-btn.role-sales:hover {
+    border-color: #f59e0b;
+    background: #fffbeb;
+}
+
+/* Brand Logo Image Compact Header */
+.brand-logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+}
+
+.brand-logo-img {
+    height: 52px !important;
+    max-height: 52px !important;
+    width: auto !important;
+    max-width: 160px !important;
+    object-fit: contain;
+    border-radius: 10px;
+    display: block;
+    box-shadow: 0 4px 12px rgba(177, 144, 93, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.brand-logo:hover .brand-logo-img {
+    transform: scale(1.03);
+    box-shadow: 0 6px 16px rgba(177, 144, 93, 0.35);
+}
+
+/* ==========================================================================
+   Global Color Harmony: Royal Crimson Theme Enforcements
+   ========================================================================== */
+.btn-primary,
+.btn-quick-create,
+.btn-save-approve,
+.doc-tab-btn.active {
+    background-color: #7D0A0A !important;
+    color: #ffffff !important;
+    border-color: #7D0A0A !important;
+}
+
+.btn-primary:hover,
+.btn-quick-create:hover,
+.btn-save-approve:hover {
+    background-color: #630808 !important;
+    border-color: #630808 !important;
+}
+
+.btn-preview:hover,
+.btn-table-action:hover,
+.btn-action-small:hover {
+    border-color: #7D0A0A !important;
+    color: #7D0A0A !important;
+    background-color: #fef2f2 !important;
+}
+
+.doc-link,
+.panel-action-link,
+.btn-renew-link,
+.plan-badge,
+.doc-pill.active,
+.total-cash,
+.doc-main-title {
+    color: #7D0A0A !important;
+}
+
+.sidebar-menu .menu-item:hover,
+.sidebar-menu .menu-item.active {
+    color: #7D0A0A !important;
+    background-color: #fef2f2 !important;
+}
+
+.sidebar-menu .menu-item.active {
+    border-left: 3px solid #7D0A0A !important;
+}
+
+.sidebar-menu .menu-item.active svg {
+    stroke: #7D0A0A !important;
+}
+
+.company-avatar {
+    background: #7D0A0A !important;
+    color: #ffffff !important;
+}
+
+.badge-advance {
+    background: linear-gradient(135deg, #7D0A0A, #a81818) !important;
+    color: #ffffff !important;
+}
+
+.color-rev,
+.dot-blue {
+    background-color: #7D0A0A !important;
+}
+
+.calc-row.grand-total {
+    border-top: 2px solid #7D0A0A !important;
+}
+
+.calc-row.grand-total .amt {
+    color: #7D0A0A !important;
+}
+
+.global-search-box:focus-within,
+.period-select:focus,
+.table-input:focus,
+.meta-field-input:focus,
+.customer-select-input:focus,
+.customer-address-area:focus,
+.doc-search-box input:focus,
+.wht-input-inline:focus {
+    border-color: #7D0A0A !important;
+    box-shadow: 0 0 0 3px rgba(125, 10, 10, 0.15) !important;
+}
+
+.wht-checkbox-label input[type="radio"],
+.wht-checkbox-label input[type="checkbox"] {
+    accent-color: #7D0A0A !important;
+}
+
+.wht-badge-53 {
+    background-color: #fef2f2 !important;
+    color: #7D0A0A !important;
+    border: 1px solid #fecaca !important;
+}
+
+.color-crimson {
+    color: var(--primary-color) !important;
+}
+
+/* ==========================================================================
+   Universal Modern Select & Dropdown Design System
+   Matches benchmark custom searchable dropdown styling across the entire app
+   ========================================================================== */
+select:not(.customer-select-clean):not(.calc-inline-select):not(.calc-mini-select),
+.form-select,
+select.form-control,
+.period-select {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-color: #ffffff !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 10px center !important;
+    background-size: 13px 13px !important;
+    padding-right: 32px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    color: #1e293b !important;
+    font-family: inherit !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    cursor: pointer !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+select:not(.customer-select-clean):not(.calc-inline-select):not(.calc-mini-select):hover,
+.form-select:hover,
+select.form-control:hover,
+.period-select:hover {
+    border-color: #94a3b8 !important;
+}
+
+select:not(.customer-select-clean):not(.calc-inline-select):not(.calc-mini-select):focus,
+.form-select:focus,
+select.form-control:focus,
+.period-select:focus {
+    border-color: var(--primary-color, #7D0A0A) !important;
+    box-shadow: 0 0 0 3px var(--primary-focus-ring, rgba(125, 10, 10, 0.15)) !important;
+    outline: none !important;
+}
+
+select:disabled,
+.form-select:disabled,
+select.form-control:disabled,
+.period-select:disabled {
+    background-color: #f1f5f9 !important;
+    color: #94a3b8 !important;
+    cursor: not-allowed !important;
+    opacity: 0.7 !important;
+    border-color: #e2e8f0 !important;
+}
+
+/* Universal Elevated Floating Dropdown Menus */
+.dropdown-menu,
+.mam-dropdown-menu,
+.status-dropdown-menu,
+.action-menu-dropdown,
+.user-dropdown-menu,
+.company-selector-dropdown {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.05) !important;
+    box-sizing: border-box !important;
+}
+
+.dropdown-item,
+.mam-dropdown-item,
+.status-menu-item,
+.action-menu-item {
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    color: #1e293b !important;
+    transition: background 0.12s ease !important;
+}
+
+.dropdown-item:hover,
+.mam-dropdown-item:hover,
+.status-menu-item:hover,
+.action-menu-item:hover {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+
+

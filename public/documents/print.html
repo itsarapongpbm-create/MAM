@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>พิมพ์เอกสารการค้า | MAM DESIGN AND SERVICE</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7D0A0A;
+            --primary-dark: #500606;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: #cbd5e1;
+            --border-light: #e2e8f0;
+            --bg-canvas: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-main);
+            font-size: 13px;
+            line-height: 1.45;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Top Action Toolbar (Screen Only) */
+        .print-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: #ffffff;
+            border-bottom: 1px solid #cbd5e1;
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            font-family: 'Prompt', -apple-system, sans-serif;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-toolbar {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13.5px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            border: 1px solid transparent;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #334155;
+            border-color: #cbd5e1;
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+
+        .copy-selector {
+            display: flex;
+            background: #f1f5f9;
+            border-radius: 6px;
+            padding: 3px;
+            gap: 2px;
+        }
+
+        .copy-tab {
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 12.5px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .copy-tab:hover {
+            color: #0f172a;
+        }
+
+        .copy-tab.active {
+            background: #ffffff;
+            color: var(--primary);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Canvas & Page Container */
+        .pages-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+            padding: 24px 12px 60px;
+        }
+
+        /* A4 Page Layout */
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            padding: 10mm 12mm 8mm;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+        }
+
+        /* Watermarks */
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 80px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.08;
+            white-space: nowrap;
+            user-select: none;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .watermark.draft {
+            color: #334155;
+            opacity: 0.1;
+        }
+
+        .watermark.cancelled {
+            color: #dc2626;
+            opacity: 0.15;
+        }
+
+        /* Page Content Structure */
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 8px;
+            border-bottom: 1.5px solid #e2e8f0;
+        }
+
+        .company-block {
+            max-width: 60%;
+        }
+
+        .company-logo {
+            height: 38px;
+            width: auto;
+            object-fit: contain;
+            margin-bottom: 4px;
+        }
+
+        .company-name-th {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .company-name-en {
+            font-size: 11px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 2px;
+        }
+
+        .company-details {
+            font-size: 10.5px;
+            color: #475569;
+            line-height: 1.35;
+        }
+
+        .title-block {
+            text-align: right;
+            max-width: 40%;
+        }
+
+        .copy-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid #0f172a;
+            border-radius: 4px;
+            padding: 3px 10px 2px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #0f172a;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            margin-bottom: 4px;
+            font-family: 'Prompt', sans-serif;
+            box-sizing: border-box;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .doc-title-th {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.2;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .doc-title-en {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            letter-spacing: 1px;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        /* Customer & Meta Two-Column Section */
+        .doc-meta-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .meta-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 10px;
+        }
+
+        .meta-box-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .meta-row {
+            display: flex;
+            margin-bottom: 2px;
+            font-size: 11.5px;
+        }
+
+        .meta-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .meta-label {
+            width: 115px;
+            color: #64748b;
+            flex-shrink: 0;
+        }
+
+        .meta-value {
+            color: #0f172a;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        /* Line Items Table */
+        .items-section {
+            margin-top: 8px;
+            flex: 1;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .items-table th {
+            background-color: var(--primary, #7D0A0A);
+            color: #ffffff;
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 5px 8px;
+            border: none;
+            text-align: left;
+            font-family: 'Prompt', sans-serif;
+            letter-spacing: 0.02em;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .items-table thead tr th:first-child {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+
+        .items-table thead tr th:last-child {
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+
+        .items-table td {
+            padding: 5px 8px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 11.5px;
+            vertical-align: top;
+        }
+
+        .col-num { width: 44px; text-align: center; }
+        .col-desc { }
+        .col-qty { width: 55px; text-align: right; }
+        .col-unit { width: 50px; text-align: center; }
+        .col-price { width: 105px; text-align: right; }
+        .col-amount { width: 120px; text-align: right; font-weight: 600; }
+
+        .item-title {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .item-subtitle {
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 1px;
+            line-height: 1.35;
+            white-space: pre-line;
+        }
+
+        /* Summary & Totals */
+        .doc-bottom-section {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 12px;
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px solid #cbd5e1;
+        }
+
+        .bottom-left-notes {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .thai-baht-box {
+            background: #f8fafc;
+            border-left: 3px solid var(--primary);
+            padding: 5px 10px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #0f172a;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .payment-account-box {
+            font-size: 10px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 6px;
+            padding: 5px 8px;
+            line-height: 1.35;
+        }
+
+        .notes-box {
+            font-size: 10px;
+            color: #475569;
+            line-height: 1.3;
+            background: #fff;
+            padding: 4px 6px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .totals-table td {
+            padding: 2.5px 5px;
+            font-size: 11.5px;
+        }
+
+        .totals-label {
+            color: #475569;
+            text-align: right;
+        }
+
+        .totals-val {
+            text-align: right;
+            font-weight: 500;
+            width: 115px;
+        }
+
+        .totals-row-grand {
+            border-top: 1.5px solid var(--primary);
+            border-bottom: 2px double var(--primary);
+        }
+
+        .totals-row-grand td {
+            padding: 4px 5px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .totals-row-net {
+            border-top: 1.5px solid var(--primary);
+            border-bottom: 2px double var(--primary);
+            background: #fdf2f2;
+        }
+
+        .totals-row-net td {
+            padding: 5px 5px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Signatures Section (3-Column Layout: Buyer (Left) | Stamp & Company (Center) | Approver (Right)) */
+        .signatures-section {
+            display: grid;
+            grid-template-columns: 1fr 1.25fr 1fr;
+            gap: 10px;
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px solid #e2e8f0;
+            align-items: stretch;
+            page-break-inside: avoid;
+        }
+
+        .sig-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 6px 6px;
+            text-align: center;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 102px;
+            box-sizing: border-box;
+        }
+
+        .sig-role {
+            font-weight: 700;
+            font-size: 11.5px;
+            color: #0f172a;
+            margin-bottom: 2px;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .sig-space {
+            flex: 1;
+            min-height: 30px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .seller-signature-img {
+            position: absolute;
+            bottom: 1px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-height: 34px;
+            max-width: 120px;
+            object-fit: contain;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .sig-name {
+            color: #334155;
+            font-size: 10px;
+            line-height: 1.25;
+            white-space: nowrap;
+        }
+
+        .sig-date {
+            color: #475569;
+            font-size: 10px;
+            margin-top: 2px;
+            line-height: 1.25;
+        }
+
+        /* Center Stamp Box */
+        .sig-card.sig-card-stamp {
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            padding: 6px 4px;
+        }
+
+        .stamp-center-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            width: 100%;
+        }
+
+        .company-stamp-center-img {
+            max-height: 52px;
+            max-width: 72px;
+            width: auto;
+            object-fit: contain;
+            opacity: 0.88;
+            transform: rotate(-3deg);
+        }
+
+        .company-stamp-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #334155;
+            line-height: 1.3;
+            font-family: 'Prompt', sans-serif;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* Envelope Mode Layout (Standard DL 220mm x 110mm) */
+        .envelope-page {
+            width: 220mm;
+            height: 110mm;
+            background: #ffffff;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+            padding: 10mm 14mm;
+            position: relative;
+            border-radius: 4px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .env-sender-box {
+            max-width: 55%;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #334155;
+        }
+
+        .env-sender-logo {
+            height: 28px;
+            width: auto;
+            margin-bottom: 4px;
+        }
+
+        .env-postage-stamp {
+            position: absolute;
+            top: 10mm;
+            right: 14mm;
+            border: 1.5px dashed #94a3b8;
+            border-radius: 4px;
+            padding: 8px 12px;
+            text-align: center;
+            font-size: 10.5px;
+            color: #64748b;
+            line-height: 1.3;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .env-recipient-box {
+            margin-left: 70mm;
+            margin-top: 10mm;
+            border: 1px dashed #cbd5e1;
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 12px 16px;
+            max-width: 115mm;
+        }
+
+        .env-recipient-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .env-recipient-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .env-recipient-addr {
+            font-size: 11.5px;
+            color: #334155;
+            line-height: 1.45;
+        }
+
+        .env-footer-ref {
+            font-size: 10px;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px dotted #e2e8f0;
+            padding-top: 4px;
+        }
+
+        /* Print Media Styles */
+        @media print {
+            body {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .print-toolbar {
+                display: none !important;
+            }
+
+            .pages-container {
+                padding: 0 !important;
+                margin: 0 !important;
+                gap: 0 !important;
+                display: block !important;
+            }
+
+            .a4-page {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 auto !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                max-height: 297mm !important;
+                padding: 10mm 12mm 8mm !important;
+                box-sizing: border-box !important;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+                overflow: hidden !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+            }
+
+            .a4-page:last-child {
+                page-break-after: auto !important;
+            }
+
+            .envelope-page {
+                box-shadow: none !important;
+                margin: 0 !important;
+                page-break-after: avoid !important;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Action Toolbar -->
+    <header class="print-toolbar">
+        <div class="toolbar-group">
+            <button class="btn-toolbar btn-secondary" onclick="window.history.back();">&larr; กลับ</button>
+            <strong id="toolbarDocNum" style="font-size: 15px; color: var(--primary);">กำลังโหลดเอกสาร...</strong>
+            <span id="toolbarDocStatus" style="font-size: 12px; padding: 2px 8px; border-radius: 10px; background: #f1f5f9; font-weight: 600;"></span>
+        </div>
+        <div class="toolbar-group">
+            <div class="copy-selector">
+                <button type="button" class="copy-tab active" data-copy="ORIGINAL">ต้นฉบับ</button>
+                <button type="button" class="copy-tab" data-copy="COPY">สำเนา</button>
+                <button type="button" class="copy-tab" data-copy="BOTH">ทั้งสองหน้า</button>
+                <button type="button" class="copy-tab" data-copy="ENVELOPE">✉️ หน้าซอง</button>
+            </div>
+            <button type="button" class="btn-toolbar btn-secondary" id="btnSavePdf" title="บันทึกเป็นไฟล์ PDF (Save as PDF)">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>ดาวน์โหลด PDF</span>
+            </button>
+            <button type="button" class="btn-toolbar btn-primary" onclick="window.print();">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                <span>พิมพ์เอกสาร (Print)</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Pages Container -->
+    <div class="pages-container" id="pagesContainer">
+        <!-- Rendered by JavaScript dynamically -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const docId = urlParams.get('id') || '1';
+            const docTypeParam = (urlParams.get('type') || '').toLowerCase();
+            const isExpenseMode = docTypeParam === 'expense';
+            const isDownloadMode = urlParams.get('download') === 'true';
+            const isEnvelopeMode = urlParams.get('envelope') === 'true';
+
+            let docData = null;
+            let compData = null;
+
+            try {
+                if (isExpenseMode) {
+                    const [rExp, rComp] = await Promise.all([
+                        fetch(`/api/expenses/${docId}`),
+                        fetch('/api/company')
+                    ]);
+                    if (rExp.ok) {
+                        const exp = await rExp.json();
+                        docData = {
+                            id: exp.id,
+                            doc_type: 'EXPENSE',
+                            doc_number: exp.doc_number,
+                            issue_date: exp.transaction_date,
+                            due_date: exp.due_date,
+                            ref_doc_number: exp.ref_doc_number || '-',
+                            customer_name: exp.vendor_name,
+                            customer_tax_id: exp.vendor_tax_id || '',
+                            customer_branch: exp.vendor_branch || 'สำนักงานใหญ่',
+                            customer_address: exp.vendor_address || '',
+                            credit_terms: exp.payment_method || 'เงินสด / โอนเงิน',
+                            salesperson: exp.created_by || 'เจ้าหน้าที่จัดซื้อ/การเงิน',
+                            subtotal: exp.subtotal || 0,
+                            discount_amount: 0,
+                            vat_type: exp.vat_type || 'exclude',
+                            vat_amount: exp.vat_amount || 0,
+                            wht_amount: exp.wht_amount || 0,
+                            grand_total: exp.net_total || 0,
+                            status: exp.payment_status || 'PAID',
+                            remarks: exp.remarks || '',
+                            terms: exp.category || '',
+                            items: (exp.items && exp.items.length > 0) ? exp.items.map(it => ({
+                                item_name: it.description || it.category || 'รายการค่าใช้จ่าย',
+                                description: it.category ? `หมวดหมู่: ${it.category}` : '',
+                                quantity: 1,
+                                unit: 'รายการ',
+                                unit_price: it.amount || it.total_amount || 0,
+                                discount: 0,
+                                vat_rate: it.vat_rate !== undefined ? it.vat_rate : 7,
+                                total_amount: it.total_amount || it.amount || 0
+                            })) : [
+                                {
+                                    item_name: exp.category || 'ค่าใช้จ่ายทั่วไป',
+                                    description: exp.remarks || '',
+                                    quantity: 1,
+                                    unit: 'รายการ',
+                                    unit_price: exp.subtotal || exp.net_total || 0,
+                                    discount: 0,
+                                    vat_rate: exp.vat_rate || 7,
+                                    total_amount: exp.subtotal || exp.net_total || 0
+                                }
+                            ]
+                        };
+                    }
+                    if (rComp.ok) compData = await rComp.json();
+                } else {
+                    const [rDoc, rComp] = await Promise.all([
+                        fetch(`/api/documents/${docId}`),
+                        fetch('/api/company')
+                    ]);
+                    if (rDoc.ok) docData = await rDoc.json();
+                    if (rComp.ok) compData = await rComp.json();
+                }
+            } catch (err) {
+                console.error('Fetch error:', err);
+            }
+
+            if (!docData) {
+                // Rich Local Fallback for Demo
+                docData = {
+                    id: 1,
+                    doc_type: 'QUOTATION',
+                    doc_number: 'QT-202610-0001',
+                    issue_date: '2026-10-02',
+                    due_date: '2026-11-01',
+                    credit_terms: 'เครดิต 30 วัน',
+                    ref_doc_number: '-',
+                    customer_name: 'บริษัท สยาม รีเทล คอร์ปอเรชั่น จำกัด (มหาชน)',
+                    customer_tax_id: '0107536000123',
+                    customer_branch: 'สำนักงานใหญ่',
+                    customer_address: '88/1 อาคารสยามทาวเวอร์ ชั้น 18 ถนนพระราม 1 แขวงปทุมวัน เขตปทุมวัน กรุงเทพฯ 10330',
+                    salesperson: 'คุณอิศรพงศ์ โพธิ์งาม',
+                    subtotal: 120000,
+                    discount_amount: 0,
+                    vat_type: 'exclude',
+                    vat_amount: 8400,
+                    wht_amount: 0,
+                    grand_total: 128400,
+                    status: 'APPROVED',
+                    remarks: 'ใบเสนอราคานี้มีผลบังคับใช้ 30 วันนับจากวันที่ออกเอกสาร',
+                    terms: '',
+                    items: [
+                        { item_name: 'บริการออกแบบและพัฒนาระบบซอฟต์แวร์ MAM', description: 'บริการงานออกแบบและพัฒนาเชื่อมต่อระบบภายในองค์กร Phase 1', quantity: 1, unit: 'โครงการ', unit_price: 120000, discount: 0, vat_rate: 7, total_amount: 120000 }
+                    ]
+                };
+            }
+
+            if (!compData) {
+                compData = {
+                    name: 'บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด',
+                    name_en: 'MAM DESIGN AND SERVICE CO., LTD.',
+                    tax_id: '0105562089456',
+                    branch: 'สำนักงานใหญ่',
+                    address: '123 อาคารสาทรซิตี้ ทาวเวอร์ ชั้น 15 ถนนสาทรใต้ แขวงทุ่งมหาเมฆ เขตสาทร กรุงเทพฯ 10120',
+                    phone: '02-821-5555',
+                    email: 'contact@mamdesign.co.th',
+                    logo_url: '../assets/images/mam-logo.png'
+                };
+            }
+
+            // Apply saved custom branding if exists
+            let savedBranding = {};
+            try {
+                const raw = localStorage.getItem('mam_document_branding') || localStorage.getItem('mam_doc_branding') || '{}';
+                savedBranding = JSON.parse(raw);
+                if (savedBranding.themeColor) {
+                    document.documentElement.style.setProperty('--primary', savedBranding.themeColor);
+                }
+                if (savedBranding.logoSrc && compData) {
+                    compData.logo_url = savedBranding.logoSrc;
+                }
+            } catch (e) {}
+
+            // Update Toolbar Status
+            const tbNum = document.getElementById('toolbarDocNum');
+            const tbStatus = document.getElementById('toolbarDocStatus');
+            if (tbNum) tbNum.textContent = docData.doc_number || 'ฉบับร่าง (DRAFT)';
+            if (tbStatus) {
+                const statusDict = {
+                    APPROVED: { text: 'อนุมัติแล้ว', bg: '#dcfce7', color: '#15803d' },
+                    PAID: { text: 'ชำระแล้ว', bg: '#dcfce7', color: '#15803d' },
+                    ISSUED: { text: 'รอชำระ', bg: '#fef3c7', color: '#b45309' },
+                    WAITING_APPROVAL: { text: 'รออนุมัติ', bg: '#fef3c7', color: '#b45309' },
+                    DRAFT: { text: 'ฉบับร่าง', bg: '#f1f5f9', color: '#475569' },
+                    CANCELLED: { text: 'ยกเลิก', bg: '#fee2e2', color: '#b91c1c' }
+                };
+                const st = statusDict[docData.status] || { text: docData.status, bg: '#f1f5f9', color: '#475569' };
+                tbStatus.textContent = st.text;
+                tbStatus.style.background = st.bg;
+                tbStatus.style.color = st.color;
+            }
+
+            // Document Title & Role Configurations (Comprehensive mapping for all 6 document types)
+            const TITLE_MAP = {
+                QUOTATION: {
+                    th: 'ใบเสนอราคา',
+                    en: 'QUOTATION',
+                    partyLabel: 'ข้อมูลลูกค้า / Customer',
+                    isVendor: false,
+                    sigBuyer: 'ผู้สั่งซื้อสินค้า',
+                    sigApprover: 'ผู้อนุมัติ / เสนอราคาโดย',
+                    dateLabel: 'วันที่ออกเอกสาร:',
+                    termsLabel: 'เงื่อนไขการชำระ:',
+                    dueDateLabel: 'วันครบกำหนด:'
+                },
+                BILLING_NOTE: {
+                    th: 'ใบวางบิล / ใบแจ้งหนี้',
+                    en: 'BILLING NOTE',
+                    partyLabel: 'ข้อมูลลูกค้า / Customer',
+                    isVendor: false,
+                    sigBuyer: 'ผู้รับใบวางบิล',
+                    sigApprover: 'ผู้วางบิล / เจ้าหน้าที่การเงิน',
+                    dateLabel: 'วันที่ออกเอกสาร:',
+                    termsLabel: 'เงื่อนไขการชำระ:',
+                    dueDateLabel: 'วันครบกำหนด:'
+                },
+                TAX_INVOICE: {
+                    th: 'ใบกำกับภาษี / ใบส่งของ',
+                    en: 'TAX INVOICE / DELIVERY ORDER',
+                    partyLabel: 'ข้อมูลลูกค้า / Customer',
+                    isVendor: false,
+                    sigBuyer: 'ผู้รับสินค้า / ได้รับสินค้าครบถ้วน',
+                    sigApprover: 'ผู้ส่งสินค้า / ผู้อนุมัติ',
+                    dateLabel: 'วันที่ออกเอกสาร:',
+                    termsLabel: 'เงื่อนไขการชำระ:',
+                    dueDateLabel: 'วันครบกำหนด:'
+                },
+                INVOICE: {
+                    th: 'ใบส่งของ / ใบกำกับภาษี',
+                    en: 'TAX INVOICE / DELIVERY ORDER',
+                    partyLabel: 'ข้อมูลลูกค้า / Customer',
+                    isVendor: false,
+                    sigBuyer: 'ผู้รับสินค้า / ได้รับสินค้าครบถ้วน',
+                    sigApprover: 'ผู้ส่งสินค้า / ผู้อนุมัติ',
+                    dateLabel: 'วันที่ออกเอกสาร:',
+                    termsLabel: 'เงื่อนไขการชำระ:',
+                    dueDateLabel: 'วันครบกำหนด:'
+                },
+                RECEIPT: {
+                    th: docData.is_tax_invoice ? 'ใบเสร็จรับเงิน / ใบกำกับภาษี' : 'ใบเสร็จรับเงิน',
+                    en: docData.is_tax_invoice ? 'RECEIPT / TAX INVOICE' : 'RECEIPT',
+                    partyLabel: 'ข้อมูลลูกค้า / Customer',
+                    isVendor: false,
+                    sigBuyer: 'ผู้ชำระเงิน',
+                    sigApprover: 'ผู้รับเงิน / เจ้าหน้าที่การเงิน',
+                    dateLabel: 'วันที่ออกเอกสาร:',
+                    termsLabel: 'การชำระเงิน:',
+                    dueDateLabel: 'วันที่ชำระเงิน:'
+                },
+                CASH_SALE: {
+                    th: 'ใบกำกับภาษี / ใบเสร็จรับเงิน (ขายสด)',
+                    en: 'TAX INVOICE / CASH RECEIPT',
+                    partyLabel: 'ข้อมูลลูกค้า / Customer',
+                    isVendor: false,
+                    sigBuyer: 'ผู้ชำระเงิน / ผู้รับสินค้า',
+                    sigApprover: 'ผู้รับเงิน / ผู้อนุมัติ',
+                    dateLabel: 'วันที่ออกเอกสาร:',
+                    termsLabel: 'วิธีชำระเงิน:',
+                    dueDateLabel: 'วันที่ชำระเงิน:'
+                },
+                PURCHASE_ORDER: {
+                    th: 'ใบสั่งซื้อ',
+                    en: 'PURCHASE ORDER',
+                    partyLabel: 'ข้อมูลผู้ขาย / Vendor Information',
+                    isVendor: true,
+                    sigBuyer: 'ผู้ขาย / ผู้รับคำสั่งซื้อ',
+                    sigApprover: 'ผู้สั่งซื้อ / ผู้อนุมัติสั่งซื้อ',
+                    dateLabel: 'วันที่สั่งซื้อ:',
+                    termsLabel: 'เงื่อนไขจัดซื้อ:',
+                    dueDateLabel: 'กำหนดส่งมอบสินค้า:'
+                },
+                EXPENSE: {
+                    th: 'ใบสำคัญจ่าย / บันทึกค่าใช้จ่าย',
+                    en: 'PAYMENT VOUCHER',
+                    partyLabel: 'ข้อมูลผู้รับเงิน / ผู้จำหน่าย (Payee / Vendor)',
+                    isVendor: true,
+                    sigBuyer: 'ผู้รับเงิน / ผู้ส่งมอบสินค้า',
+                    sigApprover: 'ผู้จ่ายเงิน / ผู้มีอำนาจอนุมัติ',
+                    dateLabel: 'วันที่ทำรายการ:',
+                    termsLabel: 'ช่องทางชำระ:',
+                    dueDateLabel: 'วันครบกำหนด:'
+                }
+            };
+
+            const tConfig = TITLE_MAP[docData.doc_type] || TITLE_MAP.QUOTATION;
+
+            // Generate Thai Baht Text
+            function toThaiBaht(num) {
+                if (isNaN(num) || num === null || num === undefined) return 'ศูนย์บาทถ้วน';
+                num = Math.round(num * 100) / 100;
+                if (num === 0) return 'ศูนย์บาทถ้วน';
+                const digits = ['ศูนย์', 'หนึ่ง', 'สอง', 'สาม', 'สี่', 'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า'];
+                const units = ['', 'สิบ', 'ร้อย', 'พัน', 'หมื่น', 'แสน', 'ล้าน'];
+                function block(str) {
+                    let s = '';
+                    const len = str.length;
+                    for (let i = 0; i < len; i++) {
+                        const d = parseInt(str.charAt(i), 10);
+                        const pos = len - i - 1;
+                        if (d !== 0) {
+                            if (pos === 0 && d === 1 && len > 1) s += 'เอ็ด';
+                            else if (pos === 1 && d === 2) s += 'ยี่สิบ';
+                            else if (pos === 1 && d === 1) s += 'สิบ';
+                            else s += digits[d] + units[pos];
+                        }
+                    }
+                    return s;
+                }
+                const parts = num.toFixed(2).split('.');
+                let intStr = parts[0];
+                let satStr = parts[1];
+                let out = '';
+                if (intStr.length > 6) {
+                    out += block(intStr.substring(0, intStr.length - 6)) + 'ล้าน';
+                    intStr = intStr.substring(intStr.length - 6);
+                }
+                out += block(intStr) + 'บาท';
+                out += parseInt(satStr, 10) === 0 ? 'ถ้วน' : block(satStr) + 'สตางค์';
+                return out;
+            }
+
+            function renderPage(copyType = 'ORIGINAL') {
+                const isOriginal = copyType === 'ORIGINAL';
+                const badgeText = isOriginal ? 'ต้นฉบับ / ORIGINAL' : 'สำเนา / COPY';
+                const copyColor = isOriginal ? '#0f172a' : '#64748b';
+
+                let watermarkHtml = '';
+                if (docData.status === 'DRAFT') {
+                    watermarkHtml = '<div class="watermark draft">ฉบับร่าง DRAFT</div>';
+                } else if (docData.status === 'CANCELLED') {
+                    watermarkHtml = '<div class="watermark cancelled">ยกเลิก CANCELLED</div>';
+                }
+
+                const rowsHtml = (docData.items || []).map((it, idx) => `
+                    <tr>
+                        <td class="col-num">${idx + 1}</td>
+                        <td class="col-desc">
+                            <div class="item-title">${it.item_name || '-'}</div>
+                            ${it.description ? `<div class="item-subtitle">${it.description}</div>` : ''}
+                        </td>
+                        <td class="col-qty">${(it.quantity || 1).toLocaleString('th-TH')}</td>
+                        <td class="col-unit">${it.unit || 'ชิ้น'}</td>
+                        <td class="col-price">${(it.unit_price || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                        <td class="col-amount">${(it.total_amount || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                `).join('');
+
+                const subtotal = docData.subtotal || 0;
+                const discount = docData.discount_amount || 0;
+                const netAfterDisc = Math.max(0, subtotal - discount);
+                const vat = docData.vat_amount || 0;
+                const wht = docData.wht_amount || 0;
+                const totalWithVat = netAfterDisc + (docData.vat_type === 'exclude' ? vat : 0);
+                const netPayment = Math.max(0, totalWithVat - wht);
+
+                const hasDiscount = discount > 0;
+                const hasVat = docData.vat_type !== 'none' && (vat > 0 || docData.vat_type === 'exclude' || docData.vat_type === 'include');
+                const hasWht = wht > 0;
+
+                // Signatures & Stamp Setup
+                const stampSrc = savedBranding.stampSrc || '../assets/images/mam-stamp.svg';
+                const showStamp = savedBranding.showCompanyStamp !== false;
+                const showSign = savedBranding.showSellerSign !== false && !!savedBranding.signatureSrc;
+                const showCustomer = savedBranding.showCustomerSign !== false;
+
+                const stampHtml = showStamp ? `<img src="${stampSrc}" class="company-stamp-seal" alt="Official Stamp">` : '';
+                const signHtml = showSign ? `<img src="${savedBranding.signatureSrc}" class="seller-signature-img" alt="Seller Signature">` : '';
+
+                // Payment Terms formatting
+                let paymentTermsText = docData.credit_terms;
+                if (!paymentTermsText && (docData.credit_days !== undefined && docData.credit_days !== null && docData.credit_days !== '')) {
+                    paymentTermsText = Number(docData.credit_days) > 0 ? `เครดิต ${docData.credit_days} วัน` : (Number(docData.credit_days) === 0 ? 'เงินสด' : '');
+                }
+                if (!paymentTermsText) {
+                    if (docData.doc_type === 'CASH_SALE') paymentTermsText = 'เงินสด (Cash)';
+                    else if (docData.doc_type === 'RECEIPT') paymentTermsText = 'โอนเงินผ่านธนาคาร';
+                    else paymentTermsText = 'เครดิต 30 วัน';
+                }
+
+                return `
+                    <div class="a4-page">
+                        ${watermarkHtml}
+                        
+                        <!-- Top Header -->
+                        <div>
+                            <header class="doc-header">
+                                <div class="company-block">
+                                    <img src="${compData.logo_url || '../assets/images/mam-logo.png'}" alt="MAM" class="company-logo">
+                                    <div class="company-name-th">${compData.name}</div>
+                                    <div class="company-name-en">${compData.name_en}</div>
+                                    <div class="company-details">
+                                        ${compData.address}<br>
+                                        เลขประจำตัวผู้เสียภาษี: <strong>${compData.tax_id}</strong> (${compData.branch})<br>
+                                        โทรศัพท์: ${compData.phone} | อีเมล: ${compData.email}
+                                    </div>
+                                </div>
+                                <div class="title-block">
+                                    <div class="copy-badge" style="border-color: ${copyColor}; color: ${copyColor};"><span>${badgeText}</span></div>
+                                    <div class="doc-title-th">${tConfig.th}</div>
+                                    <div class="doc-title-en">${tConfig.en}</div>
+                                </div>
+                            </header>
+
+                            <!-- Meta Details (Customer & Doc Info) -->
+                            <section class="doc-meta-section">
+                                <div class="meta-box">
+                                    <div class="meta-box-title">${tConfig.partyLabel}</div>
+                                    <div class="meta-row">
+                                        <div class="meta-label">ชื่อผู้ติดต่อ:</div>
+                                        <div class="meta-value"><strong>${docData.customer_name || '-'}</strong></div>
+                                    </div>
+                                    <div class="meta-row">
+                                        <div class="meta-label">ที่อยู่:</div>
+                                        <div class="meta-value">${docData.customer_address || '-'}</div>
+                                    </div>
+                                    <div class="meta-row">
+                                        <div class="meta-label">เลขประจำตัวผู้เสียภาษี:</div>
+                                        <div class="meta-value">${docData.customer_tax_id || '-'} (${docData.customer_branch || 'สำนักงานใหญ่'})</div>
+                                    </div>
+                                    ${(docData.customer_contact || docData.customer_phone) ? `
+                                    <div class="meta-row">
+                                        <div class="meta-label">ผู้ติดต่อ/โทรศัพท์:</div>
+                                        <div class="meta-value">${[docData.customer_contact, docData.customer_phone ? `โทร. ${docData.customer_phone}` : ''].filter(Boolean).join(' | ')}</div>
+                                    </div>` : ''}
+                                </div>
+                                <div class="meta-box">
+                                    <div class="meta-box-title">ข้อมูลเอกสาร / Details</div>
+                                    <div class="meta-row">
+                                        <div class="meta-label">เลขที่เอกสาร:</div>
+                                        <div class="meta-value"><strong style="color: var(--primary);">${docData.doc_number || 'ฉบับร่าง (DRAFT)'}</strong></div>
+                                    </div>
+                                    <div class="meta-row">
+                                        <div class="meta-label">${tConfig.dateLabel}</div>
+                                        <div class="meta-value">${docData.issue_date || '-'}</div>
+                                    </div>
+                                    <div class="meta-row">
+                                        <div class="meta-label">${tConfig.termsLabel || 'เงื่อนไขการชำระ:'}</div>
+                                        <div class="meta-value">${paymentTermsText}</div>
+                                    </div>
+                                    <div class="meta-row">
+                                        <div class="meta-label">${tConfig.dueDateLabel || 'วันครบกำหนด:'}</div>
+                                        <div class="meta-value">${docData.due_date || docData.valid_until || '-'}</div>
+                                    </div>
+                                    ${docData.project_name ? `
+                                    <div class="meta-row">
+                                        <div class="meta-label">โครงการ/ชื่องาน:</div>
+                                        <div class="meta-value"><strong>${docData.project_name}</strong></div>
+                                    </div>` : ''}
+                                    ${docData.ref_doc_number ? `
+                                    <div class="meta-row">
+                                        <div class="meta-label">เอกสารอ้างอิง:</div>
+                                        <div class="meta-value">${docData.ref_doc_number}</div>
+                                    </div>` : ''}
+                                    <div class="meta-row">
+                                        <div class="meta-label">พนักงานขาย:</div>
+                                        <div class="meta-value">${docData.salesperson || 'อิศรพงศ์ โพธิ์งาม'}</div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- Line Items -->
+                            <section class="items-section">
+                                <table class="items-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-num">ลำดับ</th>
+                                            <th class="col-desc">รายการสินค้า / บริการ</th>
+                                            <th class="col-qty">จำนวน</th>
+                                            <th class="col-unit">หน่วย</th>
+                                            <th class="col-price">ราคา/หน่วย</th>
+                                            <th class="col-amount">จำนวนเงิน</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${rowsHtml}
+                                    </tbody>
+                                </table>
+                            </section>
+                        </div>
+
+                        <!-- Footer & Totals -->
+                        <div>
+                            <section class="doc-bottom-section">
+                                <div class="bottom-left-notes">
+                                    <div class="thai-baht-box">
+                                        (${toThaiBaht(netPayment)})
+                                    </div>
+                                    ${(!tConfig.isVendor && docData.doc_type !== 'RECEIPT' && docData.doc_type !== 'CASH_SALE' && savedBranding.showBankAccount !== false) ? `
+                                    <div class="payment-account-box">
+                                        <strong>ข้อมูลการชำระเงินผ่านธนาคาร:</strong><br>
+                                        ${savedBranding.bankName || 'ธนาคารไทยพาณิชย์ (SCB)'} ${savedBranding.bankBranch || 'สาขาสาทรซิตี้ ทาวเวอร์'}<br>
+                                        ชื่อบัญชี: ${savedBranding.bankAccountName || 'บจก. เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส'} | เลขที่: <strong>${savedBranding.bankAccountNumber || '012-3-45892-1'}</strong> (${savedBranding.bankAccountType || 'กระแสรายวัน'})
+                                    </div>` : ''}
+                                    ${(docData.doc_type === 'RECEIPT' || docData.doc_type === 'CASH_SALE') ? `
+                                    <div class="payment-account-box" style="background: #f0fdf4; border-color: #86efac; color: #166534;" data-paid-status="true">
+                                        <div style="font-weight: 700; color: #15803d; display: flex; align-items: center; gap: 5px; margin-bottom: 2px;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                            ได้รับชำระเงินเรียบร้อยแล้ว (PAID)
+                                        </div>
+                                        <span>วันที่รับชำระ: ${docData.issue_date || '-'} | จำนวนเงิน: <strong>฿ ${netPayment.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</strong></span>
+                                    </div>` : ''}
+                                    ${(savedBranding.showRemarks !== false && (docData.remarks || savedBranding.defaultRemarks)) ? `
+                                    <div class="notes-box">
+                                        <strong>หมายเหตุ:</strong><br>
+                                        ${((docData.remarks && docData.remarks.trim() !== '') ? docData.remarks : (savedBranding.defaultRemarks || '')).split('\n').map(l => `• ${l.replace(/^[•\-\*]\s*/, '')}`).join('<br>')}
+                                    </div>` : ''}
+                                </div>
+
+                                <div>
+                                    <table class="totals-table">
+                                        <tr>
+                                            <td class="totals-label">รวมเป็นเงิน:</td>
+                                            <td class="totals-val">${subtotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                                        </tr>
+                                        ${hasDiscount ? `
+                                        <tr>
+                                            <td class="totals-label">ส่วนลดท้ายบิล:</td>
+                                            <td class="totals-val">-${discount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="totals-label">ราคาหลังหักส่วนลด:</td>
+                                            <td class="totals-val">${netAfterDisc.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                                        </tr>` : ''}
+                                        ${hasVat ? `
+                                        <tr>
+                                            <td class="totals-label">ภาษีมูลค่าเพิ่ม (VAT 7%):</td>
+                                            <td class="totals-val">${vat.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                                        </tr>` : ''}
+                                        ${hasWht ? `
+                                        <tr>
+                                            <td class="totals-label" style="font-weight: 600;">จำนวนเงินรวมทั้งสิ้น:</td>
+                                            <td class="totals-val" style="font-weight: 600;">฿ ${totalWithVat.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="totals-label" style="color: #64748b;">หักภาษี ณ ที่จ่าย (${docData.wht_rate || 3}%):</td>
+                                            <td class="totals-val" style="color: #64748b;">-฿ ${wht.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                                        </tr>
+                                        <tr class="totals-row-net">
+                                            <td class="totals-label">ยอดชำระสุทธิ:</td>
+                                            <td class="totals-val">฿ ${netPayment.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                                        </tr>
+                                        ` : `
+                                        <tr class="totals-row-grand">
+                                            <td class="totals-label">${hasDiscount || hasVat ? 'จำนวนเงินรวมทั้งสิ้น:' : 'ยอดชำระสุทธิ:'}</td>
+                                            <td class="totals-val">฿ ${totalWithVat.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                                        </tr>
+                                        `}
+                                    </table>
+                                </div>
+                            </section>
+
+                            <!-- Signatures Block (3-Column Layout: ผู้สั่งซื้อสินค้า (ซ้าย) | ตราประทับ + บริษัท (กลาง) | ผู้อนุมัติ (ขวา)) -->
+                            <footer class="signatures-section">
+                                <!-- 1. ด้านซ้ายมือ: ผู้สั่งซื้อสินค้า -->
+                                <div class="sig-card">
+                                    <div class="sig-role">${tConfig.sigBuyer || 'ผู้สั่งซื้อสินค้า'}</div>
+                                    <div class="sig-space"></div>
+                                    <div class="sig-name">(___________________________________________)</div>
+                                    <div class="sig-date">
+                                        <div>วันที่</div>
+                                        <div style="letter-spacing: 2px; font-weight: 500;">( _____ / _____ / ________ )</div>
+                                    </div>
+                                </div>
+
+                                <!-- 2. ตรงกลาง: ตราประทับบริษัท + ข้อมูลบริษัทด้านล่างรูป -->
+                                <div class="sig-card sig-card-stamp">
+                                    <div class="stamp-center-wrapper">
+                                        ${showStamp ? `<img src="${stampSrc}" class="company-stamp-center-img" alt="Official Stamp">` : ''}
+                                        <div class="company-stamp-label">${compData.name}</div>
+                                    </div>
+                                </div>
+
+                                <!-- 3. ด้านขวามือ: ผู้อนุมัติ -->
+                                <div class="sig-card">
+                                    <div class="sig-role">${tConfig.sigApprover || 'ผู้อนุมัติ'}</div>
+                                    <div class="sig-space">
+                                        ${signHtml}
+                                    </div>
+                                    <div class="sig-name">(___________________________________________)</div>
+                                    <div class="sig-date">
+                                        <div>วันที่</div>
+                                        <div style="letter-spacing: 2px; font-weight: 500;">( _____ / _____ / ________ )</div>
+                                    </div>
+                                </div>
+                            </footer>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderEnvelope() {
+                return `
+                    <div class="envelope-page">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div class="env-sender-box">
+                                <img src="${compData.logo_url || '../assets/images/mam-logo.png'}" alt="MAM" class="env-sender-logo">
+                                <div style="font-weight: 700; color: #0f172a;">${compData.name}</div>
+                                <div>${compData.address}</div>
+                                <div>โทรศัพท์: ${compData.phone} | เลขประจำตัวผู้เสียภาษี: ${compData.tax_id}</div>
+                            </div>
+                            <div class="env-postage-stamp">
+                                ชำระค่าฝากส่งเป็นรายเดือน<br>
+                                <strong>ใบอนุญาตพิเศษ</strong><br>
+                                ปณ. สาทร 10120
+                            </div>
+                        </div>
+
+                        <div class="env-recipient-box">
+                            <div class="env-recipient-label">กรุณาส่ง (TO):</div>
+                            <div class="env-recipient-name">${docData.customer_name || '-'}</div>
+                            ${(docData.customer_contact || docData.customer_phone) ? `<div style="font-size: 11.5px; font-weight: 600; color: #334155; margin-bottom: 3px;">${[docData.customer_contact ? `ผู้ติดต่อ: ${docData.customer_contact}` : '', docData.customer_phone ? `โทร: ${docData.customer_phone}` : ''].filter(Boolean).join(' | ')}</div>` : ''}
+                            <div class="env-recipient-addr">${docData.customer_address || '-'}</div>
+                            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+                                เลขประจำตัวผู้เสียภาษี: ${docData.customer_tax_id || '-'} (${docData.customer_branch || 'สำนักงานใหญ่'})
+                            </div>
+                        </div>
+
+                        <div class="env-footer-ref">
+                            <div>เอกสาร: <strong>${docData.doc_number || 'ฉบับร่าง'}</strong> (${tConfig.th})</div>
+                            <div>ผู้ส่ง: ${docData.salesperson || 'MAM Design and Service'}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const container = document.getElementById('pagesContainer');
+
+            function updateDisplay(mode = 'ORIGINAL') {
+                if (mode === 'BOTH') {
+                    container.innerHTML = renderPage('ORIGINAL') + renderPage('COPY');
+                } else if (mode === 'ENVELOPE') {
+                    container.innerHTML = renderEnvelope();
+                } else {
+                    container.innerHTML = renderPage(mode);
+                }
+            }
+
+            // Determine initial view mode
+            const initialMode = isEnvelopeMode ? 'ENVELOPE' : 'ORIGINAL';
+            document.querySelectorAll('.copy-tab').forEach(t => {
+                if (t.getAttribute('data-copy') === initialMode) {
+                    t.classList.add('active');
+                } else {
+                    t.classList.remove('active');
+                }
+            });
+            updateDisplay(initialMode);
+
+            // Copy Selector Tab Event Listeners
+            document.querySelectorAll('.copy-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.copy-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    updateDisplay(tab.getAttribute('data-copy'));
+                });
+            });
+
+            // Save PDF button action
+            const btnSavePdf = document.getElementById('btnSavePdf');
+            if (btnSavePdf) {
+                btnSavePdf.addEventListener('click', () => {
+                    window.print();
+                });
+            }
+
+            // Auto-trigger print dialog if download=true
+            if (isDownloadMode) {
+                setTimeout(() => {
+                    window.print();
+                }, 600);
+            }
+
+            // Reactive update on branding settings change
+            window.addEventListener('mam:branding-updated', () => {
+                try {
+                    const raw = localStorage.getItem('mam_document_branding') || localStorage.getItem('mam_doc_branding') || '{}';
+                    savedBranding = JSON.parse(raw);
+                    if (savedBranding.themeColor) {
+                        document.documentElement.style.setProperty('--primary', savedBranding.themeColor);
+                    }
+                    if (savedBranding.logoSrc && compData) {
+                        compData.logo_url = savedBranding.logoSrc;
+                    }
+                    const activeTab = document.querySelector('.copy-tab.active');
+                    const mode = activeTab ? activeTab.getAttribute('data-copy') : 'ORIGINAL';
+                    updateDisplay(mode);
+                } catch (e) {
+                    console.error('Error refreshing print after branding update:', e);
+                }
+            });
+        });
+    </script>
+    <!-- Document Branding & Settings Module -->
+    <script src="../assets/js/modules/doc-branding-modal.js"></script>
+</body>
+</html>

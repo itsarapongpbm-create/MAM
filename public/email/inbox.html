@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กล่องข้อความ (Inbox & Replies) | MAM DESIGN AND SERVICE</title>
+    <link rel="icon" href="/assets/images/mam-logo.png" type="image/png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/assets/css/auth.css?v=30">
+    <link rel="stylesheet" href="/assets/css/dashboard.css?v=30">
+    <link rel="stylesheet" href="/assets/css/theme.css?v=31">
+
+    <style>
+        .inbox-layout {
+            display: grid;
+            grid-template-columns: 220px 380px 1fr;
+            height: calc(100vh - 150px);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        /* Column 1: Folder Navigation */
+        .mail-folders-pane {
+            background: #f8fafc;
+            border-right: 1px solid #e2e8f0;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .btn-compose {
+            background: #7D0A0A;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            text-decoration: none;
+            box-shadow: 0 2px 4px rgba(125, 10, 10, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .btn-compose:hover {
+            background: #991b1b;
+        }
+
+        .folder-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .folder-item:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .folder-item.active {
+            background: #fee2e2;
+            color: #7D0A0A;
+            font-weight: 700;
+        }
+
+        .folder-badge {
+            background: #7D0A0A;
+            color: #ffffff;
+            border-radius: 10px;
+            padding: 1px 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* Column 2: Email List */
+        .mail-list-pane {
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+        }
+
+        .mail-list-header {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fdfdfd;
+        }
+
+        .mail-search-box {
+            flex: 1;
+            height: 34px;
+            padding: 0 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-size: 12.5px;
+        }
+
+        .btn-refresh-mail {
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            color: #475569;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-refresh-mail:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .btn-refresh-mail.spinning svg {
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .mail-items-container {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .mail-card-item {
+            padding: 12px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .mail-card-item:hover {
+            background: #f8fafc;
+        }
+
+        .mail-card-item.selected {
+            background: #fef2f2;
+            border-left: 3px solid #7D0A0A;
+        }
+
+        .mail-card-item.unread .mail-sender {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .mail-card-item.unread .mail-subject {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .mail-sender {
+            font-size: 13px;
+            color: #334155;
+            margin-bottom: 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mail-date {
+            font-size: 11px;
+            color: #94a3b8;
+            white-space: nowrap;
+        }
+
+        .mail-subject {
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .mail-snippet {
+            font-size: 12px;
+            color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Column 3: Mail Thread & Reply */
+        .mail-reading-pane {
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            overflow-y: auto;
+        }
+
+        .thread-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #fdfdfd;
+        }
+
+        .thread-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+        }
+
+        .sender-info-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sender-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sender-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #7D0A0A;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .thread-messages {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message-bubble {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px 20px;
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: #1e293b;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            word-break: break-word;
+        }
+
+        .message-bubble img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .reply-editor-box {
+            padding: 16px 20px;
+            border-top: 1px solid #e2e8f0;
+            background: #fafafa;
+        }
+
+        .reply-textarea {
+            width: 100%;
+            height: 90px;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-family: 'Prompt', sans-serif;
+            font-size: 13px;
+            resize: vertical;
+        }
+
+        .empty-inbox-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #94a3b8;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        /* Skeleton shimmer placeholder */
+        .skeleton-row {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .skeleton-line {
+            height: 12px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+
+    <!-- ================= Top Navigation Bar (Global Standard Component) ================= -->
+    <header class="top-navbar" id="globalTopNavbar">
+        <div class="nav-left">
+            <button class="btn-toggle-sidebar" id="toggleSidebarBtn" aria-label="Toggle menu" title="เปิด/ปิด เมนูด้านข้าง">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <a href="/dashboard/index.html" class="topbar-logo" title="หน้าหลักภาพรวมธุรกิจ">
+                <img src="/assets/images/mam-logo.png" alt="MAM DESIGN AND SERVICE" style="height: 38px; width: auto; object-fit: contain;">
+            </a>
+            <div class="topbar-divider"></div>
+            <div class="topbar-company-info">
+                <span class="topbar-company-name" id="topbarCompanyName">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</span>
+                <span class="badge-advance">INTERNAL CRM</span>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <div id="smtpStatusPill" style="display: inline-flex; align-items: center; gap: 6px; background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+                <span>Gmail ซิงค์ด่วน: itsarapong.pbm@gmail.com</span>
+            </div>
+
+            <div class="topbar-divider"></div>
+
+            <div class="user-profile-menu">
+                <button class="user-avatar-btn" id="userMenuBtn" type="button" aria-expanded="false" title="โปรไฟล์ผู้ใช้งาน">
+                    <img src="https://ui-avatars.com/api/?name=Itsarapong+Po&background=7D0A0A&color=fff&size=64" alt="User Avatar" class="user-avatar-img" id="topbarUserAvatar">
+                    <span class="user-display-name" id="topbarUserDisplayName">คุณอิศรพงศ์ โพธิ์งาม</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div class="user-dropdown-menu" id="userDropdownContent">
+                    <div class="user-dropdown-header">
+                        <strong id="dropdownUserFullName">Itsarapong P.</strong>
+                        <small id="dropdownUserEmail">itsarapong@mamdesign.co.th</small>
+                    </div>
+                    <a href="/settings/users.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>จัดการผู้ใช้งานและสิทธิ์</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/auth/login.html" class="dropdown-item text-danger" id="topbarLogoutBtn">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>ออกจากระบบ (Logout)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar-nav" id="sidebarNav">
+            <nav class="sidebar-menu">
+                <div class="menu-section-title">เมนูหลัก</div>
+                <a href="../dashboard/index.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <rect x="3" y="3" width="7" height="9"></rect>
+                        <rect x="14" y="3" width="7" height="5"></rect>
+                        <rect x="14" y="12" width="7" height="9"></rect>
+                        <rect x="3" y="16" width="7" height="5"></rect>
+                    </svg>
+                    <span>ภาพรวมธุรกิจ</span>
+                </a>
+
+                <div class="menu-dropdown-group" id="salesDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="salesDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                            <span>เอกสารการขาย</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../documents/quotations.html" class="submenu-item"><span>• ใบเสนอราคา</span></a>
+                        <a href="../documents/billing-notes.html" class="submenu-item"><span>• ใบวางบิล</span></a>
+                        <a href="../documents/invoices.html" class="submenu-item"><span>• ใบกำกับภาษี</span></a>
+                        <a href="../documents/receipts.html" class="submenu-item"><span>• ใบเสร็จรับเงิน</span></a>
+                        <a href="../documents/cash-sales.html" class="submenu-item"><span>• บิลเงินสด</span></a>
+                        <a href="../documents/purchase-orders.html" class="submenu-item"><span>• ใบสั่งซื้อ (PO)</span></a>
+                        <a href="../expenses/expenses.html" class="submenu-item"><span>• ค่าใช้จ่าย (Expenses)</span></a>
+                    </div>
+                </div>
+
+                <a href="../withholding-tax/withholding-tax.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>ภาษีหัก ณ ที่จ่าย (50 ทวิ)</span>
+                </a>
+
+                <div class="menu-dropdown-group" id="inventoryDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="inventoryDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline></svg>
+                            <span>สต็อกสินค้า (Inventory)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../inventory/inventory.html" class="submenu-item"><span>• ขนม / โบว์ / ตะกร้า</span></a>
+                        <a href="../inventory/gift-sets.html" class="submenu-item"><span>• Gift Set ตามกระเช้า</span></a>
+                        <a href="../inventory/gift-set-builder.html" class="submenu-item"><span>• จัด Gift Set ใหม่</span></a>
+                    </div>
+                </div>
+
+                <div class="menu-dropdown-group" id="contactsDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="contactsDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                            <span>ข้อมูลคู่ค้า (Contacts)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../contacts/customers.html" class="submenu-item"><span>• ลูกค้า (Customers)</span></a>
+                        <a href="../contacts/vendors.html" class="submenu-item"><span>• ผู้ขาย / คู่ค้า (Vendors)</span></a>
+                    </div>
+                </div>
+
+                <!-- ================= NEW SECTION: ระบบอีเมล (Email) ================= -->
+                <div class="menu-section-title">ระบบอีเมล (Email)</div>
+                <div class="menu-dropdown-group open" id="emailDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle active" id="emailDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <span>ระบบอีเมล (Email)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="campaign.html" class="submenu-item">
+                            <span>• เสนอขายกระเช้า (Giftory)</span>
+                        </a>
+                        <a href="inbox.html" class="submenu-item active">
+                            <span>• กล่องข้อความ (Inbox)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="menu-section-title">การตั้งค่าระบบ</div>
+                <a href="../settings/users.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                    <span>จัดการสิทธิ์ผู้ใช้งาน</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">กล่องข้อความ & ตอบกลับอีเมล (Gmail Mailbox)</h1>
+                    <p class="page-subtitle">เชื่อมต่อสดกับ Gmail เพื่อดูอีเมลติดต่อจากลูกค้า ตอบกลับบทสนทนา และติดตามประวัติการเสนอขาย</p>
+                </div>
+            </div>
+
+            <!-- 3-Column Inbox Layout -->
+            <div class="inbox-layout">
+                <!-- Col 1: Folders -->
+                <div class="mail-folders-pane">
+                    <a href="campaign.html" class="btn-compose">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M12 5v14M5 12h14"></path></svg>
+                        <span>สร้างแคมเปญเสนอขาย</span>
+                    </a>
+
+                    <div class="folder-item active" id="folderInbox" onclick="filterFolder('inbox')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+                            <span>กล่องขาเข้า (Inbox)</span>
+                        </div>
+                        <span class="folder-badge" id="inboxUnseenBadge" style="display: none;">0</span>
+                    </div>
+
+                    <div class="folder-item" id="folderSent" onclick="filterFolder('sent')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            <span>ส่งแล้ว (Sent)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Col 2: Email List -->
+                <div class="mail-list-pane">
+                    <div class="mail-list-header">
+                        <input type="text" class="mail-search-box" id="mailSearchInput" placeholder="🔍 ค้นหาผู้ส่ง, หัวข้อ..." oninput="filterLocalEmails()">
+                        <button type="button" class="btn-refresh-mail" id="btnRefreshMail" onclick="loadInbox(true)" title="ซิงค์ดึงอีเมลล่าสุดจาก Gmail">
+                            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                        </button>
+                    </div>
+
+                    <div class="mail-items-container" id="mailItemsContainer">
+                        <!-- Skeleton loading -->
+                        <div class="skeleton-row"><div class="skeleton-line" style="width: 50%;"></div><div class="skeleton-line" style="width: 80%;"></div></div>
+                        <div class="skeleton-row"><div class="skeleton-line" style="width: 40%;"></div><div class="skeleton-line" style="width: 75%;"></div></div>
+                        <div class="skeleton-row"><div class="skeleton-line" style="width: 60%;"></div><div class="skeleton-line" style="width: 70%;"></div></div>
+                    </div>
+                </div>
+
+                <!-- Col 3: Reading Pane & Reply -->
+                <div class="mail-reading-pane" id="mailReadingPane">
+                    <div class="empty-inbox-state">
+                        <div style="font-size: 32px; margin-bottom: 12px;">✉️</div>
+                        <div style="font-size: 15px; font-weight: 600; color: #475569;">เลือกอีเมลจากรายการด้านซ้ายเพื่อเปิดอ่าน</div>
+                        <div style="font-size: 12.5px; color: #94a3b8; margin-top: 4px;">เนื้อหาฉบับจริงจาก Gmail จะแสดงในส่วนนี้</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript Controller -->
+    <script>
+        let liveEmails = [];
+        let sentLogs = [];
+        let currentFolder = 'inbox';
+        let activeUid = null;
+        let activeSentId = null;
+        let activeMessageData = null;
+        let isLoading = false;
+
+        function filterFolder(folder) {
+            currentFolder = folder;
+            const inboxFolder = document.getElementById('folderInbox');
+            const sentFolder = document.getElementById('folderSent');
+            if (inboxFolder) inboxFolder.classList.toggle('active', folder === 'inbox');
+            if (sentFolder) sentFolder.classList.toggle('active', folder === 'sent');
+
+            const searchInput = document.getElementById('mailSearchInput');
+            if (searchInput) searchInput.value = '';
+
+            if (folder === 'sent') {
+                loadSentLogs();
+            } else {
+                loadInbox(false);
+            }
+        }
+
+        async function loadSentLogs() {
+            const container = document.getElementById('mailItemsContainer');
+            const refreshBtn = document.getElementById('btnRefreshMail');
+            if (refreshBtn) refreshBtn.classList.add('spinning');
+
+            try {
+                const res = await fetch('/api/email/logs');
+                const rows = await res.json();
+                sentLogs = Array.isArray(rows) ? rows : [];
+                renderSentLogsList(sentLogs);
+
+                if (sentLogs.length > 0) {
+                    openSentLogMessage(sentLogs[0].id);
+                } else {
+                    document.getElementById('mailReadingPane').innerHTML = `
+                        <div class="empty-inbox-state">
+                            <div style="font-size: 32px; margin-bottom: 12px;">📤</div>
+                            <div style="font-size: 15px; font-weight: 600; color: #475569;">ยังไม่มีประวัติการส่งอีเมล</div>
+                            <div style="font-size: 12.5px; color: #94a3b8; margin-top: 4px;">เมื่อคุณส่งแคมเปญหรือตอบกลับอีเมล รายการที่ส่งแล้วจะแสดงที่นี่</div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                container.innerHTML = `
+                    <div class="empty-inbox-state" style="color: #ef4444;">
+                        <div>ไม่สามารถโหลดประวัติการส่งได้: ${escapeHtml(err.message)}</div>
+                    </div>
+                `;
+            } finally {
+                if (refreshBtn) refreshBtn.classList.remove('spinning');
+            }
+        }
+
+        function renderSentLogsList(list) {
+            const container = document.getElementById('mailItemsContainer');
+            if (!list || list.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-inbox-state">
+                        <div>ไม่พบรายการอีเมลที่ส่งแล้ว</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = list.map(item => {
+                const isSelected = item.id === activeSentId;
+                const dateStr = formatMailDate(item.sent_at);
+                const recipientDisplay = item.recipient_company
+                    ? `ถึง: ${item.recipient_company}`
+                    : `ถึง: ${item.recipient_email}`;
+                const statusBadge = item.status === 'SENT'
+                    ? '<span style="color:#15803d; font-weight:600;">✓ ส่งสำเร็จ</span>'
+                    : '<span style="color:#dc2626; font-weight:600;">✕ ส่งไม่ผ่าน</span>';
+
+                return `
+                    <div class="mail-card-item ${isSelected ? 'selected' : ''}" onclick="openSentLogMessage(${item.id})">
+                        <div class="mail-sender">
+                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; font-weight: 600;" title="${escapeHtml(item.recipient_email)}">${escapeHtml(recipientDisplay)}</span>
+                            <span class="mail-date">${escapeHtml(dateStr)}</span>
+                        </div>
+                        <div class="mail-subject" title="${escapeHtml(item.subject || '')}">${escapeHtml(item.subject || '(ไม่มีหัวข้อ)')}</div>
+                        <div class="mail-snippet">${statusBadge} • ${escapeHtml(item.recipient_email)}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openSentLogMessage(logId) {
+            activeSentId = logId;
+            renderSentLogsList(sentLogs);
+            const item = sentLogs.find(r => r.id === logId);
+            if (!item) return;
+
+            const readingPane = document.getElementById('mailReadingPane');
+            const formattedDate = item.sent_at
+                ? new Date(item.sent_at).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })
+                : '-';
+
+            readingPane.innerHTML = `
+                <div class="thread-header">
+                    <h2 class="thread-title">${escapeHtml(item.subject || '(ไม่มีหัวข้อ)')}</h2>
+                    <div class="sender-info-box">
+                        <div class="sender-meta">
+                            <div class="sender-avatar" style="background: #15803d;">✓</div>
+                            <div>
+                                <div style="font-weight: 700; color: #0f172a;">ผู้รับ: ${escapeHtml(item.recipient_company || item.recipient_email)}</div>
+                                <div style="font-size: 12px; color: #64748b;">อีเมลปลายทาง: &lt;${escapeHtml(item.recipient_email)}&gt; ${item.recipient_contact ? `(${escapeHtml(item.recipient_contact)})` : ''}</div>
+                            </div>
+                        </div>
+                        <span style="font-size: 12px; color: #64748b; white-space: nowrap;">${formattedDate}</span>
+                    </div>
+                </div>
+                <div class="thread-messages">
+                    <div class="message-bubble">
+                        <div style="margin-bottom: 12px;">
+                            <span style="display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; ${item.status === 'SENT' ? 'background: #dcfce7; color: #15803d;' : 'background: #fee2e2; color: #dc2626;'}">
+                                ${item.status === 'SENT' ? '✅ ส่งอีเมลสำเร็จ (SENT)' : '❌ ส่งไม่สำเร็จ (FAILED)'}
+                            </span>
+                        </div>
+                        <div style="font-size: 13.5px; color: #334155; line-height: 1.8;">
+                            <div><strong>แคมเปญ:</strong> ${escapeHtml(item.campaign_name || 'Giftory 2026')}</div>
+                            <div><strong>หัวข้อที่ส่ง:</strong> ${escapeHtml(item.subject || '-')}</div>
+                            <div><strong>บริษัทผู้รับ:</strong> ${escapeHtml(item.recipient_company || '-')}</div>
+                            <div><strong>อีเมลผู้รับ:</strong> ${escapeHtml(item.recipient_email || '-')}</div>
+                            ${item.file_name ? `<div><strong>ไฟล์แนบ:</strong> 📎 ${escapeHtml(item.file_name)}</div>` : ''}
+                            ${item.error_message ? `<div style="color: #dc2626; margin-top: 8px;"><strong>สาเหตุที่ล้มเหลว:</strong> ${escapeHtml(item.error_message)}</div>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateUnseenBadgeFromLocal() {
+            const badge = document.getElementById('inboxUnseenBadge');
+            if (!badge) return;
+            const unseenCount = liveEmails.filter(m => m.unread).length;
+            if (unseenCount > 0) {
+                badge.innerText = unseenCount;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        async function loadInbox(forceRefresh = false) {
+            if (currentFolder === 'sent' && forceRefresh) {
+                return loadSentLogs();
+            }
+            currentFolder = 'inbox';
+            const inboxFolder = document.getElementById('folderInbox');
+            const sentFolder = document.getElementById('folderSent');
+            if (inboxFolder) inboxFolder.classList.add('active');
+            if (sentFolder) sentFolder.classList.remove('active');
+
+            if (isLoading) return;
+            isLoading = true;
+
+            const refreshBtn = document.getElementById('btnRefreshMail');
+            if (refreshBtn) refreshBtn.classList.add('spinning');
+
+            const container = document.getElementById('mailItemsContainer');
+            // ถ้าไม่มีรายการเดิมในจอ ให้โชว์ skeleton
+            if (liveEmails.length === 0) {
+                container.innerHTML = `
+                    <div class="skeleton-row"><div class="skeleton-line" style="width: 50%;"></div><div class="skeleton-line" style="width: 80%;"></div></div>
+                    <div class="skeleton-row"><div class="skeleton-line" style="width: 40%;"></div><div class="skeleton-line" style="width: 75%;"></div></div>
+                    <div class="skeleton-row"><div class="skeleton-line" style="width: 60%;"></div><div class="skeleton-line" style="width: 70%;"></div></div>
+                `;
+            }
+
+            try {
+                const res = await fetch(`/api/email/inbox?refresh=${forceRefresh ? 'true' : 'false'}&limit=15`);
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    throw new Error(data.error || 'ไม่สามารถดึงอีเมลจาก Gmail ได้');
+                }
+
+                liveEmails = data.emails || [];
+                updateUnseenBadgeFromLocal();
+
+                renderEmailList(liveEmails);
+
+                // หากยังไม่ได้เลือกอีเมลฉบับไหน ให้เปิดฉบับแรกอัตโนมัติ
+                if (liveEmails.length > 0 && !activeUid) {
+                    openEmailMessage(liveEmails[0].uid);
+                }
+            } catch (err) {
+                if (liveEmails.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-inbox-state" style="color: #ef4444;">
+                            <div style="font-size: 24px; margin-bottom: 8px;">⚠️</div>
+                            <div style="font-weight: 600;">เชื่อมต่อดึงอีเมลไม่สำเร็จ</div>
+                            <div style="font-size: 11.5px; margin-top: 4px;">${escapeHtml(err.message)}</div>
+                            <button type="button" onclick="loadInbox(true)" style="margin-top: 12px; padding: 6px 14px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-size: 12px;">ลองใหม่อีกครั้ง</button>
+                        </div>
+                    `;
+                }
+            } finally {
+                isLoading = false;
+                if (refreshBtn) refreshBtn.classList.remove('spinning');
+            }
+        }
+
+        function renderEmailList(list) {
+            const container = document.getElementById('mailItemsContainer');
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-inbox-state">
+                        <div>ไม่พบอีเมลในกล่องจดหมาย</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = list.map(item => {
+                const isSelected = item.uid === activeUid;
+                const dateStr = formatMailDate(item.date);
+                const senderDisplay = item.fromName || item.from;
+
+                return `
+                    <div class="mail-card-item ${isSelected ? 'selected' : ''} ${item.unread ? 'unread' : ''}" onclick="openEmailMessage(${item.uid})">
+                        <div class="mail-sender">
+                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;" title="${escapeHtml(item.from)}">${escapeHtml(senderDisplay)}</span>
+                            <span class="mail-date">${escapeHtml(dateStr)}</span>
+                        </div>
+                        <div class="mail-subject" title="${escapeHtml(item.subject)}">${escapeHtml(item.subject || '(ไม่มีหัวข้อ)')}</div>
+                        <div class="mail-snippet">คลิกเพื่อเปิดอ่านเนื้อหาจริง...</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function openEmailMessage(uid) {
+            activeUid = uid;
+            const targetItem = liveEmails.find(m => m.uid === uid);
+            if (targetItem && targetItem.unread) {
+                targetItem.unread = false;
+                updateUnseenBadgeFromLocal();
+            }
+            renderEmailList(liveEmails);
+
+            const readingPane = document.getElementById('mailReadingPane');
+            readingPane.innerHTML = `
+                <div class="empty-inbox-state">
+                    <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+                    <div>กำลังโหลดเนื้อหาอีเมลจาก Gmail...</div>
+                </div>
+            `;
+
+            try {
+                const res = await fetch(`/api/email/message/${uid}`);
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    throw new Error(data.error || 'ไม่สามารถโหลดข้อความได้');
+                }
+
+                const msg = data.message;
+                activeMessageData = msg;
+
+                const avatarInitial = (msg.fromName || msg.fromAddress || 'M').charAt(0).toUpperCase();
+                const formattedDate = new Date(msg.date).toLocaleString('th-TH', {
+                    dateStyle: 'medium',
+                    timeStyle: 'short'
+                });
+
+                let attachmentsHtml = '';
+                if (msg.attachments && msg.attachments.length > 0) {
+                    attachmentsHtml = `
+                        <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                            <div style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">📎 ไฟล์แนบ (${msg.attachments.length} ไฟล์):</div>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                ${msg.attachments.map(att => `
+                                    <div style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 6px; font-size: 12px; color: #334155;">
+                                        📄 ${escapeHtml(att.filename)} (${(att.size / 1024).toFixed(1)} KB)
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                readingPane.innerHTML = `
+                    <div class="thread-header">
+                        <h2 class="thread-title">${escapeHtml(msg.subject)}</h2>
+                        <div class="sender-info-box">
+                            <div class="sender-meta">
+                                <div class="sender-avatar">${escapeHtml(avatarInitial)}</div>
+                                <div>
+                                    <div style="font-weight: 700; color: #0f172a;">${escapeHtml(msg.fromName || msg.fromAddress)}</div>
+                                    <div style="font-size: 12px; color: #64748b;">&lt;${escapeHtml(msg.fromAddress)}&gt; ถึง ${escapeHtml(msg.to)}</div>
+                                </div>
+                            </div>
+                            <span style="font-size: 12px; color: #64748b; white-space: nowrap;">${formattedDate}</span>
+                        </div>
+                    </div>
+
+                    <div class="thread-messages">
+                        <div class="message-bubble">
+                            ${msg.html ? msg.html : `<pre style="white-space: pre-wrap; font-family: inherit; margin: 0;">${escapeHtml(msg.text)}</pre>`}
+                            ${attachmentsHtml}
+                        </div>
+                    </div>
+
+                    <!-- Reply Box -->
+                    <div class="reply-editor-box">
+                        <label style="display: block; font-size: 12.5px; font-weight: 700; color: #1e293b; margin-bottom: 6px;">
+                            ↩️ ตอบกลับอีเมลนี้ถึง <strong>${escapeHtml(msg.fromAddress)}</strong>:
+                        </label>
+                        <textarea class="reply-textarea" id="replyTextInput" placeholder="พิมพ์ข้อความตอบกลับที่นี่..."></textarea>
+                        <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <button type="button" onclick="insertReplySignature()" style="height: 32px; padding: 0 10px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                    <span>✍️ แทรกลายเซ็นต์ฝ่ายขาย</span>
+                                </button>
+                                <a href="../documents/quotation-new.html" target="_blank" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; font-size: 12px; font-weight: 600; color: #334155;">
+                                    <span>📄 สร้างใบเสนอราคา (Quotation) แนบตอบ</span>
+                                </a>
+                            </div>
+                            <button type="button" class="btn-primary" id="btnSendReply" onclick="sendReplyEmail(this)" style="height: 36px; padding: 0 18px; border-radius: 6px; background: #7D0A0A; color: #fff; font-weight: 700; font-size: 13px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                <span>ส่งคำตอบ (Send Reply)</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                readingPane.innerHTML = `
+                    <div class="empty-inbox-state" style="color: #ef4444;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">⚠️</div>
+                        <div>ไม่สามารถโหลดข้อความได้: ${escapeHtml(err.message)}</div>
+                    </div>
+                `;
+            }
+        }
+
+        function insertReplySignature() {
+            const ta = document.getElementById('replyTextInput');
+            if (!ta) return;
+            const signature = `\n\nขอแสดงความนับถืออย่างสูง,
+ฝ่ายขายและบริการลูกค้าองค์กร
+บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด
+อีเมล: sales@giftoryth.com
+โทรศัพท์ 095-939-3979 
+เว็บไซต์: https://www.giftoryth.com/`;
+            ta.value = ta.value ? ta.value + signature : signature.trimStart();
+            ta.focus();
+        }
+
+        async function sendReplyEmail(btnEl) {
+            if (!activeMessageData) return;
+            const replyText = document.getElementById('replyTextInput').value.trim();
+            if (!replyText) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast({ type: 'warning', title: 'กรุณาระบุข้อความ', message: 'กรุณาพิมพ์ข้อความตอบกลับก่อนส่ง' });
+                } else {
+                    alert('กรุณาพิมพ์ข้อความตอบกลับก่อนส่ง');
+                }
+                return;
+            }
+
+            const btn = btnEl || document.getElementById('btnSendReply');
+            const origHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span>⏳ กำลังส่ง...</span>';
+            }
+
+            try {
+                const res = await fetch('/api/email/send-single', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: activeMessageData.fromAddress,
+                        company: activeMessageData.fromName || '',
+                        subject: activeMessageData.subject.startsWith('Re:') ? activeMessageData.subject : `Re: ${activeMessageData.subject}`,
+                        htmlBody: replyText.replace(/\n/g, '<br>')
+                    })
+                });
+
+                const resJson = await res.json();
+                if (!res.ok) throw new Error(resJson.error || 'ส่งตอบกลับไม่สำเร็จ');
+
+                if (typeof window.showToast === 'function') {
+                    window.showToast({
+                        type: 'success',
+                        title: 'ส่งอีเมลตอบกลับสำเร็จ!',
+                        message: `ส่งอีเมลตอบกลับไปยัง ${activeMessageData.fromAddress} เรียบร้อยแล้ว`
+                    });
+                } else {
+                    alert(`ส่งอีเมลตอบกลับไปยัง ${activeMessageData.fromAddress} เรียบร้อยแล้ว!`);
+                }
+                document.getElementById('replyTextInput').value = '';
+                loadInbox(true);
+            } catch (err) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast({ type: 'error', title: 'ส่งอีเมลไม่สำเร็จ', message: err.message });
+                } else {
+                    alert('ผิดพลาด: ' + err.message);
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = origHtml;
+                }
+            }
+        }
+
+        function filterLocalEmails() {
+            const query = document.getElementById('mailSearchInput').value.trim().toLowerCase();
+            if (currentFolder === 'sent') {
+                if (!query) {
+                    renderSentLogsList(sentLogs);
+                    return;
+                }
+                const filteredSent = sentLogs.filter(m =>
+                    (m.subject && m.subject.toLowerCase().includes(query)) ||
+                    (m.recipient_email && m.recipient_email.toLowerCase().includes(query)) ||
+                    (m.recipient_company && m.recipient_company.toLowerCase().includes(query))
+                );
+                renderSentLogsList(filteredSent);
+                return;
+            }
+
+            if (!query) {
+                renderEmailList(liveEmails);
+                return;
+            }
+            const filtered = liveEmails.filter(m => 
+                (m.subject && m.subject.toLowerCase().includes(query)) ||
+                (m.from && m.from.toLowerCase().includes(query)) ||
+                (m.fromName && m.fromName.toLowerCase().includes(query))
+            );
+            renderEmailList(filtered);
+        }
+
+        function formatMailDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr);
+            const now = new Date();
+            if (d.toDateString() === now.toDateString()) {
+                return d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+            }
+            return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // โหลดข้อมูลแบบด่วนทันทีเมื่อเปิดหน้า
+        window.addEventListener('DOMContentLoaded', () => {
+            loadInbox(false);
+        });
+    </script>
+    <script src="/assets/js/auth-guard.js"></script>
+    <script src="/assets/js/global-navbar.js"></script>
+    <script src="/assets/js/modules/doc-toast.js"></script>
+</body>
+</html>

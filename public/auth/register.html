@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สร้างบัญชีผู้ใช้ | MAM DESIGN AND SERVICE</title>
+    <link rel="icon" href="../assets/images/mam-logo.png" type="image/png">
+    
+    <!-- Google Fonts (Inter & Prompt) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../assets/css/auth.css?v=30">
+    <link rel="stylesheet" href="../assets/css/theme.css?v=31">
+</head>
+<body class="auth-page">
+
+    <div class="auth-wrapper">
+        <main class="auth-card">
+            
+            <!-- MAM DESIGN AND SERVICE Brand Logo & Title -->
+            <header class="auth-header">
+                <div class="brand-logo-wrapper" style="display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+                    <a href="login.html" class="brand-logo" aria-label="MAM DESIGN AND SERVICE Home" style="display: inline-block;">
+                        <img src="../assets/images/mam-logo.png" alt="MAM DESIGN AND SERVICE" class="brand-logo-img" style="height: 64px; max-height: 64px; width: auto; max-width: 220px; object-fit: contain; display: block;">
+                    </a>
+                </div>
+                <h1 class="auth-title" style="font-size: 19px; font-weight: 700; color: #1e293b; margin: 0 0 4px;">สร้างบัญชีผู้ใช้</h1>
+                <p style="font-size: 13.5px; color: #64748b; margin: 0;">MAM DESIGN AND SERVICE CO., LTD.</p>
+            </header>
+
+            <!-- Feedback Alert (Dynamic) -->
+            <div id="alertMessage" class="alert-box" style="display: none;">
+                <span class="alert-icon"></span>
+                <span class="alert-text"></span>
+            </div>
+
+            <!-- Registration Form -->
+            <form id="registerForm" class="auth-form" novalidate>
+                
+                <!-- 1. ชื่อ-นามสกุล -->
+                <div class="form-group" id="fullNameGroup">
+                    <label for="fullName" class="form-label">ชื่อ-นามสกุล</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="fullName" 
+                            name="fullName" 
+                            class="form-control" 
+                            placeholder="กรอกชื่อ-นามสกุลของคุณ" 
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- 2. Email -->
+                <div class="form-group" id="emailGroup">
+                    <label for="regEmail" class="form-label">Email</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="email" 
+                            id="regEmail" 
+                            name="email" 
+                            class="form-control" 
+                            placeholder="name@company.com" 
+                            autocomplete="email" 
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- 3. สิทธิ์ที่จะขอเข้าใช้ในตำแหน่ง (Select / Dropdown) -->
+                <div class="form-group" id="roleGroup">
+                    <label for="requestedRole" class="form-label">สิทธิ์ที่จะขอเข้าใช้ในตำแหน่ง</label>
+                    <div class="input-wrapper">
+                        <select id="requestedRole" name="role" class="form-control" required>
+                            <option value="" disabled selected>-- เลือกตำแหน่งที่ต้องการขอสิทธิ์ --</option>
+                            <option value="ADMIN">เจ้าของกิจการ (Admin)</option>
+                            <option value="ACCOUNTANT">นักบัญชี (Accountant)</option>
+                            <option value="SALES">พนักงานขาย (Sales)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 4. รหัสผ่าน -->
+                <div class="form-group" id="passwordGroup">
+                    <label for="regPassword" class="form-label">รหัสผ่าน</label>
+                    <div class="input-wrapper password-wrapper">
+                        <input 
+                            type="password" 
+                            id="regPassword" 
+                            name="password" 
+                            class="form-control" 
+                            placeholder="กำหนดรหัสผ่าน (อย่างน้อย 8 ตัวอักษร)" 
+                            autocomplete="new-password"
+                            required 
+                            minlength="8"
+                        >
+                        <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('regPassword', this)" aria-label="Toggle password visibility">
+                            <svg class="icon-eye eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <svg class="icon-eye eye-slash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 5. ยืนยันรหัสผ่าน -->
+                <div class="form-group" id="confirmPasswordGroup">
+                    <label for="confirmPassword" class="form-label">ยืนยันรหัสผ่าน</label>
+                    <div class="input-wrapper password-wrapper">
+                        <input 
+                            type="password" 
+                            id="confirmPassword" 
+                            name="confirmPassword" 
+                            class="form-control" 
+                            placeholder="กรอกรหัสผ่านอีกครั้งเพื่อยืนยัน" 
+                            autocomplete="new-password"
+                            required 
+                            minlength="8"
+                        >
+                        <button type="button" class="btn-toggle-password" onclick="togglePasswordVisibility('confirmPassword', this)" aria-label="Toggle password visibility">
+                            <svg class="icon-eye eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <svg class="icon-eye eye-slash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submitBtn" class="btn-primary" style="margin-top: 8px;">
+                    <span class="btn-text">สร้างบัญชีผู้ใช้</span>
+                </button>
+
+                <!-- Already have an account -->
+                <div class="signup-prompt">
+                    <span>มีบัญชีผู้ใช้อยู่แล้ว?</span>
+                    <a href="login.html" class="link-highlight">เข้าสู่ระบบ</a>
+                </div>
+            </form>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/theme-manager.js"></script>
+    <script>
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            const openEye = btn.querySelector('.eye-open');
+            const slashEye = btn.querySelector('.eye-slash');
+            if (openEye) openEye.style.display = isPassword ? 'none' : 'block';
+            if (slashEye) slashEye.style.display = isPassword ? 'block' : 'none';
+        }
+
+        // Form Validation & Registration Handling
+        document.getElementById('registerForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const role = document.getElementById('requestedRole').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const alertBox = document.getElementById('alertMessage');
+            const alertText = alertBox?.querySelector('.alert-text');
+
+            function showAlert(msg, type = 'danger') {
+                if (!alertBox) return;
+                alertBox.className = 'alert-box alert-' + type;
+                if (alertText) alertText.textContent = msg;
+                alertBox.style.display = 'flex';
+                alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            if (!fullName) return showAlert('กรุณากรอกชื่อ-นามสกุล');
+            if (!email) return showAlert('กรุณากรอก Email');
+            if (!role) return showAlert('กรุณาเลือกสิทธิ์ที่จะขอเข้าใช้ในตำแหน่ง');
+            if (!password || password.length < 8) return showAlert('กรุณากำหนดรหัสผ่านอย่างน้อย 8 ตัวอักษร');
+            if (password !== confirmPassword) return showAlert('รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน');
+
+            try {
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="btn-spinner"></span> กำลังส่งคำขอ...';
+                }
+
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, email, role, password })
+                });
+
+                const result = await res.json();
+
+                if (res.ok && result.success) {
+                    showAlert(result.message || 'ส่งคำขอสร้างบัญชีผู้ใช้สำเร็จ! ระบบได้ส่งอีเมลแจ้งผู้ดูแลระบบเพื่อพิจารณาอนุมัติสิทธิ์แล้ว', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2500);
+                } else {
+                    showAlert(result.error || 'เกิดข้อผิดพลาดในการส่งคำขอ กรุณาลองใหม่อีกครั้ง');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<span class="btn-text">สร้างบัญชีผู้ใช้</span>';
+                    }
+                }
+            } catch (err) {
+                showAlert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง: ' + err.message, 'danger');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<span class="btn-text">สร้างบัญชีผู้ใช้</span>';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

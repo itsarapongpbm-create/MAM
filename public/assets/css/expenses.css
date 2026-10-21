@@ -1,0 +1,352 @@
+/* FlowAccount Advance - Expenses Module Stylesheet */
+
+/* KPI Cards */
+.expense-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 1024px) {
+    .expense-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .expense-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.expense-badge-paid {
+    background-color: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.expense-badge-paid::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #10b981;
+}
+
+.expense-badge-unpaid {
+    background-color: #fffbeb;
+    color: #d97706;
+    border: 1px solid #fde68a;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.expense-badge-unpaid::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #f59e0b;
+}
+
+.category-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+/* Slip attachment thumbnail in table */
+.slip-thumbnail-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    cursor: pointer;
+    font-size: 12px;
+    color: #7D0A0A;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.slip-thumbnail-btn:hover {
+    background: #fef2f2;
+    border-color: #7D0A0A;
+}
+
+.slip-thumbnail-btn img {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.slip-thumbnail-btn.no-slip {
+    color: #94a3b8;
+    background: transparent;
+    border-color: #e2e8f0;
+    cursor: default;
+}
+
+/* Dropzone Styles in New Expense Form */
+.slip-upload-card {
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    margin-top: 24px;
+}
+
+.slip-upload-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.slip-upload-subtitle {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 16px;
+}
+
+.slip-dropzone {
+    border: 2px dashed #fca5a5;
+    background: #fff5f5;
+    border-radius: 8px;
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+}
+
+.slip-dropzone:hover, .slip-dropzone.dragover {
+    border-color: #7D0A0A;
+    background: #fef2f2;
+}
+
+.dropzone-icon {
+    width: 48px;
+    height: 48px;
+    color: #7D0A0A;
+    margin-bottom: 12px;
+}
+
+.dropzone-text-main {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.dropzone-text-sub {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.dropzone-file-input {
+    display: none;
+}
+
+/* Preview Box */
+.slip-preview-container {
+    display: none;
+    margin-top: 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    position: relative;
+}
+
+.slip-preview-container.active {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.slip-preview-img {
+    max-width: 140px;
+    max-height: 140px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #cbd5e1;
+    cursor: pointer;
+}
+
+.slip-preview-info {
+    flex: 1;
+}
+
+.slip-filename {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    word-break: break-all;
+}
+
+.slip-filesize {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+.btn-remove-slip {
+    background: #fee2e2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.btn-remove-slip:hover {
+    background: #fca5a5;
+    color: #b91c1c;
+}
+
+/* Image Viewer Modal */
+.image-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.75);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    padding: 24px;
+}
+
+.image-modal-overlay.active {
+    display: flex;
+}
+
+.image-modal-content {
+    background: #ffffff;
+    border-radius: 12px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: modalPop 0.25s ease-out;
+}
+
+@keyframes modalPop {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.image-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.image-modal-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.image-modal-close {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #64748b;
+    padding: 4px;
+    border-radius: 6px;
+}
+
+.image-modal-close:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.image-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    text-align: center;
+    background: #0f172a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-modal-body img {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
+
+.image-modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: #f8fafc;
+}
+
+/* Payment Method Badges */
+.payment-method-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #334155;
+}

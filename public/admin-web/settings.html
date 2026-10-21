@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตั้งค่าเว็บไซต์ &amp; Edit (Giftory Admin Console) | MAM DESIGN AND SERVICE</title>
+    <link rel="icon" href="/assets/images/mam-logo.png" type="image/png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/assets/css/auth.css?v=30">
+    <link rel="stylesheet" href="/assets/css/dashboard.css?v=30">
+    <link rel="stylesheet" href="/assets/css/theme.css?v=31">
+    
+    <style>
+        .web-preview-layout {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            height: calc(100vh - 64px);
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        .web-preview-header {
+            min-height: 54px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            z-index: 10;
+            gap: 12px;
+            overflow-x: auto;
+        }
+
+        
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+            70% { transform: scale(1); box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .preview-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .btn-action-preview {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            font-size: 12.5px;
+            font-family: inherit;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-refresh {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+        }
+
+        .btn-refresh:hover {
+            background: #f8fafc;
+            color: #1e293b;
+            border-color: #94a3b8;
+        }
+
+        .btn-open-external {
+            background: #7D0A0A;
+            border: 1px solid #7D0A0A;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .btn-open-external:hover {
+            background: #630808;
+            border-color: #630808;
+        }
+
+        .iframe-viewport-wrapper {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .iframe-viewport-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .iframe-loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            z-index: 5;
+            transition: opacity 0.3s ease;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #7D0A0A;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+
+    <!-- Top Navigation Bar -->
+    <header class="top-navbar" id="globalTopNavbar">
+        <div class="nav-left">
+            <button class="btn-toggle-sidebar" id="toggleSidebarBtn" aria-label="Toggle menu" title="เปิด/ปิด เมนูด้านข้าง">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <a href="/dashboard/index.html" class="topbar-logo" title="หน้าหลักภาพรวมธุรกิจ">
+                <img src="/assets/images/mam-logo.png" alt="MAM DESIGN AND SERVICE" style="height: 38px; width: auto; object-fit: contain;">
+            </a>
+            <div class="topbar-divider"></div>
+            <div class="topbar-company-info">
+                <span class="topbar-company-name" id="topbarCompanyName">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</span>
+                <span class="badge-advance">INTERNAL CRM</span>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <button class="icon-button" id="topbarNotificationBtn" title="การแจ้งเตือน">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notification-badge" id="topbarNotificationBadge">3</span>
+            </button>
+
+            <button class="icon-button" id="topbarHelpBtn" title="ช่วยเหลือ / คู่มือ">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </button>
+
+            <div class="topbar-divider"></div>
+
+            <div class="user-profile-menu">
+                <button class="user-avatar-btn" id="userMenuBtn" type="button" aria-expanded="false" title="โปรไฟล์ผู้ใช้งาน">
+                    <img src="https://ui-avatars.com/api/?name=Itsarapong+Po&background=7D0A0A&color=fff&size=64" alt="User Avatar" class="user-avatar-img" id="topbarUserAvatar">
+                    <span class="user-display-name" id="topbarUserDisplayName">คุณอิศรพงศ์ โพธิ์งาม</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div class="user-dropdown-menu" id="userDropdownContent">
+                    <div class="user-dropdown-header">
+                        <strong id="dropdownUserFullName">Itsarapong P.</strong>
+                        <small id="dropdownUserEmail">itsarapong@mamdesign.co.th</small>
+                    </div>
+                    <a href="/settings/users.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>จัดการผู้ใช้งานและสิทธิ์</span>
+                    </a>
+                    <a href="#" class="dropdown-item" id="openCompanyInfoLink">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="6" x2="9" y2="6.01"></line><line x1="15" y1="6" x2="15" y2="6.01"></line><line x1="9" y1="10" x2="9" y2="10.01"></line><line x1="15" y1="10" x2="15" y2="10.01"></line><line x1="9" y1="14" x2="9" y2="14.01"></line><line x1="15" y1="14" x2="15" y2="14.01"></line><line x1="9" y1="18" x2="9" y2="18.01"></line><line x1="15" y1="18" x2="15" y2="18.01"></line></svg>
+                        <span>ข้อมูลองค์กร (MAM DESIGN AND SERVICE)</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/auth/login.html" class="dropdown-item text-danger" id="topbarLogoutBtn">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>ออกจากระบบ (Logout)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- App Layout -->
+    <div class="app-layout">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar-nav" id="sidebarNav">
+            <nav class="sidebar-menu">
+                <div class="menu-section-title">เมนูหลัก</div>
+                <a href="/dashboard/index.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <rect x="3" y="3" width="7" height="9"></rect>
+                        <rect x="14" y="3" width="7" height="5"></rect>
+                        <rect x="14" y="12" width="7" height="9"></rect>
+                        <rect x="3" y="16" width="7" height="5"></rect>
+                    </svg>
+                    <span>ภาพรวมธุรกิจ</span>
+                </a>
+
+                <!-- Dropdown: เอกสารการขาย -->
+                <div class="menu-dropdown-group" id="salesDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="salesDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <span>เอกสารการขาย</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="/documents/quotations.html" class="submenu-item">
+                            <span>• ใบเสนอราคา</span>
+                        </a>
+                        <a href="/documents/billing-notes.html" class="submenu-item">
+                            <span>• ใบวางบิล</span>
+                        </a>
+                        <a href="/documents/invoices.html" class="submenu-item">
+                            <span>• ใบกำกับภาษี</span>
+                        </a>
+                        <a href="/documents/receipts.html" class="submenu-item">
+                            <span>• ใบเสร็จรับเงิน</span>
+                        </a>
+                        <a href="/documents/cash-sales.html" class="submenu-item">
+                            <span>• ขายสด / บิลเงินสด</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dropdown: จัดซื้อ (Purchases) -->
+                <div class="menu-dropdown-group" id="purchaseDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="purchaseDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <span>จัดซื้อ (Purchases)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="/documents/purchase-orders.html" class="submenu-item">
+                            <span>• ใบสั่งซื้อ (PO)</span>
+                        </a>
+                        <a href="/expenses/expenses.html" class="submenu-item">
+                            <span>• ค่าใช้จ่าย (Expenses)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="/withholding-tax/withholding-tax.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>ภาษีหัก ณ ที่จ่าย (50 ทวิ)</span>
+                </a>
+
+                <!-- Dropdown: สต็อกสินค้าและกระเช้า -->
+                <div class="menu-dropdown-group" id="inventoryDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="inventoryDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                            <span>สต็อกสินค้า (Inventory)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="/inventory/inventory.html" class="submenu-item">
+                            <span>• ขนม / โบว์ / ตะกร้า</span>
+                        </a>
+                        <a href="/inventory/gift-sets.html" class="submenu-item">
+                            <span>• Gift Set ตามกระเช้า</span>
+                        </a>
+                        <a href="/inventory/gift-set-builder.html" class="submenu-item">
+                            <span>• จัด Gift Set ใหม่</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="#banking" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                        <line x1="2" y1="10" x2="22" y2="10"></line>
+                    </svg>
+                    <span>การเงิน / ธนาคาร</span>
+                </a>
+
+                <!-- Dropdown: สมุดรายชื่อ (Contacts) -->
+                <div class="menu-dropdown-group" id="contactsDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="contactsDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span>ข้อมูลคู่ค้า (Contacts)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="/contacts/customers.html" class="submenu-item">
+                            <span>• ลูกค้า (Customers)</span>
+                        </a>
+                        <a href="/contacts/vendors.html" class="submenu-item">
+                            <span>• ผู้ขาย / คู่ค้า (Vendors)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="menu-section-title">วิเคราะห์ &amp; การจัดการ</div>
+
+                <a href="#reports" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    <span>รายงาน (Reports)</span>
+                </a>
+
+                <a href="#payroll" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <polyline points="16 11 18 13 22 9"></polyline>
+                    </svg>
+                    <span>เงินเดือน (Payroll)</span>
+                </a>
+
+                <!-- Section: Admin Web -->
+                <div class="menu-section-title">Admin Web</div>
+
+                <!-- 1. ภาพรวมเว็บ (Web Overview) -->
+                <a href="/admin-web/overview.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <span>ภาพรวมเว็บ (Web Overview)</span>
+                </a>
+
+                <!-- 2. ตั้งค่าเว็บไซต์ & Edit - ACTIVE -->
+                <a href="/admin-web/settings.html" class="menu-item active">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    <span>ตั้งค่าเว็บไซต์ &amp; Edit</span>
+                </a>
+
+                <div class="menu-section-title">การตั้งค่าระบบ</div>
+
+                <a href="/settings/users.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>จัดการสิทธิ์ผู้ใช้งาน</span>
+                </a>
+
+            </nav>
+
+            <div style="margin-top: auto; padding: 14px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin: 16px 12px; font-size: 12px; color: #64748b;">
+                <div style="font-weight: 600; color: #1e293b; margin-bottom: 2px; display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #059669;"></span>
+                    MAM DESIGN &amp; SERVICE CRM
+                </div>
+                <div style="font-size: 11px;">ระบบจัดการภายในองค์กร</div>
+            </div>
+        </aside>
+
+        <!-- Main Content (Admin Console View) -->
+        <main class="web-preview-layout">
+            
+            <!-- Top Admin Navigation Toolbar -->
+            <div class="web-preview-header">
+                
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="status-pill">
+                        <span class="status-dot"></span>
+                        Admin Console
+                    </span>
+                    <a href="https://www.giftoryth.com/admin" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #475569; text-decoration: none; padding: 4px 10px; background: #f1f5f9; border-radius: 6px; border: 1px solid #e2e8f0; transition: all 0.2s;" onmouseover="this.style.color='#7D0A0A'" onmouseout="this.style.color='#475569'">
+                        <span>https://www.giftoryth.com/admin</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </a>
+                </div>
+
+                <div class="preview-actions">
+                    <!-- Refresh Button -->
+                    <button type="button" class="btn-action-preview btn-refresh" onclick="reloadAdminFrame()" title="รีเฟรชหน้าแอดมิน">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                        <span>รีเฟรช</span>
+                    </button>
+
+                    <!-- Open in New Tab -->
+                    <a href="https://www.giftoryth.com/admin" target="_blank" class="btn-action-preview btn-open-external" id="btnExternalAdmin" title="เปิดหน้าจัดการเต็มจอในแท็บใหม่">
+                        <span>เปิดแท็บใหม่</span>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Full Viewport Admin Console -->
+            <div class="iframe-viewport-wrapper">
+                <div class="iframe-loading-overlay" id="loadingOverlay">
+                    <div class="spinner"></div>
+                    <div style="font-size: 13px; color: #64748b; font-weight: 500;">กำลังโหลดระบบจัดการเว็บไซต์ Giftory Admin Console...</div>
+                </div>
+                <iframe 
+                    id="adminConsoleFrame" 
+                    src="https://www.giftoryth.com/admin" 
+                    title="Giftory Admin Console" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    onload="hideLoading()"
+                ></iframe>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/auth-guard.js?v=15"></script>
+    <script src="/assets/js/theme-manager.js?v=10"></script>
+    <script src="/assets/js/global-navbar.js"></script>
+
+    <script>
+        const BASE_ADMIN_URL = 'https://www.giftoryth.com/admin';
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => { overlay.style.display = 'none'; }, 300);
+            }
+        }
+
+        function showLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                overlay.style.opacity = '1';
+            }
+        }
+
+        function reloadAdminFrame() {
+            showLoading();
+            const frame = document.getElementById('adminConsoleFrame');
+            if (frame) {
+                frame.src = BASE_ADMIN_URL + '?t=' + new Date().getTime();
+            }
+        }
+    </script>
+</body>
+</html>

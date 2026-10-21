@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ | MAM DESIGN AND SERVICE</title>
+    <link rel="icon" href="assets/images/mam-logo.png" type="image/png">
+    
+    <!-- Google Fonts (Inter & Prompt) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="assets/css/auth.css?v=30">
+    <link rel="stylesheet" href="assets/css/theme.css?v=31">
+</head>
+<body class="auth-page">
+
+    <!-- Main Container -->
+    <div class="auth-wrapper">
+        <main class="auth-card">
+            
+            <!-- MAM DESIGN AND SERVICE Brand Logo & Title -->
+            <header class="auth-header">
+                <div class="brand-logo-wrapper" style="display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+                    <a href="#" class="brand-logo" aria-label="MAM DESIGN AND SERVICE Logo" style="display: inline-block;">
+                        <img src="assets/images/mam-logo.png" alt="MAM DESIGN AND SERVICE" class="brand-logo-img" style="height: 64px; max-height: 64px; width: auto; max-width: 220px; object-fit: contain; display: block;">
+                    </a>
+                </div>
+                <h1 class="auth-title" style="font-size: 19px; font-weight: 700; color: #1e293b; margin: 0 0 4px;">MAM DESIGN AND SERVICE CO., LTD.</h1>
+                <p style="font-size: 13.5px; color: #64748b; margin: 0;">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</p>
+                <div style="font-size: 12px; color: #7D0A0A; font-weight: 600; margin-top: 8px; background: #fef2f2; padding: 4px 12px; border-radius: 6px; display: inline-block; border: 1px solid #fecaca;">ระบบบริหารจัดการภายในองค์กร (Internal CRM)</div>
+            </header>
+
+            <!-- Feedback Alert (Dynamic) -->
+            <div id="alertMessage" class="alert-box" style="display: none;">
+                <span class="alert-icon"></span>
+                <span class="alert-text"></span>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form" novalidate autocomplete="on">
+                
+                <!-- Email Field -->
+                <div class="form-group" id="emailGroup">
+                    <label for="email" class="form-label" data-i18n="emailLabel">อีเมล</label>
+                    <div class="input-wrapper has-icon">
+                        <span class="input-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </span>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form-control" 
+                            placeholder="name@example.com"
+                            autocomplete="email"
+                            required
+                        >
+                    </div>
+                    <span class="error-msg" id="emailError" data-i18n="emailError">กรุณากรอกอีเมลให้ถูกต้อง</span>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group" id="passwordGroup">
+                    <div class="label-row">
+                        <label for="password" class="form-label" data-i18n="passwordLabel">รหัสผ่าน</label>
+                        <a href="auth/forgot-password.html" class="forgot-link" data-i18n="forgotPassword">ลืมรหัสผ่าน?</a>
+                    </div>
+                    <div class="input-wrapper password-wrapper has-icon">
+                        <span class="input-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </span>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form-control" 
+                            placeholder="กรอกรหัสผ่าน" 
+                            autocomplete="current-password"
+                            required
+                        >
+                        <button type="button" class="btn-toggle-password" id="togglePasswordBtn" aria-label="Toggle password visibility">
+                            <!-- Eye Open Icon -->
+                            <svg class="icon-eye eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <!-- Eye Slash Icon -->
+                            <svg class="icon-eye eye-slash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <span class="error-msg" id="passwordError" data-i18n="passwordError">กรุณากรอกรหัสผ่าน</span>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submitBtn" class="btn-primary">
+                    <span class="btn-spinner" style="display: none;"></span>
+                    <span class="btn-text" data-i18n="loginBtn">เข้าสู่ระบบ</span>
+                </button>
+
+                <!-- Sign Up Prompt -->
+                <div class="signup-prompt">
+                    <span data-i18n="noAccount">ยังไม่มีบัญชีกับเรา?</span>
+                    <a href="auth/register.html" class="link-highlight" data-i18n="signUpFree">สมัครใช้งานฟรี</a>
+                </div>
+            </form>
+
+        </main>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/auth.js?v=5"></script>
+    <script src="assets/js/theme-manager.js"></script>
+</body>
+</html>

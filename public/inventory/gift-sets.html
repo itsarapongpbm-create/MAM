@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Set ตามกระเช้า (Gift Sets & Hampers) | MAM DESIGN AND SERVICE</title>
+    <link rel="icon" href="../assets/images/mam-logo.png" type="image/png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/auth.css?v=30">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=30">
+    <link rel="stylesheet" href="../assets/css/inventory.css">
+    <link rel="stylesheet" href="../assets/css/theme.css?v=31">
+
+    <style>
+        .hamper-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .hamper-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .hamper-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -10px rgba(125, 10, 10, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #fca5a5;
+        }
+
+        .hamper-img-wrap {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .hamper-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .hamper-card:hover .hamper-img {
+            transform: scale(1.05);
+        }
+
+        .hamper-badge-code {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #ffffff;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            backdrop-filter: blur(4px);
+            letter-spacing: 0.5px;
+        }
+
+        .hamper-badge-theme {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(125, 10, 10, 0.9);
+            color: #ffffff;
+            padding: 3px 9px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
+        }
+
+        .hamper-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .hamper-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+            line-height: 1.35;
+        }
+
+        .hamper-packaging {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            line-height: 1.4;
+        }
+
+        .hamper-items-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11.5px;
+            color: #0284c7;
+            background: #f0f9ff;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-bottom: 14px;
+            align-self: flex-start;
+        }
+
+        .hamper-footer {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px dashed #e2e8f0;
+        }
+
+        .hamper-price-tag {
+            font-size: 18px;
+            font-weight: 800;
+            color: #7D0A0A;
+        }
+
+        .hamper-price-unit {
+            font-size: 11.5px;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .theme-filter-pill {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #475569;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .theme-filter-pill:hover {
+            border-color: #cbd5e1;
+            background: #f8fafc;
+        }
+
+        .theme-filter-pill.active {
+            background: #7D0A0A;
+            border-color: #7D0A0A;
+            color: #ffffff;
+        }
+
+        /* SKU & Thumbnail Styling (Matching Inventory Image 2) */
+        .bom-table-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            object-fit: cover;
+            background: #ffffff;
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .bom-table-thumb:hover {
+            transform: scale(1.08);
+            border-color: #7D0A0A;
+            box-shadow: 0 2px 8px rgba(125, 10, 10, 0.2);
+        }
+
+        .bom-sku-link {
+            display: inline-block;
+            font-family: monospace;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #7D0A0A;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .bom-sku-link:hover {
+            background: #fee2e2;
+            color: #991b1b;
+            text-decoration: underline;
+        }
+
+        /* Stock Status Badges */
+        .stock-pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .stock-pill-ok {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+        }
+
+        .stock-pill-low {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fde68a;
+        }
+
+        .stock-pill-out {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        /* Feasibility Banner */
+        .bom-feasibility-card {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 1px solid #86efac;
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .bom-feasibility-card.status-warning {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-color: #fcd34d;
+        }
+
+        .bom-feasibility-card.status-danger {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-color: #fca5a5;
+        }
+
+        /* Product Quick View Card Modal */
+        .quick-view-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1060;
+            padding: 16px;
+            box-sizing: border-box;
+            animation: fadeIn 0.15s ease-out;
+        }
+
+        .quick-view-card {
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            max-width: 560px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+            animation: zoomIn 0.2s ease-out;
+        }
+
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+
+    <!-- Top Navigation Bar -->
+        <!-- ================= Top Navigation Bar (Global Standard Component) ================= -->
+    <header class="top-navbar" id="globalTopNavbar">
+        <div class="nav-left">
+            <button class="btn-toggle-sidebar" id="toggleSidebarBtn" aria-label="Toggle menu" title="เปิด/ปิด เมนูด้านข้าง">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <a href="/dashboard/index.html" class="topbar-logo" title="หน้าหลักภาพรวมธุรกิจ">
+                <img src="/assets/images/mam-logo.png" alt="MAM DESIGN AND SERVICE" style="height: 38px; width: auto; object-fit: contain;">
+            </a>
+            <div class="topbar-divider"></div>
+            <div class="topbar-company-info">
+                <span class="topbar-company-name" id="topbarCompanyName">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</span>
+                <span class="badge-advance">INTERNAL CRM</span>
+            </div>
+        </div>
+
+        <!-- Actions & User Profile -->
+        <div class="nav-right">
+            <!-- Notification Bell -->
+            <button class="icon-button" id="topbarNotificationBtn" title="การแจ้งเตือน">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notification-badge" id="topbarNotificationBadge">3</span>
+            </button>
+
+            <!-- Help & Support -->
+            <button class="icon-button" id="topbarHelpBtn" title="ช่วยเหลือ / คู่มือ">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </button>
+
+            <div class="topbar-divider"></div>
+
+            <!-- User Menu -->
+            <div class="user-profile-menu">
+                <button class="user-avatar-btn" id="userMenuBtn" type="button" aria-expanded="false" title="โปรไฟล์ผู้ใช้งาน">
+                    <img src="https://ui-avatars.com/api/?name=Itsarapong+Po&background=7D0A0A&color=fff&size=64" alt="User Avatar" class="user-avatar-img" id="topbarUserAvatar">
+                    <span class="user-display-name" id="topbarUserDisplayName">คุณอิศรพงศ์ โพธิ์งาม</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div class="user-dropdown-menu" id="userDropdownContent">
+                    <div class="user-dropdown-header">
+                        <strong id="dropdownUserFullName">Itsarapong P.</strong>
+                        <small id="dropdownUserEmail">itsarapong@mamdesign.co.th</small>
+                    </div>
+                    <a href="/settings/users.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>จัดการผู้ใช้งานและสิทธิ์</span>
+                    </a>
+                    <a href="#" class="dropdown-item" id="openCompanyInfoLink">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="6" x2="9" y2="6.01"></line><line x1="15" y1="6" x2="15" y2="6.01"></line><line x1="9" y1="10" x2="9" y2="10.01"></line><line x1="15" y1="10" x2="15" y2="10.01"></line><line x1="9" y1="14" x2="9" y2="14.01"></line><line x1="15" y1="14" x2="15" y2="14.01"></line><line x1="9" y1="18" x2="9" y2="18.01"></line><line x1="15" y1="18" x2="15" y2="18.01"></line></svg>
+                        <span>ข้อมูลองค์กร (MAM DESIGN AND SERVICE)</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/auth/login.html" class="dropdown-item text-danger" id="topbarLogoutBtn">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>ออกจากระบบ (Logout)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar-nav" id="sidebarNav">
+            <nav class="sidebar-menu">
+                <div class="menu-section-title">เมนูหลัก</div>
+                <a href="../dashboard/index.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <rect x="3" y="3" width="7" height="9"></rect>
+                        <rect x="14" y="3" width="7" height="5"></rect>
+                        <rect x="14" y="12" width="7" height="9"></rect>
+                        <rect x="3" y="16" width="7" height="5"></rect>
+                    </svg>
+                    <span>ภาพรวมธุรกิจ</span>
+                </a>
+
+                <!-- Dropdown: เอกสารการขาย -->
+                <div class="menu-dropdown-group" id="salesDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="salesDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            <span>เอกสารการขาย</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../documents/quotations.html" class="submenu-item">
+                            <span>• ใบเสนอราคา</span>
+                        </a>
+                        <a href="../documents/billing-notes.html" class="submenu-item">
+                            <span>• ใบวางบิล</span>
+                        </a>
+                        <a href="../documents/invoices.html" class="submenu-item">
+                            <span>• ใบกำกับภาษี</span>
+                        </a>
+                        <a href="../documents/receipts.html" class="submenu-item">
+                            <span>• ใบเสร็จรับเงิน</span>
+                        </a>
+                        <a href="../documents/cash-sales.html" class="submenu-item">
+                            <span>• ขายสด / บิลเงินสด</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dropdown: จัดซื้อ (Purchases) -->
+                <div class="menu-dropdown-group" id="purchaseDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="purchaseDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <span>จัดซื้อ (Purchases)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../documents/purchase-orders.html" class="submenu-item">
+                            <span>• ใบสั่งซื้อ (PO)</span>
+                        </a>
+                        <a href="../expenses/expenses.html" class="submenu-item">
+                            <span>• ค่าใช้จ่าย (Expenses)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="../withholding-tax/withholding-tax.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>ภาษีหัก ณ ที่จ่าย (50 ทวิ)</span>
+                </a>
+
+                <!-- Dropdown: สต็อกสินค้าและกระเช้า -->
+                <div class="menu-dropdown-group open" id="inventoryDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle active" id="inventoryDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                            <span>สต็อกสินค้า (Inventory)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="inventory.html" class="submenu-item">
+                            <span>• ขนม / โบว์ / ตะกร้า</span>
+                        </a>
+                        <a href="gift-sets.html" class="submenu-item active">
+                            <span>• Gift Set ตามกระเช้า</span>
+                        </a>
+                        <a href="gift-set-builder.html" class="submenu-item">
+                            <span>• จัด Gift Set ใหม่</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dropdown: สมุดรายชื่อ (Contacts) -->
+                <div class="menu-dropdown-group" id="contactsDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="contactsDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span>ข้อมูลคู่ค้า (Contacts)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../contacts/customers.html" class="submenu-item">
+                            <span>• ลูกค้า (Customers)</span>
+                        </a>
+                        <a href="../contacts/vendors.html" class="submenu-item">
+                            <span>• ผู้ขาย / คู่ค้า (Vendors)</span>
+                        </a>
+                    </div>
+                </div>
+
+                
+                <!-- หมวดระบบอีเมล (Email) -->
+                <div class="menu-section-title">ระบบอีเมล (Email)</div>
+                <div class="menu-dropdown-group" id="emailDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="emailDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <span>ระบบอีเมล (Email)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../email/campaign.html" class="submenu-item">
+                            <span>• เสนอขายกระเช้า (Giftory)</span>
+                        </a>
+                        <a href="../email/inbox.html" class="submenu-item">
+                            <span>• กล่องข้อความ (Inbox)</span>
+                        </a>
+                    </div>
+                </div>
+
+<div class="menu-section-title">การตั้งค่าระบบ</div>
+                <a href="../settings/users.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>จัดการสิทธิ์ผู้ใช้งาน</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Gift Set ตามกระเช้า (Gift Sets & Hampers)</h1>
+                    <p class="page-subtitle">แคตตาล็อกชุดของขวัญและกระเช้าพรีเมียม 2026 พร้อมรายการของในชุด สเปกบรรจุภัณฑ์ และส่งออกใบเสนอราคา</p>
+                </div>
+
+                <!-- Header Actions -->
+                <div class="header-controls" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <a href="inventory.html" class="btn-secondary" style="height: 38px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; color: #334155; background: #fff; text-decoration: none;">
+                        <span>📦 คลังวัตถุดิบ (ขนม/โบว์/ตะกร้า 317 รายการ)</span>
+                    </a>
+                    <a href="gift-set-builder.html" class="btn-primary" style="height: 38px; padding: 0 16px; margin: 0; display: inline-flex; align-items: center; gap: 6px; justify-content: center; border-radius: 8px; font-weight: 600; font-size: 13.5px; cursor: pointer; text-decoration: none; color: #fff;">
+                        <span>✨ จัด Gift Set ใหม่</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- KPI Metric Summary Cards -->
+            <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+                <div class="kpi-card">
+                    <span class="kpi-label">จำนวนชุดกระเช้ามาตรฐาน</span>
+                    <div class="kpi-value" id="kpiTotalSets" style="font-size: 22px; margin: 4px 0; color: #7D0A0A;">61 ชุด</div>
+                    <span class="trend-note">คัดสรรจากแคตตาล็อกปี 2026</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">ช่วงราคาขาย (Price Span)</span>
+                    <div class="kpi-value" style="font-size: 20px; margin: 4px 0; color: #0f172a;">฿ 790 – ฿ 4,250</div>
+                    <span class="trend-note">เริ่มต้น 790 บ. ถึงชุดพรีเมียม 4,250 บ.</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">คอลเลกชัน / ธีมหลัก</span>
+                    <div class="kpi-value" style="font-size: 22px; margin: 4px 0; color: #0284c7;">9 ธีม</div>
+                    <span class="trend-note">Classic, PDM, Coffee, SME, Royal etc.</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">วัตถุดิบและของประกอบกระเช้า</span>
+                    <div class="kpi-value" style="font-size: 22px; margin: 4px 0; color: #059669;">317 SKUs</div>
+                    <span class="trend-note">เชื่อมโยงสต็อกขนม โบว์ ตะกร้าจริง</span>
+                </div>
+            </div>
+
+            <!-- Filter Controls Bar -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;">
+                <!-- Search & Dropdowns -->
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 14px;">
+                    <div style="position: relative; flex: 1; min-width: 250px;">
+                        <input type="text" id="hamperSearchInput" placeholder="ค้นหาชื่อกระเช้า, รหัส เช่น HMP-001 หรือชื่อขนมข้างใน..." style="width: 100%; height: 40px; padding: 0 14px 0 38px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13.5px; outline: none; box-sizing: border-box;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="#94a3b8" stroke-width="2.5" fill="none" style="position: absolute; left: 12px; top: 12px;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
+
+                    <select id="priceFilterSelect" style="height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px; background: #ffffff; color: #334155; outline: none;">
+                        <option value="ALL">ทุกระดับราคา</option>
+                        <option value="UNDER_1500">งบประหยัด (ต่ำกว่า ฿1,500)</option>
+                        <option value="1500_2500">งบมาตรฐาน (฿1,500 - ฿2,500)</option>
+                        <option value="OVER_2500">งบพรีเมียม / ลักชูรี่ (> ฿2,500)</option>
+                    </select>
+
+                    <select id="sortSelect" style="height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px; background: #ffffff; color: #334155; outline: none;">
+                        <option value="CODE_ASC">รหัสสินค้า (HMP-001...)</option>
+                        <option value="PRICE_ASC">ราคา: ต่ำ ➔ สูง</option>
+                        <option value="PRICE_DESC">ราคา: สูง ➔ ต่ำ</option>
+                        <option value="ITEMS_DESC">จำนวนของในชุดมากที่สุด</option>
+                    </select>
+                </div>
+
+                <!-- Theme Filter Pills -->
+                <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;" id="themePillsContainer">
+                    <button class="theme-filter-pill active" data-theme="ALL">ทั้งหมด (All)</button>
+                    <button class="theme-filter-pill" data-theme="Classic Festive">Classic Festive</button>
+                    <button class="theme-filter-pill" data-theme="The Gift Edit">The Gift Edit</button>
+                    <button class="theme-filter-pill" data-theme="Coffee & Tea Rituals">Coffee &amp; Tea</button>
+                    <button class="theme-filter-pill" data-theme="PDM Mat Designer">PDM Mat เสื่อดีไซเนอร์</button>
+                    <button class="theme-filter-pill" data-theme="Support Thai SME">Support Thai SME</button>
+                    <button class="theme-filter-pill" data-theme="Support Thai Royal">โครงการหลวง</button>
+                    <button class="theme-filter-pill" data-theme="Japanese Minimalist">ญี่ปุ่น มินิมอล</button>
+                    <button class="theme-filter-pill" data-theme="Healthy & Wellness">สุขภาพ &amp; สมดุล</button>
+                    <button class="theme-filter-pill" data-theme="Signature Velvet Bow">Signature โบว์กำมะหยี่</button>
+                </div>
+            </div>
+
+            <!-- Hamper Cards Grid -->
+            <div id="hamperLoading" style="text-align: center; padding: 60px 0; color: #64748b;">
+                <div style="font-size: 15px; font-weight: 600;">กำลังโหลดข้อมูลชุดกระเช้า...</div>
+            </div>
+
+            <div class="hamper-grid" id="hamperGridContainer" style="display: none;"></div>
+        </main>
+    </div>
+
+    <!-- ================= Modal: รายละเอียดของในกระเช้า (BOM Recipe) ================= -->
+    <div class="modal-overlay" id="bomModal" style="display: none;">
+        <div class="modal-card" style="max-width: 780px; width: 94%; max-height: 90vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 14px;">
+            <!-- Modal Header -->
+            <div style="padding: 16px 22px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: #ffffff;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span id="bomModalCode" style="font-size: 13px; font-weight: 800; color: #7D0A0A; background: #fef2f2; padding: 3px 10px; border-radius: 6px; border: 1px solid #fee2e2; font-family: monospace;">HMP-001</span>
+                    <div>
+                        <h2 id="bomModalTitle" style="font-size: 17.5px; font-weight: 700; color: #0f172a; margin: 0; line-height: 1.2;">Soft Morning Bag</h2>
+                        <div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">สูตรส่วนประกอบกระเช้า (Bill of Materials) &amp; สถานะความพร้อมสต็อก</div>
+                    </div>
+                </div>
+                <button type="button" class="modal-close" onclick="closeBomModal()">&times;</button>
+            </div>
+
+            <!-- Modal Scrollable Content -->
+            <div style="padding: 18px 22px; overflow-y: auto; flex-grow: 1;">
+                <!-- Hamper Overview Info -->
+                <div style="display: flex; gap: 16px; margin-bottom: 16px; align-items: center; background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                    <img id="bomModalImg" src="" alt="Hamper" style="width: 75px; height: 75px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff;" onerror="this.onerror=null; this.src='/assets/images/default-hamper.png';">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; flex-grow: 1;">
+                        <div style="font-size: 12.5px; color: #64748b;">
+                            <span style="display: block; font-size: 11px; color: #94a3b8; font-weight: 600;">ภาชนะ/กระเช้า</span>
+                            <strong id="bomModalPkg" style="color: #1e293b;">-</strong>
+                        </div>
+                        <div style="font-size: 12.5px; color: #64748b;">
+                            <span style="display: block; font-size: 11px; color: #94a3b8; font-weight: 600;">โบว์/ของตกแต่ง</span>
+                            <strong id="bomModalRibbon" style="color: #1e293b;">-</strong>
+                        </div>
+                        <div style="font-size: 12.5px; color: #64748b;">
+                            <span style="display: block; font-size: 11px; color: #94a3b8; font-weight: 600;">ธีมชุดกระเช้า</span>
+                            <strong id="bomModalTheme" style="color: #7D0A0A;">-</strong>
+                        </div>
+                        <div style="font-size: 12.5px; color: #64748b;">
+                            <span style="display: block; font-size: 11px; color: #94a3b8; font-weight: 600;">สต็อกกระเช้าพร้อมขาย</span>
+                            <strong id="bomModalAssembledStock" style="color: #059669;">0 ชุด</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stock Feasibility & Simulation Banner -->
+                <div id="bomFeasibilityCard" class="bom-feasibility-card">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div id="bomFeasibilityIcon" style="width: 36px; height: 36px; border-radius: 50%; background: #22c55e; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; flex-shrink: 0;">✓</div>
+                        <div>
+                            <div style="font-size: 11px; color: #166534; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">ความพร้อมสต็อกวัตถุดิบ (Stock Availability)</div>
+                            <div id="bomFeasibilityText" style="font-size: 14.5px; font-weight: 700; color: #14532d; margin-top: 1px;">
+                                พร้อมประกอบได้ทันทีสูงสุด <span id="bomMaxBuildQty" style="font-size: 18px; text-decoration: underline;">15</span> ชุด
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);">
+                            <label for="bomSimulateQtyInput" style="font-size: 12px; font-weight: 600; color: #334155; white-space: nowrap;">จำนวนสั่งทำ:</label>
+                            <input type="number" id="bomSimulateQtyInput" value="1" min="1" max="999" oninput="updateBuildSimulation(this.value)" style="width: 52px; height: 28px; text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; font-weight: 700; color: #0f172a; outline: none;">
+                            <span style="font-size: 12px; color: #64748b;">ชุด</span>
+                        </div>
+                        <button type="button" id="btnAssembleGiftSet" onclick="assembleGiftSetNow()" style="height: 36px; padding: 0 12px; background: #15803d; color: #ffffff; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); white-space: nowrap;" title="ตัดสต็อกวัตถุดิบรายชิ้นตามสูตร BOM และรับเข้าสต็อกกระเช้าสำเร็จรูปอัตโนมัติ">
+                            <span>⚡ สั่งประกอบจริง (ตัดสต็อก)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table Header info -->
+                <div style="font-size: 13.5px; font-weight: 700; color: #0f172a; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span>รายการสินค้าในกระเช้า (BOM Recipe)</span>
+                        <span id="bomModalItemCount" style="font-size: 12px; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 1px 7px; border-radius: 10px;">- รายการ</span>
+                    </div>
+                    <small style="font-size: 11.5px; color: #64748b; font-weight: 500;">คลิกที่ <span style="color:#7D0A0A; font-weight:700;">รหัส SKU</span> หรือ <span style="color:#0284c7; font-weight:700;">รูปสินค้า</span> เพื่อเปิดการ์ดดูรายละเอียดเต็ม</small>
+                </div>
+
+                <!-- Table -->
+                <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                    <table class="table-standard" style="font-size: 12.5px; margin: 0; width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
+                                <th style="width: 35px; text-align: center; padding: 10px 6px;">#</th>
+                                <th style="width: 58px; text-align: center; padding: 10px 6px;">รูป</th>
+                                <th style="width: 140px; text-align: left; padding: 10px 12px; white-space: nowrap;">รหัสสินค้า (SKU)</th>
+                                <th style="width: 65px; text-align: center; padding: 10px 6px;">จำนวน</th>
+                                <th style="width: 100px; text-align: center; padding: 10px 8px;">สต็อกคลัง</th>
+                                <th style="width: 100px; text-align: right; padding: 10px 8px;">ราคาทุนเฉลี่ย</th>
+                                <th style="width: 100px; text-align: right; padding: 10px 12px;">ราคาปลีก</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bomTableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Pricing & Profit Summary -->
+                <div style="margin-top: 16px; padding: 14px 18px; background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 12px; color: #9d174d; font-weight: 600;">ต้นทุนรวม (Cost) / กำไรขั้นต้น (Gross Profit)</div>
+                        <div style="font-size: 13.5px; font-weight: 700; color: #831843; margin-top: 2px;">
+                            ต้นทุน: <span id="bomCostSummary">฿ 0.00</span> | <span id="bomMarginSummary">กำไร: 0%</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 12px; color: #64748b;">ราคาขายแนะนำ / ตั้งต้น</div>
+                        <div id="bomPriceSummary" style="font-size: 21px; font-weight: 800; color: #7D0A0A; line-height: 1.1;">฿ 0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer Controls -->
+            <div style="padding: 12px 22px; border-top: 1px solid #e2e8f0; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; box-sizing: border-box; margin: 0 !important; width: 100% !important;">
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <button type="button" class="btn-secondary" onclick="printHamperPackingSlip()" style="height: 36px; padding: 0 11px; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; border-radius: 7px; background: #fff;" title="พิมพ์ใบหยิบของและประกอบกระเช้า">
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                        <span>พิมพ์ใบหยิบของ</span>
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="editInBuilder()" style="height: 36px; padding: 0 11px; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; border-radius: 7px; background: #fff; color: #0284c7; border-color: #bae6fd;" title="แก้ไขสูตรและข้อมูลของชุดกระเช้านี้โดยตรง">
+                        <span>✏️ แก้ไขสูตรเดิม</span>
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="duplicateToBuilder()" style="height: 36px; padding: 0 11px; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; border-radius: 7px; background: #fff;" title="คัดลอกสูตรไปสร้างเป็นชุดกระเช้ารหัสใหม่">
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>คัดลอกจัดเซ็ตใหม่</span>
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="deleteCurrentGiftSet()" style="height: 36px; padding: 0 10px; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; border-radius: 7px; background: #fff; color: #dc2626; border-color: #fecaca;" title="ลบชุดกระเช้านี้ออกจากแคตตาล็อก">
+                        <span>🗑️ ลบ</span>
+                    </button>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-secondary" onclick="closeBomModal()" style="height: 36px; padding: 0 14px; border-radius: 7px; font-size: 13px;">ปิด</button>
+                    <button type="button" class="btn-primary" id="btnExportToQuotation" style="height: 36px; padding: 0 16px; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; border-radius: 7px; font-size: 13px;">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                        <span>เปิดใบเสนอราคาด้วยชุดนี้</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= Modal: การ์ดรายละเอียดสินค้า (Product Quick View Card) ================= -->
+    <div class="quick-view-overlay" id="bomProductDetailModal" style="display: none;" onclick="if (event.target === this) closeProductQuickCard()">
+        <div class="quick-view-card">
+            <!-- Card Header -->
+            <div style="padding: 14px 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span id="quickCardSku" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px; font-weight: 800; color: #7D0A0A; background: #fee2e2; border: 1px solid #fca5a5; padding: 2px 8px; border-radius: 5px;">SKU</span>
+                    <span id="quickCardCategory" style="font-size: 12px; font-weight: 600; color: #475569; background: #e2e8f0; padding: 2px 8px; border-radius: 5px;">หมวดหมู่</span>
+                </div>
+                <button type="button" class="modal-close" onclick="closeProductQuickCard()" style="font-size: 22px; cursor: pointer; border: none; background: none; color: #64748b;">&times;</button>
+            </div>
+
+            <!-- Card Body -->
+            <div style="padding: 20px; display: grid; grid-template-columns: 160px 1fr; gap: 20px; align-items: start;">
+                <!-- Left: Big Image -->
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <div style="width: 160px; height: 160px; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; background: #f8fafc; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                        <img id="quickCardImg" src="" alt="Product" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <span style="font-size: 11px; color: #94a3b8; text-align: center;">รูปถ่ายสินค้าจริงในคลัง</span>
+                </div>
+
+                <!-- Right: Information -->
+                <div>
+                    <h3 id="quickCardName" style="font-size: 15.5px; font-weight: 700; color: #0f172a; margin: 0 0 6px 0; line-height: 1.35;">ชื่อสินค้า</h3>
+                    <div id="quickCardNotes" style="font-size: 12px; color: #64748b; margin-bottom: 12px; line-height: 1.4;">หมายเหตุ/คุณสมบัติ</div>
+
+                    <!-- Live Stock On Hand -->
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 12px; color: #64748b; font-weight: 500;">สต็อกคงเหลือในคลัง:</span>
+                            <span id="quickCardStockBadge" class="stock-pill-badge stock-pill-ok">🟢 25 ชิ้น</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px; font-size: 11.5px; color: #64748b;">
+                            <span>จุดเตือนสั่งซื้อขั้นต่ำ (Min Stock):</span>
+                            <span id="quickCardMinStock" style="font-weight: 600; color: #334155;">5 ชิ้น</span>
+                        </div>
+                    </div>
+
+                    <!-- Price & Cost Structure -->
+                    <div style="background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 8px; padding: 10px 12px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
+                            <div>
+                                <span style="color: #9d174d; font-weight: 500;">ราคาทุนเฉลี่ย:</span>
+                                <div id="quickCardCost" style="font-size: 14.5px; font-weight: 700; color: #831843; margin-top: 2px;">฿ 0.00</div>
+                            </div>
+                            <div>
+                                <span style="color: #065f46; font-weight: 500;">ราคาขายปลีก:</span>
+                                <div id="quickCardPrice" style="font-size: 14.5px; font-weight: 700; color: #047857; margin-top: 2px;">฿ 0.00</div>
+                            </div>
+                        </div>
+                        <div style="border-top: 1px dashed #f9a8d4; margin-top: 6px; padding-top: 6px; display: flex; justify-content: space-between; font-size: 11.5px; color: #831843;">
+                            <span>กำไรส่วนต่างต่อหน่วย:</span>
+                            <strong id="quickCardMargin">฿ 0.00 (0%)</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Footer -->
+            <div style="padding: 12px 20px; border-top: 1px solid #e2e8f0; background: #f8fafc; display: flex; justify-content: space-between; align-items: center;">
+                <a id="quickCardStockLink" href="../inventory/inventory.html" target="_blank" style="font-size: 12.5px; font-weight: 600; color: #0284c7; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+                    <span>เปิดดูในคลังสินค้า (Stock Card) &rarr;</span>
+                </a>
+                <button type="button" class="btn-secondary" onclick="closeProductQuickCard()" style="height: 32px; padding: 0 16px; font-size: 12.5px; border-radius: 6px;">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/auth-guard.js?v=15"></script>
+    <script src="../assets/js/theme-manager.js"></script>
+    <script>
+        let allGiftSets = [];
+        let currentTheme = 'ALL';
+        let currentPriceFilter = 'ALL';
+        let currentSort = 'CODE_ASC';
+        let activeModalSet = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchGiftSets();
+            setupFilters();
+        });
+
+        async function fetchGiftSets() {
+            try {
+                const res = await fetch('/api/gift-sets');
+                if (!res.ok) throw new Error('Failed to fetch gift sets');
+                allGiftSets = await res.json();
+                document.getElementById('kpiTotalSets').textContent = `${allGiftSets.length} ชุด`;
+                document.getElementById('hamperLoading').style.display = 'none';
+                document.getElementById('hamperGridContainer').style.display = 'grid';
+                renderHamperCards();
+            } catch (err) {
+                console.error(err);
+                document.getElementById('hamperLoading').innerHTML = `<div style="color: #ef4444;">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}</div>`;
+            }
+        }
+
+        function setupFilters() {
+            // Theme pills
+            document.querySelectorAll('.theme-filter-pill').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.theme-filter-pill').forEach(b => b.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    currentTheme = e.currentTarget.getAttribute('data-theme') || 'ALL';
+                    renderHamperCards();
+                });
+            });
+
+            // Search input
+            document.getElementById('hamperSearchInput').addEventListener('input', () => {
+                renderHamperCards();
+            });
+
+            // Price filter
+            document.getElementById('priceFilterSelect').addEventListener('change', (e) => {
+                currentPriceFilter = e.target.value;
+                renderHamperCards();
+            });
+
+            // Sort
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                renderHamperCards();
+            });
+        }
+
+        function renderHamperCards() {
+            const container = document.getElementById('hamperGridContainer');
+            const searchVal = (document.getElementById('hamperSearchInput').value || '').trim().toLowerCase();
+
+            let filtered = allGiftSets.filter(s => {
+                // Theme filter
+                if (currentTheme !== 'ALL' && s.theme !== currentTheme) {
+                    return false;
+                }
+
+                // Price filter
+                const price = Number(s.selling_price) || 0;
+                if (currentPriceFilter === 'UNDER_1500' && price >= 1500) return false;
+                if (currentPriceFilter === '1500_2500' && (price < 1500 || price > 2500)) return false;
+                if (currentPriceFilter === 'OVER_2500' && price <= 2500) return false;
+
+                // Search
+                if (searchVal) {
+                    const matchName = (s.name || '').toLowerCase().includes(searchVal);
+                    const matchCode = (s.code || '').toLowerCase().includes(searchVal);
+                    const matchPkg = (s.packaging_desc || '').toLowerCase().includes(searchVal);
+                    if (!matchName && !matchCode && !matchPkg) return false;
+                }
+
+                return true;
+            });
+
+            // Sorting
+            filtered.sort((a, b) => {
+                if (currentSort === 'PRICE_ASC') return (a.selling_price || 0) - (b.selling_price || 0);
+                if (currentSort === 'PRICE_DESC') return (b.selling_price || 0) - (a.selling_price || 0);
+                if (currentSort === 'ITEMS_DESC') return (b.item_count || 0) - (a.item_count || 0);
+                return (a.code || '').localeCompare(b.code || '');
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 0; color: #64748b;">
+                        <svg viewBox="0 0 24 24" width="48" height="48" stroke="#cbd5e1" stroke-width="1.5" fill="none" style="margin: 0 auto 12px auto; display: block;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <div style="font-size: 15px; font-weight: 600; color: #1e293b;">ไม่พบชุดกระเช้าที่ตรงตามเงื่อนไข</div>
+                        <div style="font-size: 13px; margin-top: 4px;">ลองเปลี่ยนคำค้นหา หรือเลือกระดับราคาอื่น</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(s => `
+                <div class="hamper-card">
+                    <div class="hamper-img-wrap">
+                        <img src="${s.image_url || '/assets/images/default-hamper.png'}" alt="${escapeHtml(s.name)}" class="hamper-img" onerror="this.onerror=null; this.src='/assets/images/default-hamper.png';">
+                        <span class="hamper-badge-code">${s.code}</span>
+                        <span class="hamper-badge-theme">${escapeHtml(s.theme || 'Festive')}</span>
+                    </div>
+
+                    <div class="hamper-body">
+                        <div class="hamper-title">${escapeHtml(s.name)}</div>
+                        <div class="hamper-packaging" title="${escapeHtml(s.packaging_desc || '')}">
+                            <svg viewBox="0 0 24 24" width="14" height="14" stroke="#64748b" stroke-width="2" fill="none" style="flex-shrink: 0; margin-top: 2px;">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            </svg>
+                            <span>${escapeHtml(s.packaging_desc || 'กระเช้าของขวัญมาตรฐาน')}</span>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                            <div class="hamper-items-count">
+                                <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                <span>${s.item_count || 0} รายการในชุด</span>
+                            </div>
+                            <span style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; ${Number(s.assembled_stock || 0) > 0 ? 'background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0;' : 'background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0;'}" title="จำนวนกระเช้าสำเร็จรูปในคลังพร้อมขาย">
+                                พร้อมขาย: ${Number(s.assembled_stock || 0)} ชุด
+                            </span>
+                        </div>
+
+                        <div class="hamper-footer">
+                            <div>
+                                <div class="hamper-price-unit">ราคาชุดละ</div>
+                                <div class="hamper-price-tag">฿ ${Number(s.selling_price || 0).toLocaleString('th-TH', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
+                            </div>
+
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" class="btn-secondary" onclick="openBomModal(${s.id})" style="height: 34px; padding: 0 10px; font-size: 12px; font-weight: 600; border-radius: 6px;" title="ดูรายการของในชุด">
+                                    <span>ดูของ</span>
+                                </button>
+                                <button type="button" class="btn-primary" onclick="goToQuotation('${s.code}', '${escapeHtml(s.name)}', ${s.selling_price || 0})" style="height: 34px; padding: 0 10px; font-size: 12px; font-weight: 600; border-radius: 6px;" title="ออกใบเสนอราคาด้วยชุดนี้">
+                                    <span>ใบเสนอราคา</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function openBomModal(setId) {
+            try {
+                const res = await fetch(`/api/gift-sets/${setId}`);
+                if (!res.ok) throw new Error('Failed to fetch set details');
+                const data = await res.json();
+                activeModalSet = data;
+
+                document.getElementById('bomModalCode').textContent = data.code;
+                document.getElementById('bomModalTitle').textContent = data.name;
+                document.getElementById('bomModalImg').src = data.image_url || '/assets/images/default-hamper.png';
+                document.getElementById('bomModalPkg').textContent = data.packaging_desc || '-';
+                document.getElementById('bomModalRibbon').textContent = data.ribbon_desc || '-';
+                document.getElementById('bomModalTheme').textContent = data.theme || '-';
+                const asmEl = document.getElementById('bomModalAssembledStock');
+                if (asmEl) {
+                    const asmQty = Number(data.assembled_stock || 0);
+                    asmEl.textContent = `${asmQty} ชุด`;
+                    asmEl.style.color = asmQty > 0 ? '#059669' : '#64748b';
+                }
+                document.getElementById('bomModalItemCount').textContent = `${(data.items || []).length} รายการ`;
+
+                const simInput = document.getElementById('bomSimulateQtyInput');
+                if (simInput) simInput.value = 1;
+
+                renderBomTable(1);
+
+                document.getElementById('btnExportToQuotation').onclick = () => {
+                    goToQuotation(data.code, data.name, Number(data.selling_price) || 0);
+                };
+
+                document.getElementById('bomModal').style.display = 'flex';
+            } catch (err) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast({ type: 'error', title: 'เกิดข้อผิดพลาด', message: err.message });
+                } else {
+                    alert(`เกิดข้อผิดพลาด: ${err.message}`);
+                }
+            }
+        }
+
+        function renderBomTable(simulateQty = 1) {
+            if (!activeModalSet || !activeModalSet.items) return;
+            const items = activeModalSet.items;
+            simulateQty = Math.max(1, parseInt(simulateQty, 10) || 1);
+
+            // 1. Calculate Maximum Buildable Sets based on weakest link
+            let maxBuildable = 999999;
+            items.forEach(it => {
+                const st = it.current_stock !== null && it.current_stock !== undefined ? Number(it.current_stock) : 0;
+                const req = Number(it.quantity) || 1;
+                const canMake = Math.floor(st / req);
+                if (canMake < maxBuildable) maxBuildable = canMake;
+            });
+            if (maxBuildable === 999999) maxBuildable = 0;
+
+            // 2. Update Feasibility Banner
+            const fCard = document.getElementById('bomFeasibilityCard');
+            const fIcon = document.getElementById('bomFeasibilityIcon');
+            const fText = document.getElementById('bomFeasibilityText');
+            const fMaxQty = document.getElementById('bomMaxBuildQty');
+
+            if (fMaxQty) fMaxQty.textContent = maxBuildable;
+
+            const shortageItems = items.filter(it => {
+                const st = it.current_stock !== null && it.current_stock !== undefined ? Number(it.current_stock) : 0;
+                const req = (Number(it.quantity) || 1) * simulateQty;
+                return st < req;
+            });
+
+            const asmBtn = document.getElementById('btnAssembleGiftSet');
+            if (maxBuildable <= 0) {
+                fCard.className = 'bom-feasibility-card status-danger';
+                fIcon.style.background = '#ef4444';
+                fIcon.textContent = '✕';
+                fText.innerHTML = `ยังไม่สามารถประกอบได้ทันที <span style="font-size: 12px; font-weight: 500; color: #991b1b;">(มีวัตถุดิบค้างสต็อก 0 ชิ้น)</span>`;
+                if (asmBtn) {
+                    asmBtn.style.background = '#94a3b8';
+                    asmBtn.style.cursor = 'not-allowed';
+                }
+            } else if (simulateQty > maxBuildable) {
+                fCard.className = 'bom-feasibility-card status-warning';
+                fIcon.style.background = '#f59e0b';
+                fIcon.textContent = '⚠️';
+                fText.innerHTML = `พร้อมประกอบได้ทันที <strong style="text-decoration: underline;">${maxBuildable}</strong> ชุด <span style="font-size: 12px; color: #b45309;">(ต้องการจัด ${simulateQty} ชุด จะขาดวัตถุดิบ ${shortageItems.length} รายการ)</span>`;
+                if (asmBtn) {
+                    asmBtn.style.background = '#d97706';
+                    asmBtn.style.cursor = 'pointer';
+                }
+            } else {
+                fCard.className = 'bom-feasibility-card';
+                fIcon.style.background = '#22c55e';
+                fIcon.textContent = '✓';
+                fText.innerHTML = `พร้อมประกอบได้ทันทีสูงสุด <strong style="font-size: 18px; text-decoration: underline;">${maxBuildable}</strong> ชุด <span style="font-size: 11.5px; color: #15803d; font-weight: 500;">(สต็อกวัตถุดิบครบถ้วนพร้อมจัดส่ง)</span>`;
+                if (asmBtn) {
+                    asmBtn.style.background = '#15803d';
+                    asmBtn.style.cursor = 'pointer';
+                }
+            }
+
+            // 3. Render Table Rows
+            let totalCost = 0;
+            const tbody = document.getElementById('bomTableBody');
+            tbody.innerHTML = items.map((it, idx) => {
+                const cost = Number(it.unit_cost) || 0;
+                const reqQty = Number(it.quantity) || 1;
+                totalCost += cost * reqQty;
+
+                const stock = it.current_stock !== null && it.current_stock !== undefined ? Number(it.current_stock) : null;
+                const unit = it.product_unit || 'ชิ้น';
+                const sku = it.product_code || 'SKU';
+                const img = it.product_image || '/assets/images/default-hamper.png';
+                const isShort = stock !== null && stock < (reqQty * simulateQty);
+
+                let stockBadge = '';
+                if (stock === null) {
+                    stockBadge = `<span class="stock-pill-badge" style="background:#f1f5f9; color:#64748b;">รอเช็ค</span>`;
+                } else if (stock <= 0) {
+                    stockBadge = `<span class="stock-pill-badge stock-pill-out">🔴 หมด</span>`;
+                } else if (stock <= (it.min_stock || 5)) {
+                    stockBadge = `<span class="stock-pill-badge stock-pill-low" title="ใกล้หมดสต็อก">🟡 ${stock} ${escapeHtml(unit)}</span>`;
+                } else {
+                    stockBadge = `<span class="stock-pill-badge stock-pill-ok">🟢 ${stock} ${escapeHtml(unit)}</span>`;
+                }
+
+                return `
+                    <tr style="${isShort ? 'background: #fff1f2;' : ''}">
+                        <td style="text-align: center; color: #94a3b8; font-weight: 600; padding: 8px 6px;">${idx + 1}</td>
+                        <td style="text-align: center; padding: 6px 8px;">
+                            <img src="${img}" class="bom-table-thumb" alt="${escapeHtml(it.item_name)}" onclick="openProductQuickCard(${idx})" onerror="this.src='/assets/images/default-hamper.png';" title="คลิกดูการ์ดสินค้า: ${escapeHtml(it.item_name)}">
+                        </td>
+                        <td style="padding: 8px 12px; white-space: nowrap;">
+                            <span class="bom-sku-link" onclick="openProductQuickCard(${idx})" title="คลิกเปิดการ์ดข้อมูลสินค้า: ${escapeHtml(it.item_name)}">
+                                ${escapeHtml(sku)}
+                            </span>
+                            ${isShort ? `<div style="font-size: 10.5px; color: #dc2626; font-weight: 600; margin-top: 2px;">⚠️ ขาด ${(reqQty * simulateQty) - stock} ${escapeHtml(unit)}</div>` : ''}
+                        </td>
+                        <td style="text-align: center; font-weight: 700; color: #1e293b; padding: 8px 6px; font-size: 13.5px;">${reqQty}</td>
+                        <td style="text-align: center; padding: 8px;">${stockBadge}</td>
+                        <td style="text-align: right; color: #475569; padding: 8px; font-weight: 600;">฿ ${cost.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                        <td style="text-align: right; color: #059669; font-weight: 700; padding: 8px 12px;">฿ ${(Number(it.unit_price) || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // 4. Update Summary
+            const price = Number(activeModalSet.selling_price) || 0;
+            const profit = price - totalCost;
+            const marginPct = price > 0 ? ((profit / price) * 100).toFixed(1) : 0;
+
+            document.getElementById('bomCostSummary').textContent = `฿ ${totalCost.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+            document.getElementById('bomMarginSummary').textContent = `กำไร: ${marginPct}% (฿${profit.toLocaleString('th-TH', { minimumFractionDigits: 2 })})`;
+            document.getElementById('bomPriceSummary').textContent = `฿ ${price.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+        }
+
+        function updateBuildSimulation(val) {
+            renderBomTable(val);
+        }
+
+        function openProductQuickCard(idx) {
+            if (!activeModalSet || !activeModalSet.items || !activeModalSet.items[idx]) return;
+            const it = activeModalSet.items[idx];
+
+            const sku = it.product_code || 'SKU';
+            const name = it.product_real_name || it.item_name;
+            const category = it.product_category || it.notes || 'วัตถุดิบกระเช้า';
+            const unit = it.product_unit || 'ชิ้น';
+            const img = it.product_image || '/assets/images/default-hamper.png';
+            const stock = it.current_stock !== null && it.current_stock !== undefined ? Number(it.current_stock) : 0;
+            const minStock = it.min_stock !== null && it.min_stock !== undefined ? Number(it.min_stock) : 5;
+            const cost = Number(it.live_cost_price || it.unit_cost || 0);
+            const price = Number(it.live_unit_price || it.unit_price || 0);
+            const diff = price - cost;
+            const marginPct = price > 0 ? ((diff / price) * 100).toFixed(1) : 0;
+
+            document.getElementById('quickCardSku').textContent = sku;
+            document.getElementById('quickCardCategory').textContent = category;
+            document.getElementById('quickCardName').textContent = name;
+            document.getElementById('quickCardNotes').textContent = it.product_desc || it.notes || 'ส่วนประกอบและวัตถุดิบสำหรับจัดชุดของขวัญ';
+            document.getElementById('quickCardImg').src = img;
+
+            const badge = document.getElementById('quickCardStockBadge');
+            if (stock <= 0) {
+                badge.className = 'stock-pill-badge stock-pill-out';
+                badge.textContent = `🔴 หมดสต็อก (0 ${unit})`;
+            } else if (stock <= minStock) {
+                badge.className = 'stock-pill-badge stock-pill-low';
+                badge.textContent = `🟡 ใกล้หมด (${stock} ${unit})`;
+            } else {
+                badge.className = 'stock-pill-badge stock-pill-ok';
+                badge.textContent = `🟢 พร้อมจัด (${stock} ${unit})`;
+            }
+
+            document.getElementById('quickCardMinStock').textContent = `${minStock} ${unit}`;
+            document.getElementById('quickCardCost').textContent = `฿ ${cost.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+            document.getElementById('quickCardPrice').textContent = `฿ ${price.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+            document.getElementById('quickCardMargin').textContent = `฿ ${diff.toLocaleString('th-TH', { minimumFractionDigits: 2 })} (${marginPct}%)`;
+
+            const stockLink = document.getElementById('quickCardStockLink');
+            if (stockLink) {
+                stockLink.href = `../inventory/inventory.html?search=${encodeURIComponent(sku)}`;
+            }
+
+            document.getElementById('bomProductDetailModal').style.display = 'flex';
+        }
+
+        function closeProductQuickCard() {
+            const modal = document.getElementById('bomProductDetailModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function printHamperPackingSlip() {
+            if (!activeModalSet) return;
+            const s = activeModalSet;
+            const simQty = Math.max(1, parseInt(document.getElementById('bomSimulateQtyInput')?.value, 10) || 1);
+            const printWin = window.open('', '_blank', 'width=850,height=950');
+
+            const rowsHtml = (s.items || []).map((it, idx) => {
+                const totalReq = (Number(it.quantity) || 1) * simQty;
+                return `
+                    <tr>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: center; font-size: 15px;">&#9633;</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: center;">${idx + 1}</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px; font-family: monospace; font-weight: bold; color: #7D0A0A;">${escapeHtml(it.product_code || '-')}</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px;">
+                            <strong>${escapeHtml(it.item_name)}</strong>
+                            ${it.notes ? `<div style="font-size: 11px; color: #64748b;">${escapeHtml(it.notes)}</div>` : ''}
+                        </td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: center; font-weight: bold; font-size: 14px;">${totalReq} ${escapeHtml(it.product_unit || 'ชิ้น')}</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: center;">${it.current_stock !== null ? it.current_stock : '-'}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            const html = `
+                <!DOCTYPE html>
+                <html lang="th">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>ใบสั่งประกอบกระเช้า - ${escapeHtml(s.code)}</title>
+                    <style>
+                        body { font-family: 'Prompt', 'Inter', sans-serif; padding: 25px; color: #0f172a; margin: 0; }
+                        h1 { margin: 0; font-size: 20px; color: #7D0A0A; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+                        th { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 9px; text-align: left; }
+                        .meta-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-top: 14px; display: flex; justify-content: space-between; }
+                        @media print { button { display: none; } }
+                    </style>
+                </head>
+                <body>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #7D0A0A; padding-bottom: 12px;">
+                        <div>
+                            <h1>ใบสั่งประกอบและหยิบของกระเช้า (Hamper Packing Slip)</h1>
+                            <div style="font-size: 12.5px; color: #64748b; margin-top: 3px;">MAM DESIGN AND SERVICE - ERP Inventory & Production</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 17px; font-weight: 800; color: #7D0A0A; font-family: monospace;">[ ${escapeHtml(s.code)} ]</div>
+                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}</div>
+                        </div>
+                    </div>
+
+                    <div class="meta-box">
+                        <div>
+                            <div style="font-size: 15px; font-weight: 700; color: #0f172a;">${escapeHtml(s.name)}</div>
+                            <div style="font-size: 12px; color: #475569; margin-top: 3px;"><strong>ภาชนะ/กระเช้า:</strong> ${escapeHtml(s.packaging_desc || '-')}</div>
+                            <div style="font-size: 12px; color: #475569; margin-top: 2px;"><strong>โบว์/ของตกแต่ง:</strong> ${escapeHtml(s.ribbon_desc || '-')}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 13px; color: #0369a1; font-weight: 700;">จำนวนสั่งประกอบ: ${simQty} ชุด</div>
+                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">รายการส่วนประกอบ: ${(s.items || []).length} ชนิด</div>
+                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">ราคาชุดละ: ฿ ${Number(s.selling_price || 0).toLocaleString()}</div>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 45px; text-align: center;">เช็ค</th>
+                                <th style="width: 35px; text-align: center;">#</th>
+                                <th style="width: 95px; text-align: center;">รหัส SKU</th>
+                                <th>รายการวัตถุดิบ / ขนม / บรรจุภัณฑ์</th>
+                                <th style="width: 85px; text-align: center;">จำนวนที่ใช้</th>
+                                <th style="width: 85px; text-align: center;">สต็อกคลัง</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top: 35px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; font-size: 12px; text-align: center;">
+                        <div style="border-top: 1px solid #cbd5e1; padding-top: 8px;">ผู้หยิบของจากคลัง<br/><br/>______________________</div>
+                        <div style="border-top: 1px solid #cbd5e1; padding-top: 8px;">ผู้จัดประกอบและผูกโบว์<br/><br/>______________________</div>
+                        <div style="border-top: 1px solid #cbd5e1; padding-top: 8px;">ผู้ตรวจสอบ QC และส่งมอบ<br/><br/>______________________</div>
+                    </div>
+
+                    <script>window.onload = function() { window.print(); };<\/script>
+                </body>
+                </html>
+            `;
+            printWin.document.write(html);
+            printWin.document.close();
+        }
+
+        async function assembleGiftSetNow() {
+            if (!activeModalSet) return;
+            const s = activeModalSet;
+            const buildQty = Math.max(1, parseInt(document.getElementById('bomSimulateQtyInput')?.value, 10) || 1);
+
+            const confirmMsg = `ยืนยันการสั่งประกอบชุดกระเช้า [${s.code}] ${s.name}\nจำนวน: ${buildQty} ชุด\n\n• ระบบจะตัดสต็อกวัตถุดิบ (กระเช้า/โบว์/ขนม) ทั้ง ${(s.items || []).length} รายการตามสูตร BOM\n• เพิ่มยอดสต็อกกระเช้าสำเร็จรูป [${s.code}] อีก +${buildQty} ชุด ทันที`;
+            if (!confirm(confirmMsg)) return;
+
+            const btn = document.getElementById('btnAssembleGiftSet');
+            const origText = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span>⏳ กำลังตัดสต็อก...</span>';
+            }
+
+            try {
+                const res = await fetch(`/api/gift-sets/${s.id}/assemble`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ quantity: buildQty })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || 'ไม่สามารถประกอบชุดกระเช้าได้');
+                }
+
+                if (typeof window.showToast === 'function') {
+                    window.showToast({
+                        type: 'success',
+                        title: 'สั่งประกอบและตัดสต็อกสำเร็จ!',
+                        message: `${data.message} (เลขที่อ้างอิง: ${data.ref_doc_number})`,
+                        duration: 4000
+                    });
+                } else {
+                    alert(data.message);
+                }
+
+                await openBomModal(s.id);
+                await fetchGiftSets();
+            } catch (err) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast({
+                        type: 'error',
+                        title: 'ไม่สามารถประกอบชุดกระเช้าได้',
+                        message: err.message,
+                        duration: 5000
+                    });
+                } else {
+                    alert(err.message);
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = origText;
+                }
+            }
+        }
+
+        function editInBuilder() {
+            if (!activeModalSet) return;
+            const s = activeModalSet;
+            sessionStorage.setItem('MAM_CUSTOM_BUILDER_DRAFT', JSON.stringify({
+                edit_id: s.id,
+                source_code: s.code,
+                code: s.code,
+                name: s.name,
+                theme: s.theme,
+                packaging_desc: s.packaging_desc,
+                ribbon_desc: s.ribbon_desc,
+                selling_price: s.selling_price,
+                cost_price: s.cost_price,
+                image_url: s.image_url,
+                items: s.items || []
+            }));
+            window.location.href = `gift-set-builder.html?edit_id=${encodeURIComponent(s.id)}`;
+        }
+
+        function duplicateToBuilder() {
+            if (!activeModalSet) return;
+            const s = activeModalSet;
+            sessionStorage.setItem('MAM_CUSTOM_BUILDER_DRAFT', JSON.stringify({
+                source_code: s.code,
+                name: `${s.name} (Custom)`,
+                theme: s.theme,
+                packaging_desc: s.packaging_desc,
+                ribbon_desc: s.ribbon_desc,
+                selling_price: s.selling_price,
+                cost_price: s.cost_price,
+                items: s.items || []
+            }));
+            window.location.href = `gift-set-builder.html?from_hmp=${encodeURIComponent(s.code)}`;
+        }
+
+        async function deleteCurrentGiftSet() {
+            if (!activeModalSet) return;
+            const s = activeModalSet;
+            if (!confirm(`ยืนยันการลบชุดกระเช้า [${s.code}] "${s.name}" ออกจากแคตตาล็อกหรือไม่?`)) return;
+
+            try {
+                const res = await fetch(`/api/gift-sets/${s.id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'ลบชุดกระเช้าไม่สำเร็จ');
+
+                closeBomModal();
+                if (typeof window.showToast === 'function') {
+                    window.showToast({
+                        type: 'success',
+                        title: 'ลบชุดกระเช้าสำเร็จ',
+                        message: `ลบชุด [${s.code}] "${s.name}" ออกจากระบบเรียบร้อยแล้ว`,
+                        duration: 3000
+                    });
+                }
+                await fetchGiftSets();
+            } catch (err) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast({ type: 'error', title: 'ลบไม่สำเร็จ', message: err.message });
+                } else {
+                    alert(err.message);
+                }
+            }
+        }
+
+        function closeBomModal() {
+            document.getElementById('bomModal').style.display = 'none';
+        }
+
+        function goToQuotation(code, name, price) {
+            sessionStorage.setItem('MAM_SELECTED_HAMPER', JSON.stringify({
+                code: code,
+                name: name,
+                price: price
+            }));
+            window.location.href = `../documents/quotation-new.html?prefill_hmp=${encodeURIComponent(code)}`;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+    </script>
+    <script src="../assets/js/modules/doc-toast.js"></script>
+    <script src="/assets/js/global-navbar.js"></script>
+</body>
+</html>
+

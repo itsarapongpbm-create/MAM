@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกค่าใช้จ่าย (Payment Voucher) | MAM DESIGN AND SERVICE</title>
+    <link rel="icon" href="../assets/images/mam-logo.png" type="image/png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/auth.css?v=30">
+    <link rel="stylesheet" href="../assets/css/document-editor.css?v=toast2">
+    <link rel="stylesheet" href="../assets/css/expenses.css">
+    <link rel="stylesheet" href="../assets/css/theme.css?v=31">
+</head>
+<body class="editor-page">
+
+    <!-- Sticky Toolbar -->
+    <header class="editor-toolbar">
+        <div class="toolbar-left">
+            <a href="expenses.html" class="back-btn">&larr; กลับหน้ารายการ</a>
+            <span class="toolbar-divider">|</span>
+            <span class="doc-badge" id="editorDocBadge">บันทึกค่าใช้จ่ายใหม่</span>
+        </div>
+        <div class="toolbar-right">
+            <button type="button" class="btn-save-draft" id="btnSaveDraft">บันทึกแบบร่าง</button>
+            <button type="button" class="btn-save-approve" id="btnSubmitExpense">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: -2px; margin-right: 4px;">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                <span id="btnSubmitText">บันทึกรายการค่าใช้จ่าย</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Canvas Wrapper -->
+    <div class="canvas-wrapper">
+        <main class="paper-canvas">
+            <form id="expenseForm">
+                <!-- Paper Header -->
+                <section class="paper-header">
+                    <!-- Company Branding (Left) -->
+                    <div class="company-branding">
+                        <div class="company-logo-placeholder">
+                            <img src="../assets/images/mam-logo.png" alt="MAM DESIGN AND SERVICE" style="height: 48px; width: auto; object-fit: contain;">
+                        </div>
+                        <div class="company-title-text">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</div>
+                        <div style="font-size: 13px; font-weight: 600; color: #475569; margin-top: -2px; margin-bottom: 4px;">MAM DESIGN AND SERVICE CO., LTD.</div>
+                        <div class="company-details-block">
+                            123 อาคารสาทรซิตี้ ทาวเวอร์ ชั้น 15 ถนนสาทรใต้ แขวงทุ่งมหาเมฆ เขตสาทร กรุงเทพฯ 10120<br>
+                            เลขประจำตัวผู้เสียภาษี: <strong>0105562089456</strong> (สำนักงานใหญ่)<br>
+                            โทรศัพท์: 02-821-5555 | อีเมล: contact@mamdesign.co.th
+                        </div>
+                    </div>
+
+                    <!-- Document Metadata (Right) -->
+                    <div class="doc-meta-badge">
+                        <h1 class="doc-main-title">ใบสำคัญจ่าย</h1>
+                        <div class="doc-sub-title">PAYMENT VOUCHER / EXPENSE</div>
+                        <div style="font-size: 11.5px; color: var(--doc-theme-color, #7D0A0A); font-weight: 700; margin-bottom: 8px;">(บันทึกค่าใช้จ่าย / ฝ่ายการเงิน)</div>
+
+                        <div class="meta-field-row">
+                            <span class="meta-field-label">เลขที่เอกสาร:</span>
+                            <input type="text" id="docNumber" class="meta-field-input" placeholder="EXP-202610-XXX (อัตโนมัติ)" readonly>
+                        </div>
+                        <div class="meta-field-row">
+                            <span class="meta-field-label">วันที่ทำรายการ:</span>
+                            <div class="date-picker-input-wrap">
+                                <input type="date" id="transactionDate" class="meta-field-input" required>
+                            </div>
+                        </div>
+                        <div class="meta-field-row">
+                            <span class="meta-field-label">กำหนดชำระเงิน:</span>
+                            <div class="date-picker-input-wrap">
+                                <input type="date" id="dueDate" class="meta-field-input" required>
+                            </div>
+                        </div>
+                        <div class="meta-field-row">
+                            <span class="meta-field-label">เลขที่บิล/ใบเสร็จผู้ขาย:</span>
+                            <input type="text" id="refDocNumber" class="meta-field-input" placeholder="เช่น INV-2026-001 หรือ PO-xxxx">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Vendor & Purchasing Section (Unified Connected Card) -->
+                <section class="customer-info-section">
+                    <div class="section-label">ข้อมูลผู้จำหน่าย / ผู้รับเงิน (Vendor / Payee Information)</div>
+                    <div class="customer-connected-card">
+                        <!-- แถวที่ 1: ชื่อผู้จำหน่าย -->
+                        <div class="connected-row">
+                            <span class="row-prefix-label">ผู้จำหน่าย:</span>
+                            <div class="row-field-wrap">
+                                <input type="text" id="vendorName" class="customer-clean-input" placeholder="ระบุชื่อบริษัท, ห้างหุ้นส่วน หรือร้านค้าผู้ให้บริการ" required>
+                            </div>
+                        </div>
+
+                        <!-- แถวที่ 2: เลขภาษี | สาขา -->
+                        <div class="connected-row">
+                            <span class="row-prefix-label">เลขภาษี / สาขา:</span>
+                            <div class="row-field-wrap contact-split-grid">
+                                <input type="text" id="vendorTaxId" class="customer-clean-input" style="max-width: 220px;" placeholder="เลขประจำตัวผู้เสียภาษี 13 หลัก" maxlength="13">
+                                <span class="contact-divider">|</span>
+                                <span class="row-sub-label">สาขา:</span>
+                                <input type="text" id="vendorBranch" class="customer-clean-input" placeholder="สำนักงานใหญ่ หรือ ระบุสาขา" value="สำนักงานใหญ่">
+                            </div>
+                        </div>
+
+                        <!-- แถวที่ 3: ที่อยู่ -->
+                        <div class="connected-row">
+                            <span class="row-prefix-label">ที่อยู่:</span>
+                            <div class="row-field-wrap">
+                                <textarea id="vendorAddress" class="customer-address-clean" placeholder="ระบุที่อยู่ตามใบเสร็จรับเงิน หรือ ภ.พ.20"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- แถวที่ 4: หมวดหมู่ | สถานะชำระ | วิธีชำระเงิน -->
+                        <div class="connected-row">
+                            <span class="row-prefix-label">หมวดหมู่ / การชำระ:</span>
+                            <div class="row-field-wrap contact-split-grid">
+                                <select id="mainCategorySelect" class="customer-select-clean" style="max-width: 230px;" required>
+                                    <option value="ค่าบริการวิชาชีพและที่ปรึกษา">ค่าบริการวิชาชีพและที่ปรึกษา</option>
+                                    <option value="ค่าเช่าอาคารและสำนักงาน">ค่าเช่าอาคารและสำนักงาน</option>
+                                    <option value="ค่าสาธารณูปโภค (น้ำ/ไฟ/เน็ต)">ค่าสาธารณูปโภค (น้ำ/ไฟ/เน็ต)</option>
+                                    <option value="ค่าโฆษณาและการตลาดดิจิทัล">ค่าโฆษณาและการตลาดดิจิทัล</option>
+                                    <option value="ค่าธรรมเนียมบริการซอฟต์แวร์ Cloud">ค่าบริการ Cloud / ซอฟต์แวร์</option>
+                                    <option value="ต้นทุนสินค้าและบริการ">ต้นทุนสินค้าและบริการ</option>
+                                    <option value="ค่าใช้จ่ายทั่วไป" selected>ค่าใช้จ่ายทั่วไป</option>
+                                </select>
+                                <span class="contact-divider">|</span>
+                                <span class="row-sub-label">สถานะ:</span>
+                                <select id="paymentStatus" class="customer-select-clean" style="max-width: 140px;">
+                                    <option value="PAID" selected>ชำระแล้ว (Paid)</option>
+                                    <option value="UNPAID">รอชำระ (Unpaid)</option>
+                                    <option value="DRAFT">แบบร่าง (Draft)</option>
+                                </select>
+                                <span class="contact-divider">|</span>
+                                <span class="row-sub-label">วิธีชำระ:</span>
+                                <select id="paymentMethod" class="customer-select-clean" style="max-width: 140px;">
+                                    <option value="โอนเงิน" selected>โอนเงิน (Transfer)</option>
+                                    <option value="เงินสด">เงินสด (Cash)</option>
+                                    <option value="เช็ค">เช็ค (Cheque)</option>
+                                    <option value="บัตรเครดิต">บัตรเครดิต (Card)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Line Items Table -->
+                <section class="items-table-section">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th class="col-no text-center" style="width: 44px;">#</th>
+                                <th class="col-desc">รายละเอียดค่าใช้จ่าย</th>
+                                <th class="col-unit text-center" style="width: 170px;">หมวดหมู่ย่อย</th>
+                                <th class="col-total text-right" style="width: 150px;">จำนวนเงิน (฿)</th>
+                                <th class="col-del text-center" style="width: 40px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseItemsBody">
+                            <!-- Populated dynamically by expense-editor.js -->
+                        </tbody>
+                    </table>
+
+                    <div class="add-row-bar">
+                        <button type="button" class="btn-add-item" id="btnAddRow">+ เพิ่มแถวรายการค่าใช้จ่าย</button>
+                    </div>
+                </section>
+
+                <!-- Summary & Calculations Section -->
+                <section class="summary-section">
+                    <!-- Left: Remarks & Slip Dropzone -->
+                    <div class="additional-info-block">
+                        <div class="notes-two-cols" style="grid-template-columns: 1fr; margin-bottom: 14px;">
+                            <div class="note-box">
+                                <label class="note-label">หมายเหตุ / คำอธิบายเพิ่มเติม</label>
+                                <textarea id="remarks" class="note-textarea remarks-textarea" placeholder="ระบุเหตุผล หรือรายละเอียดค่าใช้จ่าย..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Slip Attachment Card (Compact & Clean) -->
+                        <div class="slip-upload-card" style="margin-top: 0; padding: 14px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc;">
+                            <div class="slip-upload-title" style="font-size: 13.5px; margin-bottom: 2px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" stroke="#7D0A0A" stroke-width="2" fill="none">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                                <span>แนบหลักฐานสลิป / ใบเสร็จรับเงิน</span>
+                            </div>
+                            <div class="slip-upload-subtitle" style="font-size: 11.5px; margin-bottom: 10px;">ลากไฟล์สลิปมาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์ (JPG, PNG, PDF ขนาดไม่เกิน 15MB)</div>
+
+                            <!-- Dropzone Area -->
+                            <div class="slip-dropzone" id="slipDropzone" style="padding: 16px 12px; border: 1.5px dashed #fca5a5; background: #ffffff; border-radius: 6px; cursor: pointer; text-align: center;">
+                                <div class="dropzone-text-main" style="font-size: 13px; font-weight: 600; color: #1e293b;">
+                                    คลิกเพื่อเลือกรูปสลิป หรือลากไฟล์มาวางที่นี่
+                                </div>
+                                <div class="dropzone-text-sub" style="font-size: 11px; color: #64748b; margin-top: 2px;">ระบบจะบันทึกรูปแนบเข้ากับบิลนี้อัตโนมัติ</div>
+                                <input type="file" id="slipFileInput" class="dropzone-file-input" accept="image/*,application/pdf" style="display: none;">
+                            </div>
+
+                            <!-- Slip Preview Box -->
+                            <div class="slip-preview-container" id="slipPreviewContainer" style="display: none; margin-top: 10px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; align-items: center; gap: 12px;">
+                                <img id="slipPreviewImg" class="slip-preview-img" src="" alt="Slip preview" style="max-width: 60px; max-height: 60px; border-radius: 4px; object-fit: cover; border: 1px solid #e2e8f0;">
+                                <div class="slip-preview-info" style="flex: 1;">
+                                    <div class="slip-filename" id="slipFilename" style="font-size: 12.5px; font-weight: 600; color: #1e293b;">slip.png</div>
+                                    <div class="slip-filesize" id="slipFilesize" style="font-size: 11px; color: #64748b;">0 KB</div>
+                                </div>
+                                <button type="button" class="btn-remove-slip" id="removeSlipBtn" style="background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                                    ลบรูป
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Calculations Block -->
+                    <div class="calculation-block">
+                        <div class="calc-row">
+                            <span class="calc-label">รวมเป็นเงิน (Subtotal)</span>
+                            <strong class="calc-val">฿ <span id="subtotalDisplay">0.00</span></strong>
+                        </div>
+
+                        <div class="calc-row">
+                            <span class="calc-label">ภาษีมูลค่าเพิ่ม (VAT)</span>
+                            <select id="vatTypeSelect" class="calc-select" style="height: 30px; font-size: 12px; border-radius: 4px; padding: 0 6px; border: 1px solid #cbd5e1; background: #fff;">
+                                <option value="exclude" selected>แยกนอก 7%</option>
+                                <option value="include">รวมใน 7%</option>
+                                <option value="none">ไม่มีภาษี (0%)</option>
+                            </select>
+                        </div>
+                        <div class="calc-row">
+                            <span class="calc-label" style="font-size: 12px; color: #64748b; padding-left: 8px;">มูลค่า VAT 7%</span>
+                            <span class="calc-val" style="color: #64748b;">฿ <span id="vatAmountDisplay">0.00</span></span>
+                        </div>
+
+                        <div class="calc-row">
+                            <span class="calc-label">ภาษีหัก ณ ที่จ่าย (WHT)</span>
+                            <select id="whtRateSelect" class="calc-select" style="height: 30px; font-size: 12px; border-radius: 4px; padding: 0 6px; border: 1px solid #cbd5e1; background: #fff;">
+                                <option value="0" selected>ไม่หักภาษี</option>
+                                <option value="1">หัก 1% (ค่าขนส่ง)</option>
+                                <option value="2">หัก 2% (ค่าโฆษณา)</option>
+                                <option value="3">หัก 3% (บริการ/จ้างทำของ)</option>
+                                <option value="5">หัก 5% (ค่าเช่า)</option>
+                            </select>
+                        </div>
+                        <div class="calc-row">
+                            <span class="calc-label" style="font-size: 12px; color: #64748b; padding-left: 8px;">ยอดหัก ณ ที่จ่าย</span>
+                            <span class="calc-val" style="color: #dc2626;">- ฿ <span id="whtAmountDisplay">0.00</span></span>
+                        </div>
+
+                        <div class="calc-row grand-total-row" style="margin-top: 8px; padding-top: 10px; border-top: 2px solid #e2e8f0;">
+                            <span class="calc-label" style="font-weight: 700; font-size: 14.5px; color: #0f172a;">ยอดชำระสุทธิ (Net Total)</span>
+                            <strong class="calc-val" style="color: #059669; font-size: 18px;">฿ <span id="grandTotalDisplay">0.00</span></strong>
+                        </div>
+                        <div style="font-size: 11.5px; color: #64748b; text-align: right; margin-top: 4px;" id="thaiBahtTextDisplay">
+                            ศูนย์บาทถ้วน
+                        </div>
+                    </div>
+                </section>
+            </form>
+        </main>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastNotificationContainer" class="mam-toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/doc-action-modal.js?v=15"></script>
+    <script src="../assets/js/expense-editor.js?v=16"></script>
+    <script src="../assets/js/theme-manager.js"></script>
+</body>
+</html>
+

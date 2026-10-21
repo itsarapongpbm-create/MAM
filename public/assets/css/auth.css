@@ -1,0 +1,732 @@
+/* ==========================================================================
+   FlowAccount Auth Template - Modern & Responsive Stylesheet
+   Color Identity: Royal Crimson (#7D0A0A)
+   Typography: 'Inter', 'Prompt', sans-serif
+   ========================================================================== */
+
+:root {
+    --primary: #7D0A0A;
+    --primary-hover: #630808;
+    --primary-active: #4a0606;
+    --primary-light: #fef2f2;
+    --primary-focus-ring: rgba(125, 10, 10, 0.25);
+
+    --text-heading: #1e293b;
+    --text-body: #334155;
+    --text-muted: #64748b;
+    --text-light: #94a3b8;
+
+    --border-color: #cbd5e1;
+    --border-hover: #94a3b8;
+    --border-focus: #7D0A0A;
+
+    --bg-page: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-input: #ffffff;
+
+    --error-color: #ef4444;
+    --error-bg: #fef2f2;
+    --error-border: #fca5a5;
+
+    --success-color: #10b981;
+    --success-bg: #ecfdf5;
+
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+
+    --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+    --shadow-input-focus: 0 0 0 3px var(--primary-focus-ring);
+    
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Reset */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: 'Inter', 'Prompt', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-body);
+    font-size: 15px;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Mobile App Banner
+   ========================================================================== */
+.mobile-app-banner {
+    display: none;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 10px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.mobile-app-banner.active {
+    display: block;
+}
+
+.banner-inner {
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.app-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.app-icon img {
+    width: 38px;
+    height: 38px;
+    border-radius: 9px;
+    object-fit: cover;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.app-meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.app-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-heading);
+    line-height: 1.2;
+}
+
+.app-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.btn-download-app {
+    background-color: var(--primary);
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 20px;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.btn-download-app:hover {
+    background-color: var(--primary-hover);
+}
+
+.banner-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--text-light);
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 6px;
+}
+
+.banner-close:hover {
+    color: var(--text-heading);
+}
+
+/* ==========================================================================
+   Layout Wrapper
+   ========================================================================== */
+.auth-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 32px 16px 20px;
+    width: 100%;
+}
+
+.auth-card {
+    background: var(--bg-card);
+    width: 100%;
+    max-width: 440px;
+    border-radius: var(--radius-lg);
+    border: 1px solid #e2e8f0;
+    box-shadow: var(--shadow-card);
+    padding: 40px 36px 32px;
+    animation: fadeIn 0.35s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   Header & Brand Logo
+   ========================================================================== */
+.auth-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.brand-logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.brand-logo {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    text-decoration: none;
+}
+
+.brand-logo-img {
+    height: 52px !important;
+    max-height: 52px !important;
+    width: auto !important;
+    max-width: 160px !important;
+    object-fit: contain;
+    border-radius: 10px;
+    display: block;
+    box-shadow: 0 4px 12px rgba(177, 144, 93, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.brand-logo:hover .brand-logo-img {
+    transform: scale(1.03);
+    box-shadow: 0 6px 16px rgba(177, 144, 93, 0.35);
+}
+
+.flowaccount-svg-logo {
+    height: 32px;
+    width: auto;
+    display: block;
+}
+
+.auth-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-heading);
+    letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   Alert Notification Box
+   ========================================================================== */
+.alert-box {
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+    font-size: 13.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: slideDown 0.25s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.alert-box.alert-danger {
+    background-color: var(--error-bg);
+    color: var(--error-color);
+    border: 1px solid var(--error-border);
+}
+
+.alert-box.alert-success {
+    background-color: var(--success-bg);
+    color: var(--success-color);
+    border: 1px solid #a7f3d0;
+}
+
+/* ==========================================================================
+   Form Controls
+   ========================================================================== */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-heading);
+    margin-bottom: 6px;
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.forgot-link {
+    font-size: 13.5px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.forgot-link:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.form-control {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text-heading);
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: var(--transition);
+}
+
+.form-control::placeholder {
+    color: var(--text-light);
+    font-weight: 400;
+}
+
+.form-control:hover {
+    border-color: var(--border-hover);
+}
+
+.form-control:focus {
+    border-color: var(--border-focus);
+    box-shadow: var(--shadow-input-focus);
+}
+
+select.form-control {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 38px;
+}
+
+/* Password with toggle button */
+.password-wrapper .form-control {
+    padding-right: 46px;
+}
+
+.btn-toggle-password {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 44px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    transition: var(--transition);
+}
+
+.btn-toggle-password:hover {
+    color: var(--text-muted);
+}
+
+.icon-eye {
+    width: 19px;
+    height: 19px;
+}
+
+/* Validation states */
+.form-group.has-error .form-control {
+    border-color: var(--error-color);
+    background-color: #fffbfb;
+}
+
+.form-group.has-error .form-control:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.error-msg {
+    display: none;
+    font-size: 12.5px;
+    color: var(--error-color);
+    margin-top: 5px;
+    padding-left: 2px;
+}
+
+.form-group.has-error .error-msg {
+    display: block;
+}
+
+/* ==========================================================================
+/* Primary Action Button (Scoped to Auth pages) */
+.auth-card .btn-primary,
+.auth-form .btn-primary,
+.auth-box .btn-primary,
+.auth-container .btn-primary,
+.auth-body .btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: 46px;
+    background-color: var(--primary);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 15.5px;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 4px;
+    box-shadow: 0 2px 6px rgba(125, 10, 10, 0.25);
+}
+
+.auth-card .btn-primary:hover,
+.auth-form .btn-primary:hover,
+.auth-box .btn-primary:hover,
+.auth-container .btn-primary:hover,
+.auth-body .btn-primary:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 4px 10px rgba(125, 10, 10, 0.35);
+}
+
+.auth-card .btn-primary:active,
+.auth-form .btn-primary:active,
+.auth-box .btn-primary:active,
+.auth-container .btn-primary:active,
+.auth-body .btn-primary:active {
+    background-color: var(--primary-active);
+    transform: translateY(1px);
+}
+
+.auth-card .btn-primary:disabled,
+.auth-form .btn-primary:disabled,
+.auth-box .btn-primary:disabled,
+.auth-container .btn-primary:disabled,
+.auth-body .btn-primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Spinner */
+.btn-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Sign up prompt
+   ========================================================================== */
+.signup-prompt {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.link-highlight {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 4px;
+    transition: var(--transition);
+}
+
+.link-highlight:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   Divider
+   ========================================================================== */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 22px 0;
+    color: var(--text-light);
+    font-size: 13.5px;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.divider span {
+    padding: 0 14px;
+}
+
+/* ==========================================================================
+   Social Login Group
+   ========================================================================== */
+.social-login-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    height: 42px;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    background: #ffffff;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-social:hover {
+    background-color: #f8fafc;
+    border-color: var(--border-hover);
+}
+
+.btn-social:active {
+    background-color: #f1f5f9;
+}
+
+.social-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* Facebook */
+.btn-facebook {
+    border-color: #1877f2;
+    color: #1877f2;
+}
+
+.btn-facebook:hover {
+    background-color: #f0f7ff;
+    border-color: #1877f2;
+}
+
+/* Google */
+.btn-google {
+    color: var(--text-heading);
+}
+
+/* Apple */
+.btn-apple {
+    background-color: #111827;
+    border-color: #111827;
+    color: #ffffff;
+}
+
+.btn-apple:hover {
+    background-color: #000000;
+    border-color: #000000;
+}
+
+/* ==========================================================================
+   Terms Notice & Security Badge
+   ========================================================================== */
+.terms-notice {
+    margin-top: 24px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.6;
+}
+
+.blue-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.blue-link:hover {
+    text-decoration: underline;
+}
+
+.ssl-badge {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.ssl-lock-icon {
+    width: 13px;
+    height: 13px;
+    stroke: var(--text-light);
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.auth-footer {
+    width: 100%;
+    max-width: 480px;
+    margin-top: 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+.footer-copyright {
+    color: var(--text-light);
+}
+
+.footer-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-links a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+.dot-separator {
+    color: var(--border-color);
+}
+
+/* Language switch button */
+.lang-switch-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    padding: 3px 8px;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-body);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: var(--transition);
+}
+
+.lang-switch-btn:hover {
+    background: #ffffff;
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+@media (max-width: 640px) {
+    .auth-wrapper {
+        padding: 16px 12px 24px;
+        justify-content: flex-start;
+    }
+
+    .auth-card {
+        border: none;
+        box-shadow: none;
+        background: transparent;
+        padding: 16px 8px;
+    }
+
+    body {
+        background-color: #ffffff;
+    }
+
+    .mobile-app-banner {
+        display: block;
+    }
+}
+
+@media (max-width: 380px) {
+    .flowaccount-svg-logo {
+        height: 28px;
+    }
+    
+    .auth-title {
+        font-size: 20px;
+    }
+    
+    .btn-social span {
+        font-size: 13px;
+    }
+}

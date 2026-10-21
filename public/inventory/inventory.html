@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สต็อกสินค้าและสินค้าคงคลัง (Inventory) | MAM DESIGN AND SERVICE</title>
+    <link rel="icon" href="../assets/images/mam-logo.png" type="image/png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/auth.css?v=30">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=30">
+    <link rel="stylesheet" href="../assets/css/document-editor.css?v=25">
+    <link rel="stylesheet" href="../assets/css/inventory.css?v=12">
+    <link rel="stylesheet" href="../assets/css/theme.css?v=31">
+</head>
+<body class="dashboard-body">
+
+    <!-- Top Navigation Bar -->
+        <!-- ================= Top Navigation Bar (Global Standard Component) ================= -->
+    <header class="top-navbar" id="globalTopNavbar">
+        <div class="nav-left">
+            <button class="btn-toggle-sidebar" id="toggleSidebarBtn" aria-label="Toggle menu" title="เปิด/ปิด เมนูด้านข้าง">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <a href="/dashboard/index.html" class="topbar-logo" title="หน้าหลักภาพรวมธุรกิจ">
+                <img src="/assets/images/mam-logo.png" alt="MAM DESIGN AND SERVICE" style="height: 38px; width: auto; object-fit: contain;">
+            </a>
+            <div class="topbar-divider"></div>
+            <div class="topbar-company-info">
+                <span class="topbar-company-name" id="topbarCompanyName">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</span>
+                <span class="badge-advance">INTERNAL CRM</span>
+            </div>
+        </div>
+
+        <!-- Actions & User Profile -->
+        <div class="nav-right">
+            <!-- Notification Bell -->
+            <button class="icon-button" id="topbarNotificationBtn" title="การแจ้งเตือน">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notification-badge" id="topbarNotificationBadge">3</span>
+            </button>
+
+            <!-- Help & Support -->
+            <button class="icon-button" id="topbarHelpBtn" title="ช่วยเหลือ / คู่มือ">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </button>
+
+            <div class="topbar-divider"></div>
+
+            <!-- User Menu -->
+            <div class="user-profile-menu">
+                <button class="user-avatar-btn" id="userMenuBtn" type="button" aria-expanded="false" title="โปรไฟล์ผู้ใช้งาน">
+                    <img src="https://ui-avatars.com/api/?name=Itsarapong+Po&background=7D0A0A&color=fff&size=64" alt="User Avatar" class="user-avatar-img" id="topbarUserAvatar">
+                    <span class="user-display-name" id="topbarUserDisplayName">คุณอิศรพงศ์ โพธิ์งาม</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div class="user-dropdown-menu" id="userDropdownContent">
+                    <div class="user-dropdown-header">
+                        <strong id="dropdownUserFullName">Itsarapong P.</strong>
+                        <small id="dropdownUserEmail">itsarapong@mamdesign.co.th</small>
+                    </div>
+                    <a href="/settings/users.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>จัดการผู้ใช้งานและสิทธิ์</span>
+                    </a>
+                    <a href="#" class="dropdown-item" id="openCompanyInfoLink">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="6" x2="9" y2="6.01"></line><line x1="15" y1="6" x2="15" y2="6.01"></line><line x1="9" y1="10" x2="9" y2="10.01"></line><line x1="15" y1="10" x2="15" y2="10.01"></line><line x1="9" y1="14" x2="9" y2="14.01"></line><line x1="15" y1="14" x2="15" y2="14.01"></line><line x1="9" y1="18" x2="9" y2="18.01"></line><line x1="15" y1="18" x2="15" y2="18.01"></line></svg>
+                        <span>ข้อมูลองค์กร (MAM DESIGN AND SERVICE)</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/auth/login.html" class="dropdown-item text-danger" id="topbarLogoutBtn">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>ออกจากระบบ (Logout)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar-nav" id="sidebarNav">
+            <nav class="sidebar-menu">
+                <div class="menu-section-title">เมนูหลัก</div>
+                <a href="../dashboard/index.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <rect x="3" y="3" width="7" height="9"></rect>
+                        <rect x="14" y="3" width="7" height="5"></rect>
+                        <rect x="14" y="12" width="7" height="9"></rect>
+                        <rect x="3" y="16" width="7" height="5"></rect>
+                    </svg>
+                    <span>ภาพรวมธุรกิจ</span>
+                </a>
+
+                <!-- Dropdown: เอกสารการขาย -->
+                <div class="menu-dropdown-group" id="salesDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="salesDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            <span>เอกสารการขาย</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../documents/quotations.html" class="submenu-item">
+                            <span>• ใบเสนอราคา</span>
+                        </a>
+                        <a href="../documents/billing-notes.html" class="submenu-item">
+                            <span>• ใบวางบิล</span>
+                        </a>
+                        <a href="../documents/invoices.html" class="submenu-item">
+                            <span>• ใบกำกับภาษี</span>
+                        </a>
+                        <a href="../documents/receipts.html" class="submenu-item">
+                            <span>• ใบเสร็จรับเงิน</span>
+                        </a>
+                        <a href="../documents/cash-sales.html" class="submenu-item">
+                            <span>• ขายสด / บิลเงินสด</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dropdown: จัดซื้อ (Purchases) -->
+                <div class="menu-dropdown-group" id="purchaseDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="purchaseDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <span>จัดซื้อ (Purchases)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../documents/purchase-orders.html" class="submenu-item">
+                            <span>• ใบสั่งซื้อ (PO)</span>
+                        </a>
+                        <a href="../expenses/expenses.html" class="submenu-item">
+                            <span>• ค่าใช้จ่าย (Expenses)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="../withholding-tax/withholding-tax.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>ภาษีหัก ณ ที่จ่าย (50 ทวิ)</span>
+                </a>
+
+                <!-- Dropdown: สต็อกสินค้าและกระเช้า -->
+                <div class="menu-dropdown-group open" id="inventoryDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle active" id="inventoryDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                            <span>สต็อกสินค้า (Inventory)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="inventory.html" class="submenu-item active">
+                            <span>• ขนม / โบว์ / ตะกร้า</span>
+                        </a>
+                        <a href="gift-sets.html" class="submenu-item">
+                            <span>• Gift Set ตามกระเช้า</span>
+                        </a>
+                        <a href="gift-set-builder.html" class="submenu-item">
+                            <span>• จัด Gift Set ใหม่</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dropdown: สมุดรายชื่อ (Contacts) -->
+                <div class="menu-dropdown-group" id="contactsDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="contactsDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span>ข้อมูลคู่ค้า (Contacts)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../contacts/customers.html" class="submenu-item">
+                            <span>• ลูกค้า (Customers)</span>
+                        </a>
+                        <a href="../contacts/vendors.html" class="submenu-item">
+                            <span>• ผู้ขาย / คู่ค้า (Vendors)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="menu-section-title">การตั้งค่าระบบ</div>
+                <a href="../settings/users.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>จัดการสิทธิ์ผู้ใช้งาน</span>
+                </a>
+            </nav>
+
+            <!-- Internal Organization Portal Footer -->
+            <div style="margin-top: auto; padding: 14px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin: 16px 12px; font-size: 12px; color: #64748b;">
+                <div style="font-weight: 600; color: #1e293b; margin-bottom: 2px; display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #059669;"></span>
+                    MAM DESIGN &amp; SERVICE CRM
+                </div>
+                <div style="font-size: 11px;">ระบบจัดการภายในองค์กร</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">คลังวัตถุดิบ (ขนม / โบว์ / ตะกร้า)</h1>
+                    <p class="page-subtitle">โฟกัสเฉพาะ "วัตถุดิบ 317 ชนิด" สำหรับตรวจนับสต็อกของที่จะเอามาประกอบกระเช้า</p>
+                </div>
+
+                <!-- Header Actions -->
+                <div class="header-controls" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <a href="gift-sets.html" class="btn-secondary" style="height: 38px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1px solid #7D0A0A; color: #7D0A0A; background: #fff; text-decoration: none;">
+                        <span>🎁 Gift Set ตามกระเช้า (61 ชุด)</span>
+                    </a>
+                    <a href="gift-set-builder.html" class="btn-secondary" style="height: 38px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1px solid #0284c7; color: #0284c7; background: #fff; text-decoration: none;">
+                        <span>✨ จัด Gift Set ใหม่</span>
+                    </a>
+                    <button type="button" id="btnExportExcel" class="btn-secondary" style="height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 14px; font-weight: 600; font-size: 13px; cursor: pointer; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; white-space: nowrap; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s ease;">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="#059669" stroke-width="2.2" fill="none">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="8" y1="13" x2="16" y2="13"></line>
+                            <line x1="8" y1="17" x2="16" y2="17"></line>
+                        </svg>
+                        <span>Excel</span>
+                    </button>
+                    <button type="button" class="btn-primary" onclick="openCreateProductModal()" style="height: 38px; padding: 0 14px; margin: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; white-space: nowrap; box-sizing: border-box;">
+                        <span>+ เพิ่มวัตถุดิบ</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Metric Summary Cards -->
+            <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+                <div class="kpi-card">
+                    <span class="kpi-label">มูลค่าสินค้าคงคลังรวม (ราคาทุน)</span>
+                    <div class="kpi-value" id="kpiTotalStockValue" style="font-size: 19px; margin: 4px 0;">฿ 0.00</div>
+                    <span class="trend-note">คำนวณจากราคาทุนเฉลี่ย</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">วัตถุดิบประกอบกระเช้า (SKU)</span>
+                    <div class="kpi-value" id="kpiTotalSkus" style="font-size: 19px; margin: 4px 0;">0 รายการ</div>
+                    <span class="trend-note">ขนม 300 / ตะกร้า 7 / โบว์ 10</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">สินค้าใกล้หมดสต็อก</span>
+                    <div class="kpi-value text-warning" id="kpiLowStock" style="font-size: 19px; margin: 4px 0;">0 รายการ</div>
+                    <span class="trend-note text-warning">ต่ำกว่าจุดสั่งซื้อขั้นต่ำ</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">สินค้าหมดสต็อก</span>
+                    <div class="kpi-value text-danger" id="kpiOutOfStock" style="font-size: 19px; margin: 4px 0;">0 รายการ</div>
+                    <span class="trend-note text-danger">ต้องสั่งซื้อเพิ่มทันที</span>
+                </div>
+            </div>
+
+            <!-- Category Quick Pills Bar -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;" id="categoryPills">
+                    <span style="font-size: 13px; font-weight: 700; color: #475569; margin-right: 4px;">เลือกดูวัตถุดิบ:</span>
+                    <button type="button" class="cat-pill active" data-cat="ALL">
+                        🌟 วัตถุดิบทั้งหมด (<span id="catPillAll">317</span>)
+                    </button>
+                    <button type="button" class="cat-pill" data-cat="ขนมและของทานเล่น">
+                        🍪 ขนมและของทานเล่น (<span id="catPillSnk">300</span>)
+                    </button>
+                    <button type="button" class="cat-pill" data-cat="แบบกระเป๋าและกระเช้า">
+                        🧺 แบบกระเป๋าและกระเช้า (<span id="catPillBag">7</span>)
+                    </button>
+                    <button type="button" class="cat-pill" data-cat="สินค้าพรีเมียมและแก้วน้ำ">
+                        🎀 โบว์และของตกแต่ง (<span id="catPillPrm">10</span>)
+                    </button>
+                </div>
+                <div style="font-size: 12.5px; color: #64748b; display: flex; align-items: center; gap: 8px;">
+                    <span>ต้องการดูกระเช้าสำเร็จรูป?</span>
+                    <a href="gift-sets.html" style="font-weight: 700; color: #7D0A0A; text-decoration: none; padding: 4px 10px; background: #fef2f2; border-radius: 6px; border: 1px solid #fecaca; display: inline-flex; align-items: center; gap: 4px;">
+                        <span>🎁 เปิดดู Gift Set 61 ชุด</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Panel -->
+            <div class="content-panel">
+                <!-- Filter Tabs & Search Bar -->
+                <div class="doc-filter-bar" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 16px; background: #ffffff; border-bottom: 1px solid #e2e8f0;">
+                    <div class="doc-tabs">
+                        <button class="doc-tab-btn tab-item active" data-tab="ALL">ทั้งหมด (<span id="badgeAll">0</span>)</button>
+                        <button class="doc-tab-btn tab-item" data-tab="NORMAL">มีสินค้าพร้อมขาย (<span id="badgeNormal">0</span>)</button>
+                        <button class="doc-tab-btn tab-item" data-tab="LOW_STOCK">ใกล้หมด (<span id="badgeLow">0</span>)</button>
+                        <button class="doc-tab-btn tab-item" data-tab="OUT_OF_STOCK">สินค้าหมด (<span id="badgeOut">0</span>)</button>
+                        <button class="doc-tab-btn tab-item" data-tab="MOVEMENTS">ประวัติสต็อก (Stock Card)</button>
+                    </div>
+
+                    <!-- Filters Bar for Inventory List -->
+                    <div id="inventoryFiltersBar" style="display: flex; gap: 8px; align-items: center; flex: 1; max-width: 480px; justify-content: flex-end;">
+                        <select id="inventoryCategoryFilter" style="height: 36px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 13px; color: #334155; background: #fff; max-width: 170px; cursor: pointer;">
+                            <option value="ALL">ทุกหมวดหมู่วัตถุดิบ</option>
+                            <option value="ขนมและของทานเล่น">ขนมและของทานเล่น</option>
+                            <option value="แบบกระเป๋าและกระเช้า">แบบกระเป๋าและกระเช้า</option>
+                            <option value="สินค้าพรีเมียมและแก้วน้ำ">สินค้าพรีเมียมและแก้วน้ำ</option>
+                        </select>
+                        <div class="doc-search-box" style="flex: 1; max-width: 280px; margin: 0;">
+                            <input type="text" id="searchInventoryInput" placeholder="ค้นหาชื่อสินค้า, SKU, หมวดหมู่...">
+                        </div>
+                    </div>
+
+                    <!-- Filters Bar for Movements Tab (Shown only when MOVEMENTS tab is active) -->
+                    <div id="movementsFiltersBar" style="display: none; gap: 8px; align-items: center; flex: 1; max-width: 520px; justify-content: flex-end;">
+                        <select id="movementTypeFilter" style="height: 36px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 13px; color: #334155; background: #fff; max-width: 160px; cursor: pointer;">
+                            <option value="ALL">ทุกประเภทรายการ</option>
+                            <option value="IN_PURCHASE">รับเข้าสต็อก (In)</option>
+                            <option value="OUT_SALE">ขายออก / ตัดจ่าย (Out)</option>
+                            <option value="ADJUST_COUNT">ตรวจนับ / ปรับยอด (Adjust)</option>
+                            <option value="DAMAGE">ชำรุด / เสียหาย</option>
+                        </select>
+                        <div class="doc-search-box" style="flex: 1; max-width: 220px; margin: 0;">
+                            <input type="text" id="searchMovementsInput" placeholder="ค้นหาประวัติสต็อก, SKU...">
+                        </div>
+                        <button type="button" id="btnExportMovements" class="btn-secondary" style="height: 36px; padding: 0 10px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; white-space: nowrap;">
+                            <svg viewBox="0 0 24 24" width="13" height="13" stroke="#059669" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            <span>CSV</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Inventory Table -->
+                <div class="table-responsive" id="inventoryTableWrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px; min-width: 60px; text-align: center;" class="text-center">รูป</th>
+                                <th style="width: 130px; min-width: 130px; text-align: left; white-space: nowrap;">รหัสสินค้า (SKU)</th>
+                                <th style="min-width: 240px; text-align: left;">ชื่อสินค้า / รายละเอียด</th>
+                                <th style="width: 140px; min-width: 140px; text-align: left; white-space: nowrap;">หมวดหมู่</th>
+                                <th style="width: 130px; min-width: 130px; text-align: right; white-space: nowrap; padding-right: 18px;" class="text-right">ราคาขาย (บาท)</th>
+                                <th style="width: 150px; min-width: 150px; text-align: right; white-space: nowrap; padding-right: 18px;" class="text-right">คงเหลือ / มูลค่าทุน</th>
+                                <th style="width: 140px; min-width: 140px; text-align: center; white-space: nowrap;" class="text-center">สถานะสต็อก</th>
+                                <th style="width: 180px; min-width: 180px; text-align: center; white-space: nowrap;" class="text-center">การจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <!-- Populated dynamically by inventory.js -->
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination Footer -->
+                    <div class="table-pagination-footer" id="inventoryPaginationFooter">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span>แสดง</span>
+                            <select id="rowsPerPageSelect" style="height: 32px; padding: 0 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; color: #334155; background: #fff; cursor: pointer;">
+                                <option value="25">25 รายการ</option>
+                                <option value="50" selected>50 รายการ</option>
+                                <option value="100">100 รายการ</option>
+                                <option value="ALL">ทั้งหมด</option>
+                            </select>
+                            <span id="paginationInfoText">แสดง 0 รายการ</span>
+                        </div>
+                        <div style="display: flex; gap: 6px; align-items: center;" id="paginationControls"></div>
+                    </div>
+                </div>
+
+                <!-- Global Movements Table (Hidden by default, shown when on MOVEMENTS tab) -->
+                <div class="table-responsive" id="movementsTableWrapper" style="display: none;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 160px;">วัน-เวลา</th>
+                                <th style="width: 110px;">รหัสสินค้า</th>
+                                <th>ชื่อสินค้า</th>
+                                <th style="text-align: center; width: 130px;">ประเภทรายการ</th>
+                                <th style="text-align: right; width: 120px;">จำนวนที่เปลี่ยน</th>
+                                <th style="text-align: right; width: 120px;">คงเหลือหลังทำ</th>
+                                <th>เอกสารอ้างอิง / หมายเหตุ</th>
+                                <th style="width: 110px;">ผู้บันทึก</th>
+                            </tr>
+                        </thead>
+                        <tbody id="movementsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= Product Create / Edit Modal ================= -->
+    <div class="modal-overlay" id="productModal" style="display: none;">
+        <div class="modal-card" style="max-width: 660px; width: 94%;">
+            <div class="modal-header">
+                <div>
+                    <h3 id="productModalTitle" style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">+ เพิ่มวัตถุดิบใหม่เข้าคลัง (ขนม / โบว์ / ตะกร้า)</h3>
+                    <div style="font-size: 11.5px; color: #64748b; margin-top: 1px;">บันทึกข้อมูลขนม วัตถุดิบประกอบ หรือบรรจุภัณฑ์สำหรับใช้จัดกระเช้า</div>
+                </div>
+                <button type="button" class="modal-close" onclick="closeProductModal()">&times;</button>
+            </div>
+            <form id="productForm" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; margin: 0; padding: 0;">
+                <input type="hidden" id="modalProductId">
+
+                <!-- Scrollable Body (Inputs scroll smoothly, Header & Footer stay permanently visible) -->
+                <div class="modal-body-scroll">
+                    <!-- 1. Category Quick Selector -->
+                    <div style="margin-bottom: 12px;" id="modalCategorySelectorWrap">
+                        <label class="input-label required" style="display: block; font-size: 12.5px; font-weight: 600; color: #334155; margin-bottom: 4px;">เลือกหมวดหมู่วัตถุดิบ *</label>
+                        <div class="category-preset-group">
+                            <button type="button" class="cat-select-btn active" id="btnCatSnk" onclick="selectModalCategory('ขนมและของทานเล่น', 'SNK')">
+                                <span style="font-size: 18px;">🍪</span>
+                                <div>
+                                    <div class="cat-btn-title">ขนมและของทานเล่น</div>
+                                    <div class="cat-btn-sub">รหัสชุด SNK-xxx</div>
+                                </div>
+                            </button>
+                            <button type="button" class="cat-select-btn" id="btnCatBag" onclick="selectModalCategory('แบบกระเป๋าและกระเช้า', 'BAG')">
+                                <span style="font-size: 18px;">🧺</span>
+                                <div>
+                                    <div class="cat-btn-title">แบบกระเป๋าและกระเช้า</div>
+                                    <div class="cat-btn-sub">รหัสชุด BAG-xxx</div>
+                                </div>
+                            </button>
+                            <button type="button" class="cat-select-btn" id="btnCatPrm" onclick="selectModalCategory('สินค้าพรีเมียมและแก้วน้ำ', 'PRM')">
+                                <span style="font-size: 18px;">🎀</span>
+                                <div>
+                                    <div class="cat-btn-title">โบว์ / ของตกแต่ง</div>
+                                    <div class="cat-btn-sub">รหัสชุด PRM-xxx</div>
+                                </div>
+                            </button>
+                        </div>
+                        <input type="hidden" id="productCategoryInput" value="ขนมและของทานเล่น">
+                    </div>
+
+                    <!-- 2. SKU and Product Name -->
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-bottom: 10px;">
+                        <div>
+                            <label class="input-label required" style="display: block; font-size: 12.5px; font-weight: 600; color: #334155; margin-bottom: 4px;">รหัสสินค้า (SKU)</label>
+                            <div style="display: flex; gap: 6px;">
+                                <input type="text" id="productCodeInput" class="form-control" placeholder="SNK-301" required style="width: 100%; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; font-family: monospace; font-weight: 700; font-size: 13.5px; box-sizing: border-box; color: #7D0A0A;">
+                                <button type="button" class="btn-secondary" onclick="triggerAutoSuggestSku()" title="สร้างรหัสถัดไปอัตโนมัติ" style="height: 36px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #f8fafc; cursor: pointer; white-space: nowrap; font-size: 12px; font-weight: 600;">Auto</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="input-label required" style="display: block; font-size: 12.5px; font-weight: 600; color: #334155; margin-bottom: 4px;">ชื่อสินค้า / วัตถุดิบ *</label>
+                            <input type="text" id="productNameInput" class="form-control" placeholder="เช่น คุกกี้เนยสดเดนมาร์ก, กระเช้าหวายทรงรี..." required style="width: 100%; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 12px; font-family: inherit; font-size: 13px; box-sizing: border-box;">
+                        </div>
+                    </div>
+
+                    <!-- 3. Unit and Brand/Specification -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <div>
+                            <label class="input-label" style="display: block; font-size: 12.5px; font-weight: 600; color: #334155; margin-bottom: 4px;">แบรนด์ / ผู้ผลิต (Brand / Vendor)</label>
+                            <input type="text" id="productBrandInput" class="form-control" placeholder="เช่น ดอยคำ, ยังเกอร์ฟาร์ม, PDM หรือเว้นว่าง" style="width: 100%; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 12px; font-family: inherit; font-size: 12.5px; box-sizing: border-box;">
+                        </div>
+                        <div>
+                            <label class="input-label required" style="display: block; font-size: 12.5px; font-weight: 600; color: #334155; margin-bottom: 4px;">หน่วยนับ *</label>
+                            <select id="productUnitSelect" class="form-control" style="width: 100%; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 13px; box-sizing: border-box; background: #fff;">
+                                <optgroup label="ขนม / เครื่องดื่ม">
+                                    <option value="ซอง" selected>ซอง</option>
+                                    <option value="กล่อง">กล่อง</option>
+                                    <option value="กระปุก">กระปุก</option>
+                                    <option value="กระป๋อง">กระป๋อง</option>
+                                    <option value="ขวด">ขวด</option>
+                                    <option value="ถุง">ถุง</option>
+                                    <option value="แพ็ค">แพ็ค</option>
+                                    <option value="ชิ้น">ชิ้น</option>
+                                </optgroup>
+                                <optgroup label="กระเช้า / บรรจุภัณฑ์">
+                                    <option value="ใบ">ใบ</option>
+                                    <option value="ชุด">ชุด</option>
+                                </optgroup>
+                                <optgroup label="โบว์ / ตกแต่ง / พรีเมียม">
+                                    <option value="อัน">อัน</option>
+                                    <option value="ม้วน">ม้วน</option>
+                                    <option value="เส้น">เส้น</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 4. Cost, Price, and Quick Markup -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 6px;">
+                        <div>
+                            <label class="input-label required" style="display: block; font-size: 12.5px; font-weight: 600; color: #334155; margin-bottom: 4px;">ราคาทุนเฉลี่ย (บาท) *</label>
+                            <input type="number" step="0.01" min="0" id="productCostPriceInput" class="form-control" placeholder="0.00" required style="width: 100%; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 13.5px; font-weight: 700; box-sizing: border-box; text-align: right;">
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <label class="input-label required" style="font-size: 12.5px; font-weight: 600; color: #334155; margin: 0;">ราคาขาย (บาท) *</label>
+                                <div style="display: flex; gap: 4px;">
+                                    <button type="button" class="markup-pill-btn" onclick="applyMarkup(30)" title="บวกกำไร 30%">+30%</button>
+                                    <button type="button" class="markup-pill-btn" onclick="applyMarkup(50)" title="บวกกำไร 50%">+50%</button>
+                                    <button type="button" class="markup-pill-btn" onclick="applyMarkup(100)" title="บวกกำไร 100%">+100%</button>
+                                </div>
+                            </div>
+                            <input type="number" step="0.01" min="0" id="productUnitPriceInput" class="form-control" placeholder="0.00" required style="width: 100%; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 13.5px; font-weight: 700; box-sizing: border-box; text-align: right;">
+                        </div>
+                    </div>
+
+                    <!-- Margin preview box -->
+                    <div id="productMarginPreview" style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 6px 12px; font-size: 12px; color: #475569; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>กำไรต่อหน่วยโดยประมาณ:</span>
+                        <strong id="marginProfitText" style="color: #059669;">฿ 0.00 (0%)</strong>
+                    </div>
+
+                    <!-- 5. Opening Stock & Min Stock Level -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <div id="openingStockGroup">
+                            <label class="input-label" style="display: block; font-size: 12.5px; font-weight: 600; color: #334155; margin-bottom: 4px;">จำนวนสต็อกตั้งต้น (Opening Stock)</label>
+                            <input type="number" step="1" min="0" id="productOpeningQtyInput" class="form-control" value="0" placeholder="0" style="width: 100%; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 13.5px; box-sizing: border-box; text-align: right;">
+                            <small style="color: #64748b; font-size: 10.5px;">บันทึกเป็นยอดยกมาเริ่มต้นใน Stock Card</small>
+                        </div>
+                        <div>
+                            <label class="input-label" style="display: block; font-size: 12.5px; font-weight: 600; color: #334155; margin-bottom: 4px;">จุดเตือนสั่งซื้อขั้นต่ำ (Min Stock Level)</label>
+                            <input type="number" step="1" min="0" id="productMinStockInput" class="form-control" value="5" placeholder="5" style="width: 100%; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 13.5px; box-sizing: border-box; text-align: right;">
+                            <small style="color: #64748b; font-size: 10.5px;">แจ้งเตือนสถานะ "ใกล้หมดสต็อก" เมื่อยอดต่ำกว่านี้</small>
+                        </div>
+                    </div>
+
+                    <!-- 6. Product Image (Upload File or URL) -->
+                    <div style="margin-bottom: 10px;">
+                        <label class="input-label" style="display: block; font-size: 12.5px; font-weight: 600; color: #334155; margin-bottom: 4px;">รูปภาพวัตถุดิบ (Product Image)</label>
+                        <div class="product-image-upload-wrapper">
+                            <!-- Mode Tabs -->
+                            <div class="image-upload-tabs">
+                                <button type="button" class="img-tab-btn active" id="tabUploadFile" onclick="switchImageMode('upload')">
+                                    📁 แนบไฟล์ภาพจากเครื่อง
+                                </button>
+                                <button type="button" class="img-tab-btn" id="tabImageUrl" onclick="switchImageMode('url')">
+                                    🔗 ใช้ลิงก์ภาพ / ภาพตัวอย่าง
+                                </button>
+                            </div>
+
+                            <!-- Tab 1: File Upload / Dropzone -->
+                            <div id="panelUploadFile" class="image-upload-panel">
+                                <input type="file" id="productFileInput" accept="image/png, image/jpeg, image/webp, image/gif" style="display: none;" onchange="handleImageFileSelect(this)">
+                                
+                                <div class="image-dropzone" id="imageDropzone" onclick="document.getElementById('productFileInput').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)">
+                                    <div class="dropzone-empty" id="dropzoneEmpty">
+                                        <div class="dropzone-icon">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7D0A0A" stroke-width="2">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                                <polyline points="21 15 16 10 5 21"></polyline>
+                                            </svg>
+                                        </div>
+                                        <div class="dropzone-text">
+                                            <strong>คลิกเพื่อเลือกไฟล์ภาพ</strong> หรือลากรูปมาวางที่นี่
+                                        </div>
+                                        <div class="dropzone-hint">
+                                            รองรับ JPG, PNG, WEBP (สูงสุด 10MB) หรือกด Ctrl+V เพื่อวางรูปภาพ
+                                        </div>
+                                    </div>
+
+                                    <!-- Preview when image is uploaded -->
+                                    <div class="dropzone-preview" id="dropzonePreview" style="display: none;">
+                                        <img id="uploadPreviewImg" src="" alt="Preview">
+                                        <div class="dropzone-preview-info">
+                                            <div class="preview-filename" id="previewFileName">filename.jpg</div>
+                                            <div class="preview-filesize" id="previewFileSize">อัปโหลดสำเร็จ</div>
+                                            <div class="preview-actions">
+                                                <button type="button" class="btn-preview-change" onclick="event.stopPropagation(); document.getElementById('productFileInput').click();">
+                                                    🔄 เปลี่ยนรูป
+                                                </button>
+                                                <button type="button" class="btn-preview-remove" onclick="event.stopPropagation(); removeUploadedImage();">
+                                                    🗑️ ลบรูป
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Uploading spinner -->
+                                    <div class="dropzone-loading" id="dropzoneLoading" style="display: none;">
+                                        <div class="spinner-small" style="margin: 0 auto 6px;"></div>
+                                        <div style="font-size: 12px; font-weight: 600; color: #7D0A0A;">กำลังอัปโหลดและประมวลผลรูปภาพ...</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab 2: URL & Preset Chips -->
+                            <div id="panelImageUrl" class="image-upload-panel" style="display: none;">
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <input type="url" id="productImageUrlInput" class="form-control" placeholder="https://..." style="flex: 1; height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 12px; box-sizing: border-box;" oninput="handleUrlInput(this.value)">
+                                    <img id="productImagePreviewThumb" src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=400&q=80" class="product-img-thumb" alt="Preview" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1;">
+                                </div>
+                                <div class="preset-chips-wrap" style="margin-top: 6px;">
+                                    <span style="font-size: 10.5px; color: #64748b; padding: 2px 0;">เลือกภาพตัวอย่าง:</span>
+                                    <button type="button" class="preset-chip" onclick="applyImagePreset('cookies')">🍪 คุกกี้</button>
+                                    <button type="button" class="preset-chip" onclick="applyImagePreset('chocolate')">🍫 ช็อกโกแลต</button>
+                                    <button type="button" class="preset-chip" onclick="applyImagePreset('coffee')">☕ ชา/กาแฟ</button>
+                                    <button type="button" class="preset-chip" onclick="applyImagePreset('basket')">🧺 ตะกร้าหวาย</button>
+                                    <button type="button" class="preset-chip" onclick="applyImagePreset('bag')">👜 กระเป๋าผ้า</button>
+                                    <button type="button" class="preset-chip" onclick="applyImagePreset('ribbon')">🎀 โบว์</button>
+                                    <button type="button" class="preset-chip" onclick="applyImagePreset('mug')">🥛 แก้วน้ำ</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. Description / Net Weight -->
+                    <div>
+                        <label class="input-label" style="display: block; font-size: 12.5px; font-weight: 600; color: #334155; margin-bottom: 4px;">รายละเอียด / คุณสมบัติ / ขนาด (Description)</label>
+                        <textarea id="productDescInput" class="form-control" rows="2" placeholder="เช่น รสชาติ, ปริมาณสุทธิ (เช่น 150g), สเปกตะกร้าขนาด 12 นิ้ว หรือจุดเด่นของวัตถุดิบ" style="width: 100%; height: 52px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px; font-family: inherit; font-size: 12.5px; box-sizing: border-box; resize: vertical;"></textarea>
+                    </div>
+                </div>
+
+                <!-- Pinned Modal Footer (Always stays fixed at the bottom, never cut off) -->
+                <div class="modal-footer" style="margin: 0 !important; width: 100% !important; box-sizing: border-box; padding: 12px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-shrink: 0; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;">
+                    <button type="button" class="btn-secondary" onclick="closeProductModal()" style="height: 36px; padding: 0 16px; border-radius: 7px; font-size: 13px;">ยกเลิก</button>
+                    <button type="submit" id="btnSubmitProduct" class="btn-primary" style="height: 36px; padding: 0 20px; border-radius: 7px; font-weight: 700; font-size: 13px;">บันทึกข้อมูลสินค้า</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= Stock Adjust / Count Modal ================= -->
+    <div class="modal-overlay" id="stockAdjustModal" style="display: none;">
+        <div class="modal-card" style="max-width: 580px; width: 94%;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h3 style="margin: 0; font-size: 16.5px; font-weight: 700; color: #0f172a;">ตรวจนับ / ปรับปรุงยอดสต็อกสินค้า (Stock Count &amp; Adjustment)</h3>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 2px;">ปรับยอดคลังสินค้า บันทึกการรับเข้า หรือตัดจ่ายสินค้า</div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button type="button" class="btn-secondary" id="btnOpenStockCardFromAdjust" style="height: 30px; padding: 0 10px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; color: #334155;" title="ดูประวัติความเคลื่อนไหว">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="#0284c7" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+                        <span>ประวัติ Stock Card</span>
+                    </button>
+                    <button type="button" class="modal-close" onclick="closeAdjustModal()">&times;</button>
+                </div>
+            </div>
+            <form id="stockAdjustForm" style="display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; margin: 0; padding: 0;">
+                <input type="hidden" id="adjustProductId">
+
+                <div class="modal-body-scroll">
+
+                <!-- Product Box with Image, Category & Cost -->
+                <div class="stock-adjust-box" style="display: flex; gap: 14px; align-items: center; padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 16px;">
+                    <div style="width: 56px; height: 56px; min-width: 56px; border-radius: 8px; overflow: hidden; background: #fff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;">
+                        <img id="adjustProductImg" src="/assets/images/products/product_placeholder.png" alt="Product" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='/assets/images/products/product_placeholder.png';">
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                            <span id="adjustProductCode" style="font-family: monospace; font-size: 11.5px; font-weight: 700; color: #7D0A0A; background: #fef2f2; padding: 2px 6px; border-radius: 4px; border: 1px solid #fecaca;">-</span>
+                            <span id="adjustProductCategory" style="font-size: 11px; color: #64748b; background: #f1f5f9; padding: 2px 7px; border-radius: 4px;">-</span>
+                        </div>
+                        <div style="font-size: 13.5px; font-weight: 700; color: #0f172a; margin-top: 3px; line-height: 1.35;" id="adjustProductName">-</div>
+                        <div style="font-size: 11.5px; color: #64748b; margin-top: 3px;">
+                            <span>ราคาทุนเฉลี่ย: </span>
+                            <strong id="adjustCostPerUnit" style="color: #0f172a;">฿ 0.00</strong>
+                            <span style="margin: 0 6px; color: #cbd5e1;">|</span>
+                            <span>ราคาขาย: </span>
+                            <span id="adjustPricePerUnit">฿ 0.00</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right; min-width: 100px; padding-left: 10px; border-left: 1px dashed #cbd5e1;">
+                        <div style="font-size: 11px; color: #64748b;">ยอดในระบบปัจจุบัน</div>
+                        <div style="font-size: 20px; font-weight: 800; color: #7D0A0A; margin-top: 2px;" id="adjustCurrentQty">0</div>
+                        <div id="adjustCurrentStatusBadge" style="font-size: 11px; font-weight: 600; color: #059669; margin-top: 2px;">🟢 มีของพร้อมขาย</div>
+                    </div>
+                </div>
+
+                <!-- Mode Selector Tabs with Distinct Color Badges -->
+                <div class="adjust-mode-group">
+                    <button type="button" class="adjust-mode-btn mode-count active" id="btnModeCount" onclick="setAdjustMode('COUNT')">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg>
+                        <span>1. ตรวจนับยอดจริง</span>
+                    </button>
+                    <button type="button" class="adjust-mode-btn mode-in" id="btnModeIn" onclick="setAdjustMode('IN')">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                        <span>2. รับเข้าเพิ่ม (+In)</span>
+                    </button>
+                    <button type="button" class="adjust-mode-btn mode-out" id="btnModeOut" onclick="setAdjustMode('OUT')">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                        <span>3. ตัดจ่าย (-Out)</span>
+                    </button>
+                </div>
+
+                <!-- 1. COUNT Mode Inputs -->
+                <div class="input-group" id="inputGroupCount">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label class="input-label required" style="font-size: 13px; font-weight: 600; color: #334155; margin: 0;">จำนวนที่ตรวจนับได้จริงในคลัง (New Quantity) *</label>
+                        <span style="font-size: 11.5px; color: #64748b;">(นับได้เท่าไหร่ ป้อนค่านั้น)</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <button type="button" class="qty-step-btn" onclick="stepAdjustQty(-1)" title="ลด 1">-</button>
+                        <input type="number" step="1" min="0" id="adjustNewQtyInput" class="form-control" style="font-size: 18px; font-weight: 800; text-align: center; height: 42px; border: 1px solid #cbd5e1; border-radius: 8px; flex: 1; box-sizing: border-box; color: #0f172a;" required>
+                        <button type="button" class="qty-step-btn" onclick="stepAdjustQty(1)" title="เพิ่ม 1">+</button>
+                        <span class="qty-unit-badge" id="adjustUnitLabel">ชิ้น</span>
+                    </div>
+                    <div class="quick-chips-bar" id="chipsCount">
+                        <span class="chip-label">ลัด:</span>
+                        <button type="button" class="quick-chip" onclick="setCountPreset('ORIGINAL')">ยอดเดิม (<span id="chipOrigQty">0</span>)</button>
+                        <button type="button" class="quick-chip" onclick="stepAdjustQty(1)">+1</button>
+                        <button type="button" class="quick-chip" onclick="stepAdjustQty(5)">+5</button>
+                        <button type="button" class="quick-chip" onclick="stepAdjustQty(10)">+10</button>
+                        <button type="button" class="quick-chip text-danger" onclick="setCountPreset(0)">สินค้าหมด (0)</button>
+                    </div>
+                </div>
+
+                <!-- 2. IN Mode Inputs -->
+                <div class="input-group" id="inputGroupIn" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label class="input-label required" style="font-size: 13px; font-weight: 600; color: #065f46; margin: 0;">จำนวนที่รับเข้าเพิ่มเติม (+ In) *</label>
+                        <span style="font-size: 11.5px; color: #059669;">(บวกเพิ่มจากยอดปัจจุบัน)</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <button type="button" class="qty-step-btn" onclick="stepInQty(-1)" title="ลด 1">-</button>
+                        <input type="number" step="1" min="1" id="adjustAddQtyInput" class="form-control" placeholder="0" style="font-size: 18px; font-weight: 800; text-align: center; height: 42px; border: 1px solid #a7f3d0; background: #f0fdf4; border-radius: 8px; flex: 1; box-sizing: border-box; color: #047857;">
+                        <button type="button" class="qty-step-btn" onclick="stepInQty(1)" title="เพิ่ม 1">+</button>
+                        <span class="qty-unit-badge" id="adjustUnitLabelIn">ชิ้น</span>
+                    </div>
+                    <div class="quick-chips-bar">
+                        <span class="chip-label">บวกด่วน:</span>
+                        <button type="button" class="quick-chip" onclick="addInQty(1)">+1</button>
+                        <button type="button" class="quick-chip" onclick="addInQty(5)">+5</button>
+                        <button type="button" class="quick-chip" onclick="addInQty(10)">+10</button>
+                        <button type="button" class="quick-chip" onclick="addInQty(20)">+20</button>
+                        <button type="button" class="quick-chip" onclick="addInQty(50)">+50</button>
+                        <button type="button" class="quick-chip" onclick="addInQty(100)">+100</button>
+                        <button type="button" class="quick-chip" onclick="clearInQty()">เคลียร์</button>
+                    </div>
+                </div>
+
+                <!-- 3. OUT Mode Inputs -->
+                <div class="input-group" id="inputGroupOut" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label class="input-label required" style="font-size: 13px; font-weight: 600; color: #991b1b; margin: 0;">จำนวนที่ตัดจ่าย / ชำรุด (- Out) *</label>
+                        <span style="font-size: 11.5px; color: #dc2626;">(หักออกจากยอดปัจจุบัน)</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <button type="button" class="qty-step-btn" onclick="stepOutQty(-1)" title="ลด 1">-</button>
+                        <input type="number" step="1" min="1" id="adjustDeductQtyInput" class="form-control" placeholder="0" style="font-size: 18px; font-weight: 800; text-align: center; height: 42px; border: 1px solid #fecaca; background: #fff5f5; border-radius: 8px; flex: 1; box-sizing: border-box; color: #b91c1c;">
+                        <button type="button" class="qty-step-btn" onclick="stepOutQty(1)" title="เพิ่ม 1">+</button>
+                        <span class="qty-unit-badge" id="adjustUnitLabelOut">ชิ้น</span>
+                    </div>
+                    <div class="quick-chips-bar">
+                        <span class="chip-label">หักด่วน:</span>
+                        <button type="button" class="quick-chip" onclick="addOutQty(1)">-1</button>
+                        <button type="button" class="quick-chip" onclick="addOutQty(2)">-2</button>
+                        <button type="button" class="quick-chip" onclick="addOutQty(5)">-5</button>
+                        <button type="button" class="quick-chip" onclick="addOutQty(10)">-10</button>
+                        <button type="button" class="quick-chip text-danger" onclick="setOutAll()">ตัดทั้งหมดในคลัง</button>
+                    </div>
+                </div>
+
+                <!-- Financial & Inventory Difference Preview -->
+                <div style="margin: 16px 0; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 12px; font-weight: 600; color: #64748b;">ผลลัพธ์ยอดคงเหลือใหม่:</span>
+                        <span id="adjustDiffPreview" class="adjust-diff-pill">คงที่ 0 ชิ้น (ไม่เปลี่ยนแปลง)</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px dashed #e2e8f0; font-size: 12.5px;">
+                        <span style="color: #64748b;">ผลกระทบมูลค่าคลัง (ต้นทุนรวม):</span>
+                        <strong id="adjustCostImpact" style="color: #475569;">฿ 0.00</strong>
+                    </div>
+                    <div id="adjustWarningAlert" style="display: none; margin-top: 8px; padding: 6px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 600;"></div>
+                </div>
+
+                <!-- Reason Selector (Tailored for Gift Hamper & Food Business) -->
+                <div class="input-group" style="margin-bottom: 14px;">
+                    <label class="input-label required" style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px;">เหตุผลการปรับปรุงยอด *</label>
+                    <select id="adjustReasonSelect" class="form-control" required style="width: 100%; height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 12px; font-family: inherit; font-size: 13px; box-sizing: border-box; background: #fff;">
+                        <option value="ตรวจนับสินค้าจริงประจำรอบ (Physical Inventory Count)">ตรวจนับสินค้าจริงประจำรอบ (Physical Inventory Count)</option>
+                        <option value="รับสินค้าเข้าจากผู้ผลิต / ซัพพลายเออร์ส่งของ">รับสินค้าเข้าจากผู้ผลิต / ซัพพลายเออร์ส่งของ</option>
+                        <option value="เบิกใช้จัดกระเช้าตัวอย่าง / ถ่ายรูปแคตตาล็อก">เบิกใช้จัดกระเช้าตัวอย่าง / ถ่ายรูปแคตตาล็อก</option>
+                        <option value="ขนมหมดอายุ / เสื่อมสภาพ (Expired / Spoiled)">ขนมหมดอายุ / เสื่อมสภาพ (Expired / Spoiled)</option>
+                        <option value="สินค้าชำรุด เสียหาย กล่องบุบ แตกหัก ระหว่างจัดเก็บ">สินค้าชำรุด เสียหาย กล่องบุบ แตกหัก ระหว่างจัดเก็บ</option>
+                        <option value="ลูกค้านำสินค้ามาเปลี่ยนหรือคืน">ลูกค้านำสินค้ามาเปลี่ยนหรือคืน</option>
+                        <option value="ปรับปรุงข้อผิดพลาดจากการคีย์ข้อมูล">ปรับปรุงข้อผิดพลาดจากการคีย์ข้อมูล</option>
+                    </select>
+                </div>
+
+                <!-- Ref Doc & Expiry Date -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                    <div>
+                        <label class="input-label" style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px;">เลขที่เอกสารอ้างอิง</label>
+                        <input type="text" id="adjustRefDocInput" class="form-control" placeholder="เช่น PO-2610-001 หรือเว้นว่าง" style="width: 100%; height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 12px; font-family: inherit; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label class="input-label" style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px;">วันหมดอายุ / Best Before (ถ้ามี)</label>
+                        <input type="date" id="adjustExpiryDateInput" class="form-control" style="width: 100%; height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; font-family: inherit; font-size: 13px; box-sizing: border-box; background: #fff; color: #334155;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 18px;">
+                    <label class="input-label" style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px;">บันทึกเพิ่มเติม / ตำแหน่งจัดเก็บ / ล็อตผลิต</label>
+                    <input type="text" id="adjustNotesInput" class="form-control" placeholder="เช่น ชั้นวางขนม A-02, ล็อต 2610-B" style="width: 100%; height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 12px; font-family: inherit; font-size: 13px; box-sizing: border-box;">
+                </div>
+
+                </div>
+
+                <div class="modal-footer" style="margin: 0 !important; width: 100% !important; box-sizing: border-box; padding: 12px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-shrink: 0; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;">
+                    <button type="button" class="btn-secondary" onclick="closeAdjustModal()" style="height: 36px; padding: 0 16px; border-radius: 7px; font-size: 13px;">ยกเลิก</button>
+                    <button type="submit" id="btnSubmitAdjust" class="btn-primary" style="height: 36px; padding: 0 20px; border-radius: 7px; font-weight: 700; font-size: 13px;">บันทึกปรับยอดสต็อก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= Product Stock Card Modal ================= -->
+    <div class="modal-overlay" id="stockCardModal" style="display: none;">
+        <div class="modal-card" style="max-width: 820px; width: 94%;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 id="stockCardTitle" style="margin: 0; font-size: 16.5px; font-weight: 700; color: #0f172a;">Stock Card</h3>
+                    <div id="stockCardCategory" style="font-size: 12.5px; color: #64748b; margin-top: 2px;"></div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button type="button" id="btnExportStockCard" class="btn-secondary" style="height: 32px; padding: 0 10px; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="#059669" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <span>ส่งออก CSV</span>
+                    </button>
+                    <button type="button" class="modal-close" onclick="closeStockCardModal()">&times;</button>
+                </div>
+            </div>
+
+            <!-- Stock Card Summary Bar -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 14px 20px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                <div>
+                    <span style="font-size: 11.5px; color: #64748b;">ยอดคงเหลือปัจจุบัน</span>
+                    <div id="stockCardCurrentQty" style="font-size: 17px; font-weight: 700; color: #7D0A0A; margin-top: 2px;">0 ชิ้น</div>
+                </div>
+                <div>
+                    <span style="font-size: 11.5px; color: #64748b;">ราคาทุนเฉลี่ย</span>
+                    <div id="stockCardUnitCost" style="font-size: 17px; font-weight: 700; color: #0f172a; margin-top: 2px;">฿ 0.00</div>
+                </div>
+                <div>
+                    <span style="font-size: 11.5px; color: #64748b;">มูลค่าสต็อกรวม (ราคาทุน)</span>
+                    <div id="stockCardTotalValue" style="font-size: 17px; font-weight: 700; color: #059669; margin-top: 2px;">฿ 0.00</div>
+                </div>
+            </div>
+
+            <div style="padding: 16px 20px; max-height: 55vh; overflow-y: auto;">
+                <table class="table-standard" style="font-size: 12.5px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 140px;">วัน-เวลา</th>
+                            <th style="width: 130px;">เลขที่เอกสาร</th>
+                            <th style="text-align: center; width: 110px;">ประเภท</th>
+                            <th>รายการ / เหตุผล</th>
+                            <th style="text-align: right; width: 90px;">จำนวน</th>
+                            <th style="text-align: right; width: 90px;">ยอดคงเหลือ</th>
+                            <th style="width: 100px;">ผู้บันทึก</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockCardBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= Product Image Lightbox Modal ================= -->
+    <div class="modal-overlay" id="imageLightboxModal" style="display: none;" onclick="closeLightbox(event)">
+        <div class="modal-card" style="max-width: 480px; width: 90%; text-align: center; overflow: hidden; padding: 0;">
+            <div style="position: relative; background: #0f172a;">
+                <button type="button" class="modal-close" onclick="closeLightbox(event)" style="position: absolute; right: 12px; top: 12px; color: #fff; background: rgba(0,0,0,0.5); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; z-index: 10;">&times;</button>
+                <img id="lightboxImg" src="" alt="Product Photo" style="width: 100%; max-height: 360px; object-fit: contain; display: block;" onerror="this.onerror=null; this.src='/assets/images/products/product_placeholder.png';">
+            </div>
+            <div style="padding: 16px 20px; text-align: left;">
+                <div id="lightboxTitle" style="font-size: 15px; font-weight: 700; color: #0f172a;"></div>
+                <div id="lightboxSku" style="font-size: 12px; color: #7D0A0A; font-weight: 600; margin-top: 2px;"></div>
+                <div id="lightboxDesc" style="font-size: 12.5px; color: #64748b; margin-top: 6px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/modules/doc-toast.js"></script>
+    <script src="../assets/js/auth-guard.js?v=15"></script>
+    <script src="../assets/js/inventory.js?v=6"></script>
+    <script src="../assets/js/theme-manager.js"></script>
+    <script src="/assets/js/global-navbar.js"></script>
+</body>
+</html>
+

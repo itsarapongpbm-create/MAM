@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมุดรายชื่อผู้ขายและคู่ค้า (Vendors & Suppliers) | MAM DESIGN AND SERVICE</title>
+    <link rel="icon" href="../assets/images/mam-logo.png" type="image/png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/auth.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/theme.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- ================= Top Navigation Bar ================= -->
+    <header class="top-navbar">
+        <div class="nav-left">
+            <button class="btn-toggle-sidebar" id="toggleSidebarBtn" aria-label="Toggle menu">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <a href="../dashboard/index.html" class="topbar-logo">
+                <img src="../assets/images/mam-logo.png" alt="MAM DESIGN AND SERVICE" style="height: 38px; width: auto; object-fit: contain;">
+            </a>
+            <div class="topbar-divider"></div>
+            <div class="topbar-company-info">
+                <span class="topbar-company-name" id="topbarCompanyName">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</span>
+                <span class="badge-advance">INTERNAL CRM</span>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <!-- Notification Bell -->
+            <button class="icon-button" title="การแจ้งเตือน">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notification-badge">3</span>
+            </button>
+
+            <!-- Help & Support -->
+            <button class="icon-button" title="ช่วยเหลือ / คู่มือ">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </button>
+
+            <div class="topbar-divider"></div>
+
+            <!-- User Menu -->
+            <div class="user-profile-menu">
+                <button class="user-avatar-btn" id="userMenuBtn">
+                    <img src="https://ui-avatars.com/api/?name=Itsarapong+Po&background=7D0A0A&color=fff&size=64" alt="User Avatar" class="user-avatar-img">
+                    <span class="user-display-name">คุณอิศรพงศ์ โพธิ์งาม</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div class="user-dropdown-menu" id="userDropdownContent">
+                    <div class="user-dropdown-header">
+                        <strong>Itsarapong P.</strong>
+                        <small>itsarapong@mamdesign.co.th</small>
+                    </div>
+                    <a href="../settings/users.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>จัดการผู้ใช้งานและสิทธิ์</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="../auth/login.html" class="dropdown-item text-danger">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>ออกจากระบบ (Logout)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= App Container ================= -->
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar-nav" id="sidebarNav">
+            <nav class="sidebar-menu">
+                <div class="menu-section-title">เมนูหลัก</div>
+                <a href="../dashboard/index.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <rect x="3" y="3" width="7" height="9"></rect>
+                        <rect x="14" y="3" width="7" height="5"></rect>
+                        <rect x="14" y="12" width="7" height="9"></rect>
+                        <rect x="3" y="16" width="7" height="5"></rect>
+                    </svg>
+                    <span>ภาพรวมธุรกิจ</span>
+                </a>
+
+                <!-- Dropdown: เอกสารการขาย -->
+                <div class="menu-dropdown-group" id="salesDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="salesDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <span>เอกสารการขาย</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../documents/quotations.html" class="submenu-item">
+                            <span>• ใบเสนอราคา</span>
+                        </a>
+                        <a href="../documents/billing-notes.html" class="submenu-item">
+                            <span>• ใบวางบิล</span>
+                        </a>
+                        <a href="../documents/invoices.html" class="submenu-item">
+                            <span>• ใบกำกับภาษี</span>
+                        </a>
+                        <a href="../documents/receipts.html" class="submenu-item">
+                            <span>• ใบเสร็จรับเงิน</span>
+                        </a>
+                        <a href="../documents/cash-sales.html" class="submenu-item">
+                            <span>• ขายสด / บิลเงินสด</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dropdown: จัดซื้อ (Purchases) -->
+                <div class="menu-dropdown-group" id="purchaseDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="purchaseDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <span>จัดซื้อ (Purchases)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../documents/purchase-orders.html" class="submenu-item">
+                            <span>• ใบสั่งซื้อ (PO)</span>
+                        </a>
+                        <a href="../expenses/expenses.html" class="submenu-item">
+                            <span>• ค่าใช้จ่าย (Expenses)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="../withholding-tax/withholding-tax.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>ภาษีหัก ณ ที่จ่าย (50 ทวิ)</span>
+                </a>
+
+                <!-- Dropdown: สต็อกสินค้าและกระเช้า -->
+                <div class="menu-dropdown-group" id="inventoryDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="inventoryDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                            <span>สต็อกสินค้า (Inventory)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../inventory/inventory.html" class="submenu-item">
+                            <span>• ขนม / โบว์ / ตะกร้า</span>
+                        </a>
+                        <a href="../inventory/gift-sets.html" class="submenu-item">
+                            <span>• Gift Set ตามกระเช้า</span>
+                        </a>
+                        <a href="../inventory/gift-set-builder.html" class="submenu-item">
+                            <span>• จัด Gift Set ใหม่</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dropdown: สมุดรายชื่อ (Contacts) -->
+                <div class="menu-dropdown-group open" id="contactsDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle active" id="contactsDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span>ข้อมูลคู่ค้า (Contacts)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="customers.html" class="submenu-item">
+                            <span>• ลูกค้า (Customers)</span>
+                        </a>
+                        <a href="vendors.html" class="submenu-item active">
+                            <span>• ผู้ขาย / คู่ค้า (Vendors)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="menu-section-title">การตั้งค่าระบบ</div>
+                <a href="../settings/users.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>จัดการสิทธิ์ผู้ใช้งาน</span>
+                </a>
+            </nav>
+
+            <div style="margin-top: auto; padding: 14px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin: 16px 12px; font-size: 12px; color: #64748b;">
+                <div style="font-weight: 600; color: #1e293b; margin-bottom: 2px; display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #059669;"></span>
+                    MAM DESIGN &amp; SERVICE CRM
+                </div>
+                <div style="font-size: 11px;">ระบบจัดการภายในองค์กร</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <!-- Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">สมุดรายชื่อผู้ขาย (Vendors & Suppliers)</h1>
+                    <p class="page-subtitle">จัดการฐานข้อมูลผู้จำหน่าย วัตถุดิบ ค่าใช้จ่าย และเครดิตเทอมการสั่งซื้อ</p>
+                </div>
+                <div class="header-controls" style="display: flex; gap: 10px; align-items: center;">
+                    <button type="button" id="btnExportExcel" class="btn-secondary" style="height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 16px; font-weight: 600; font-size: 13.5px; cursor: pointer; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="#059669" stroke-width="2.2" fill="none">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="8" y1="13" x2="16" y2="13"></line>
+                            <line x1="8" y1="17" x2="16" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <span>รายงาน Excel</span>
+                    </button>
+                    <button type="button" class="btn-primary" onclick="openCreateModal()" style="height: 38px; padding: 0 16px; margin: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 600; font-size: 13.5px; cursor: pointer;">
+                        <span>+ เพิ่มผู้ขายใหม่</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Summary Cards -->
+            <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+                <div class="kpi-card">
+                    <span class="kpi-label">ผู้ขาย / คู่ค้าทั้งหมด</span>
+                    <div class="kpi-value" id="kpiTotalCount" style="font-size: 19px; margin: 4px 0;">0 ราย</div>
+                    <span class="trend-note">ฐานข้อมูลซัพพลายเออร์ในระบบ</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">นิติบุคคล (บริษัท / หจก.)</span>
+                    <div class="kpi-value text-primary" id="kpiJuristicCount" style="font-size: 19px; margin: 4px 0; color: #0284c7;">0 ราย</div>
+                    <span class="trend-note" style="color: #0284c7;">มีเลขผู้เสียภาษี 13 หลัก</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">บุคคลธรรมดา / ร้านค้า</span>
+                    <div class="kpi-value text-warning" id="kpiIndividualCount" style="font-size: 19px; margin: 4px 0; color: #d97706;">0 ราย</div>
+                    <span class="trend-note" style="color: #d97706;">ร้านค้าทั่วไป / ผู้รับเหมา</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">มีเครดิตเทอม</span>
+                    <div class="kpi-value text-success" id="kpiCreditCount" style="font-size: 19px; margin: 4px 0;">0 ราย</div>
+                    <span class="trend-note text-success">เครดิต 15 - 90 วัน</span>
+                </div>
+            </div>
+
+            <!-- Content Panel -->
+            <div class="content-panel">
+                <!-- Filter Tabs & Search -->
+                <div class="doc-filter-bar">
+                    <div class="doc-tabs">
+                        <button class="doc-tab-btn active" data-filter="ALL">ทั้งหมด (<span id="countAll">0</span>)</button>
+                        <button class="doc-tab-btn" data-filter="JURISTIC">นิติบุคคล (<span id="countJuristic">0</span>)</button>
+                        <button class="doc-tab-btn" data-filter="INDIVIDUAL">บุคคลธรรมดา (<span id="countIndividual">0</span>)</button>
+                        <button class="doc-tab-btn" data-filter="CREDIT">มีเครดิตเทอม (<span id="countCredit">0</span>)</button>
+                    </div>
+                    <div class="doc-search-box">
+                        <input type="text" id="searchInput" placeholder="ค้นหาด้วยรหัส, ชื่อผู้ขาย, เลขผู้เสียภาษี, เบอร์โทร...">
+                    </div>
+                </div>
+
+                <!-- Contacts Table -->
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 44px; text-align: center;"><input type="checkbox" id="selectAll"></th>
+                                <th style="min-width: 110px; width: 110px; text-align: left; white-space: nowrap;">รหัสผู้ขาย</th>
+                                <th style="min-width: 250px; text-align: left;">ชื่อผู้จำหน่าย / บริษัท</th>
+                                <th style="min-width: 170px; width: 170px; text-align: left; white-space: nowrap;">เลขประจำตัวผู้เสียภาษี</th>
+                                <th style="min-width: 160px; text-align: left;">ผู้ติดต่อ / โทรศัพท์</th>
+                                <th style="min-width: 160px; text-align: left;">อีเมล</th>
+                                <th style="min-width: 130px; width: 130px; text-align: left; white-space: nowrap;">เครดิตเทอม</th>
+                                <th style="min-width: 100px; width: 100px; text-align: center; white-space: nowrap;">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contactsTableBody">
+                            <!-- Dynamic Content loaded by contacts.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= Add / Edit Contact Modal (FlowAccount Style) ================= -->
+    <div class="modal-overlay" id="contactModal" style="display: none;">
+        <div class="modal-card" style="max-width: 680px; width: 95%; max-height: 90vh; display: flex; flex-direction: column; padding: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);">
+            <!-- Modal Header -->
+            <div class="modal-header" style="padding: 16px 24px; border-bottom: 1px solid #e2e8f0; margin-bottom: 0; background: #ffffff;">
+                <h3 id="modalTitle" style="font-size: 17px; font-weight: 700; color: #0f172a; margin: 0;">+ เพิ่มข้อมูลผู้ขายใหม่</h3>
+                <button type="button" class="modal-close" onclick="closeContactModal()">&times;</button>
+            </div>
+
+            <!-- Modal Body (Scrollable) -->
+            <div style="padding: 24px 28px; overflow-y: auto; flex: 1;">
+                <form id="contactForm">
+                    <input type="hidden" id="modalContactId">
+
+                    <!-- Section Title: ข้อมูลผู้ติดต่อ -->
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 22px;">
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 700; color: #0284c7; white-space: nowrap;">ข้อมูลผู้ติดต่อ</h4>
+                        <div style="flex: 1; height: 1px; background-color: #e2e8f0;"></div>
+                    </div>
+
+                    <!-- FlowAccount-style Form Grid -->
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        
+                        <!-- 1. ประเภทผู้ติดต่อ: นิติบุคคล / บุคคลธรรมดา -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a;">ประเภทผู้ติดต่อ:</label>
+                            <div style="display: flex; gap: 24px; align-items: center;">
+                                <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: #1e293b; cursor: pointer;">
+                                    <input type="radio" name="entityType" id="entityJuristic" value="JURISTIC" checked onchange="onEntityTypeChange()">
+                                    <span>นิติบุคคล</span>
+                                </label>
+                                <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: #1e293b; cursor: pointer;">
+                                    <input type="radio" name="entityType" id="entityIndividual" value="INDIVIDUAL" onchange="onEntityTypeChange()">
+                                    <span>บุคคลธรรมดา</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 2. ประเภท: [ ] ลูกค้า  [v] ผู้จำหน่าย -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a;">ประเภท:</label>
+                            <div style="display: flex; gap: 24px; align-items: center;">
+                                <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: #1e293b; cursor: pointer;">
+                                    <input type="checkbox" id="typeCustomer">
+                                    <span>ลูกค้า</span>
+                                </label>
+                                <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: #1e293b; cursor: pointer;">
+                                    <input type="checkbox" id="typeVendor" checked>
+                                    <span>ผู้จำหน่าย</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 3. เครดิต (วัน): -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a;">เครดิต (วัน):</label>
+                            <input type="number" id="creditDays" class="form-control" value="30" min="0" placeholder="ระบุจำนวนวัน เช่น 30" style="height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 12px; font-size: 13.5px; width: 100%; box-sizing: border-box;">
+                        </div>
+
+                        <!-- 4. ที่ตั้งธุรกิจ: ⓘ ไทย / ต่างประเทศ -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a; display: flex; align-items: center; gap: 4px;">
+                                ที่ตั้งธุรกิจ:
+                                <span style="display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; background: #0284c7; color: #fff; font-size: 10px; font-weight: bold; cursor: help;" title="เลือกพื้นที่จดทะเบียนของธุรกิจ">i</span>
+                            </label>
+                            <div style="display: flex; gap: 24px; align-items: center;">
+                                <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: #1e293b; cursor: pointer;">
+                                    <input type="radio" name="businessLocation" id="locationTH" value="TH" checked>
+                                    <span>ไทย</span>
+                                </label>
+                                <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: #1e293b; cursor: pointer;">
+                                    <input type="radio" name="businessLocation" id="locationOverseas" value="OVERSEAS">
+                                    <span>ต่างประเทศ</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 5. รหัสผู้ติดต่อ: -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a;">รหัสผู้ติดต่อ:</label>
+                            <input type="text" id="contactCode" class="form-control" placeholder="ระบบรันให้อัตโนมัติ (หรือระบุเอง เช่น VEN-001)" style="height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 12px; font-size: 13.5px; width: 100%; box-sizing: border-box; font-family: monospace;">
+                        </div>
+
+                        <!-- 6. ชื่อธุรกิจ: ⓘ -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a; display: flex; align-items: center; gap: 4px;">
+                                ชื่อธุรกิจ: <span style="color: #dc2626;">*</span>
+                                <span style="display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; background: #0284c7; color: #fff; font-size: 10px; font-weight: bold; cursor: help;" title="ชื่อบริษัท ห้างหุ้นส่วน หรือชื่อบุคคลสำหรับออกเอกสาร">i</span>
+                            </label>
+                            <input type="text" id="contactName" class="form-control" required placeholder="ตัวอย่างการกรอก: บริษัท โฟลว์แอคเคาท์ จำกัด" style="height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 12px; font-size: 13.5px; width: 100%; box-sizing: border-box;">
+                        </div>
+
+                        <!-- 7. เลขผู้เสียภาษี: -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a;">เลขผู้เสียภาษี:</label>
+                            <input type="text" id="taxId" class="form-control" maxlength="13" placeholder="ระบุเลขผู้เสียภาษี 10 - 13 หลัก" style="height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 12px; font-size: 13.5px; width: 100%; box-sizing: border-box; font-family: monospace;">
+                        </div>
+
+                        <!-- 8. สำนักงาน/สาขา: สำนักงานใหญ่ / สาขา -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a;">สำนักงาน/สาขา:</label>
+                            <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
+                                <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: #1e293b; cursor: pointer;">
+                                    <input type="radio" name="branchType" id="branchHead" value="HEAD" checked onchange="onBranchTypeChange()">
+                                    <span>สำนักงานใหญ่</span>
+                                </label>
+                                <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: #1e293b; cursor: pointer;">
+                                    <input type="radio" name="branchType" id="branchSub" value="BRANCH" onchange="onBranchTypeChange()">
+                                    <span>สาขา</span>
+                                </label>
+                                <div id="branchDetailWrap" style="display: none; align-items: center; gap: 8px;">
+                                    <input type="text" id="branchDetail" class="form-control" placeholder="ระบุรหัสสาขา 5 หลัก หรือชื่อสาขา เช่น 00001" style="height: 34px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 10px; font-size: 13px; width: 220px; box-sizing: border-box;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 9. ที่อยู่: -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: start;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a; padding-top: 6px;">ที่อยู่:</label>
+                            <textarea id="address" class="form-control" rows="3" placeholder="เลขที่ ถนน แขวง/ตำบล เขต/อำเภอ จังหวัด" style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; font-size: 13.5px; width: 100%; box-sizing: border-box; resize: vertical; min-height: 68px;"></textarea>
+                        </div>
+
+                        <!-- 10. รหัสไปรษณีย์: -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a;">รหัสไปรษณีย์:</label>
+                            <input type="text" id="postalCode" class="form-control" maxlength="5" placeholder="เช่น 10330" style="height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 12px; font-size: 13.5px; width: 160px; box-sizing: border-box; font-family: monospace;">
+                        </div>
+
+                        <!-- 11. ข้อมูลจัดส่ง: -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: start;">
+                            <div style="padding-top: 6px;">
+                                <label style="font-size: 13.5px; font-weight: 600; color: #0f172a; display: block;">ข้อมูลจัดส่ง:</label>
+                                <button type="button" onclick="copyAddressToShipping()" style="background: none; border: none; padding: 0; margin-top: 4px; font-size: 11px; color: #0284c7; text-decoration: underline; cursor: pointer;">คัดลอกจากที่อยู่หลัก</button>
+                            </div>
+                            <textarea id="shippingAddress" class="form-control" rows="3" placeholder="ระบุที่อยู่สำหรับจัดส่งสินค้า หรือวางบิล (กรณีแตกต่างจากที่อยู่ตาม ภ.พ.20)" style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; font-size: 13.5px; width: 100%; box-sizing: border-box; resize: vertical; min-height: 68px;"></textarea>
+                        </div>
+
+                        <!-- 12. เบอร์สำนักงาน: -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a;">เบอร์สำนักงาน:</label>
+                            <input type="text" id="officePhone" class="form-control" placeholder="เช่น 02-123-4567" style="height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 12px; font-size: 13.5px; width: 100%; box-sizing: border-box;">
+                        </div>
+
+                        <!-- 13. เบอร์โทรสาร: -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a;">เบอร์โทรสาร:</label>
+                            <input type="text" id="fax" class="form-control" placeholder="เช่น 02-123-4568" style="height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 12px; font-size: 13.5px; width: 100%; box-sizing: border-box;">
+                        </div>
+
+                        <!-- 14. เว็บไซต์: -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a;">เว็บไซต์:</label>
+                            <input type="text" id="website" class="form-control" placeholder="เช่น https://www.company.co.th" style="height: 38px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0 12px; font-size: 13.5px; width: 100%; box-sizing: border-box;">
+                        </div>
+
+                        <!-- Image 2 Group: ผู้ติดต่อ (ชื่อผู้ติดต่อ, อีเมล, เบอร์มือถือ) -->
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center; margin-top: 6px;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a;">ชื่อผู้ติดต่อ:</label>
+                            <input type="text" id="contactPerson" class="form-control" placeholder="ชื่อ-นามสกุล ผู้ติดต่อ" style="height: 38px; border: 1px solid #cbd5e1; border-radius: 6px 6px 0 0; padding: 0 12px; font-size: 13.5px; width: 100%; box-sizing: border-box; margin-bottom: -1px;">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a;">อีเมล:</label>
+                            <input type="email" id="email" class="form-control" placeholder="contact@company.com" style="height: 38px; border: 1px solid #cbd5e1; border-radius: 0; padding: 0 12px; font-size: 13.5px; width: 100%; box-sizing: border-box; margin-bottom: -1px;">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 145px 1fr; align-items: center;">
+                            <label style="font-size: 13.5px; font-weight: 600; color: #0f172a;">เบอร์มือถือ:</label>
+                            <input type="text" id="mobilePhone" class="form-control" placeholder="เช่น 081-234-5678" style="height: 38px; border: 1px solid #cbd5e1; border-radius: 0 0 6px 6px; padding: 0 12px; font-size: 13.5px; width: 100%; box-sizing: border-box;">
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer" style="padding: 14px 24px; border-top: 1px solid #e2e8f0; background: #f8fafc; display: flex; justify-content: flex-end; gap: 10px; margin: 0;">
+                <button type="button" class="btn-secondary" onclick="closeContactModal()" style="height: 38px; padding: 0 20px; font-size: 13.5px; border-radius: 8px; cursor: pointer;">ยกเลิก</button>
+                <button type="button" class="btn-primary" onclick="submitContactForm()" style="height: 38px; padding: 0 24px; font-size: 13.5px; font-weight: 600; border-radius: 8px; cursor: pointer;">บันทึกข้อมูล</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>window.CONTACT_PAGE_TYPE = 'VENDOR';</script>
+    <script src="../assets/js/modules/doc-toast.js"></script>
+    <script src="../assets/js/theme-manager.js"></script>
+    <script src="../assets/js/auth-guard.js"></script>
+    <script src="../assets/js/contacts.js"></script>
+    <script src="/assets/js/global-navbar.js"></script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สร้างหนังสือรับรองหัก ณ ที่จ่าย (50 ทวิ) | MAM DESIGN AND SERVICE</title>
+    <link rel="icon" href="../assets/images/mam-logo.png" type="image/png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/auth.css?v=30">
+    <link rel="stylesheet" href="../assets/css/document-editor.css?v=cust_drop2">
+    <link rel="stylesheet" href="../assets/css/withholding-tax.css?v=4">
+    <link rel="stylesheet" href="../assets/css/theme.css?v=31">
+</head>
+<body class="editor-page">
+
+    <!-- Sticky Toolbar (Quotation Style) -->
+    <header class="editor-toolbar no-print">
+        <div class="toolbar-left">
+            <a href="withholding-tax.html" class="back-btn">&larr; กลับหน้ารายการ</a>
+            <div class="editor-title-group" style="margin-left: 12px;">
+                <span class="editor-doc-category" style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;">ภาษีหัก ณ ที่จ่าย (50 ทวิ)</span>
+                <h1 class="editor-doc-title" id="editorTitle" style="font-size: 15.5px; font-weight: 700; color: #0f172a; margin: 0;">หนังสือรับรองการหักภาษี ณ ที่จ่าย (มาตรา 50 ทวิ)</h1>
+            </div>
+            <span class="badge-status-editing" id="editorModeBadge" style="margin-left: 8px;">สร้างใหม่</span>
+        </div>
+
+        <div class="toolbar-right">
+            <button type="button" class="btn-doc-settings" id="btnPrintWht" title="พิมพ์แบบ 50 ทวิ">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                <span>พิมพ์แบบ 50 ทวิ</span>
+            </button>
+            <button type="button" class="btn-doc-settings" id="btnEditWht" style="display: none;" title="แก้ไขหนังสือรับรอง">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                <span>แก้ไขเอกสาร</span>
+            </button>
+            <button type="button" class="btn-save-draft" id="btnSaveDraft">บันทึกแบบร่าง</button>
+            <button type="button" class="btn-save-approve" id="btnSaveWht">บันทึกเอกสาร</button>
+        </div>
+    </header>
+
+    <!-- Canvas Wrapper (Quotation Style) -->
+    <div class="canvas-wrapper">
+        <div style="width: 100%; max-width: 900px; margin: 0 auto;">
+
+            <!-- Toolbar Options Bar (เหมือนแถบตั้งค่าใบเสนอราคา) -->
+            <div class="wht-editor-options-bar no-print">
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    <div style="display: inline-flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 12.5px; font-weight: 600; color: #475569;">แบบพิมพ์:</span>
+                        <select id="printCopySelect" style="height: 32px; font-size: 12.5px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; padding: 0 8px; color: #1e293b;">
+                            <option value="both" selected>พิมพ์ทั้ง 2 ฉบับ (ต้นฉบับ + สำเนา)</option>
+                            <option value="copy1">ฉบับที่ 1 (ผู้ถูกหักนำไปยื่นภาษี)</option>
+                            <option value="copy2">ฉบับที่ 2 (ผู้ถูกหักเก็บเป็นหลักฐาน)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
+                    <label class="wht-option-item">
+                        <input type="checkbox" id="toggleCompanyStamp" checked>
+                        <span>แสดงตราประทับบริษัท</span>
+                    </label>
+                    <label class="wht-option-item">
+                        <input type="checkbox" id="toggleSignature" checked>
+                        <span>แสดงลายมือชื่อ</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Cancelled Notice -->
+            <div class="wht-cancel-banner" id="whtCancelBanner" style="display: none;">
+                <strong>หนังสือรับรองฉบับนี้ถูกยกเลิกแล้ว</strong>
+                <span id="whtCancelReason"></span>
+            </div>
+
+            <form id="whtForm" novalidate>
+                <fieldset id="whtFieldset" class="wht-fieldset">
+
+                <!-- Container for Document Sheets (Supports Copy 1 and Copy 2 for printing) -->
+                <div id="whtPaperContainer">
+
+                    <!-- Official 50 ทวิ Form Paper (Sheet 1) -->
+                    <div class="wht-cert-paper" id="whtPaper">
+
+                        <!-- Copy Notice Header -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #475569; margin-bottom: 6px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px;">
+                            <span id="copyIndicatorText">ฉบับที่ 1 (สำหรับผู้ถูกหักภาษี ณ ที่จ่าย ใช้แนบพร้อมกับแบบแสดงรายการภาษี)</span>
+                            <span style="font-weight: 600; color: #0f172a;">แบบ 50 ทวิ</span>
+                        </div>
+
+                        <!-- Title & Meta Header -->
+                        <div class="wht-cert-header">
+                            <div class="wht-cert-title">หนังสือรับรองการหักภาษี ณ ที่จ่าย</div>
+                            <div class="wht-cert-subtitle">ตามมาตรา 50 ทวิ แห่งประมวลรัษฎากร</div>
+                            
+                            <div class="wht-meta-top">
+                                <div>
+                                    <span>เล่มที่:</span>
+                                    <input type="text" id="bookNumber" value="01" class="wht-input-inline" style="width: 60px; text-align: center;">
+                                </div>
+                                <div>
+                                    <span>เลขที่:</span>
+                                    <input type="text" id="docNumber" class="wht-input-inline" placeholder="สร้างอัตโนมัติเมื่อบันทึก" title="เว้นว่างไว้เพื่อให้ระบบรันเลขที่อัตโนมัติ" style="width: 190px; text-align: center; font-weight: 600;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 1: ผู้มีหน้าที่หักภาษี ณ ที่จ่าย (Payer) — ดึงจากข้อมูลบริษัทในระบบ -->
+                        <div class="wht-section-box">
+                            <div class="wht-section-title">
+                                <span>ผู้มีหน้าที่หักภาษี ณ ที่จ่าย (Payer)</span>
+                                <div>
+                                    <span style="font-size: 11.5px; font-weight: 600; margin-right: 4px;">เลขประจำตัวผู้เสียภาษีอากร:</span>
+                                    <div class="tax-box-group" id="payerTaxBoxes">
+                                        <span class="tax-digit-box"></span><span class="tax-digit-box"></span><span class="tax-digit-box"></span>
+                                        <span class="tax-digit-box"></span><span class="tax-digit-box"></span><span class="tax-digit-box"></span>
+                                        <span class="tax-digit-box"></span><span class="tax-digit-box"></span><span class="tax-digit-box"></span>
+                                        <span class="tax-digit-box"></span><span class="tax-digit-box"></span><span class="tax-digit-box"></span>
+                                        <span class="tax-digit-box"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="wht-form-row">
+                                <span class="wht-form-label">ชื่อ / นิติบุคคล:</span>
+                                <input type="text" id="payerName" class="wht-input-inline" value="" placeholder="กำลังโหลดข้อมูลบริษัท..." readonly tabindex="-1" style="font-weight: 600;">
+                            </div>
+                            <div class="wht-form-row">
+                                <span class="wht-form-label">ที่อยู่:</span>
+                                <input type="text" id="payerAddress" class="wht-input-inline" value="" readonly tabindex="-1">
+                            </div>
+                        </div>
+
+                        <!-- Section 2: ผู้ถูกหักภาษี ณ ที่จ่าย (Payee - Quotation Style Searchable Dropdown) -->
+                        <div class="wht-section-box">
+                            <div class="wht-section-title">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span>ผู้ถูกหักภาษี ณ ที่จ่าย (Payee)</span>
+                                    <span id="payeeEntityBadge" style="display: none; font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #e0f2fe; color: #0369a1; font-weight: 600;">นิติบุคคล</span>
+                                </div>
+                                <div>
+                                    <span style="font-size: 11.5px; font-weight: 600; margin-right: 4px;">เลขประจำตัวผู้เสียภาษีอากร (13 หลัก):</span>
+                                    <div class="tax-box-group" id="payeeTaxBoxes">
+                                        <span class="tax-digit-box"></span><span class="tax-digit-box"></span><span class="tax-digit-box"></span>
+                                        <span class="tax-digit-box"></span><span class="tax-digit-box"></span><span class="tax-digit-box"></span>
+                                        <span class="tax-digit-box"></span><span class="tax-digit-box"></span><span class="tax-digit-box"></span>
+                                        <span class="tax-digit-box"></span><span class="tax-digit-box"></span><span class="tax-digit-box"></span>
+                                        <span class="tax-digit-box"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Searchable Vendor Dropdown (Quotation Style) -->
+                            <div class="wht-form-row" style="position: relative;">
+                                <span class="wht-form-label">ชื่อผู้ถูกหักภาษี:</span>
+                                <div class="customer-dropdown-wrap" style="flex: 1;">
+                                    <input type="text" id="payeeName" class="customer-clean-input customer-search-input" placeholder="ค้นหาหรือพิมพ์ชื่อผู้จำหน่าย / คู่ค้า..." autocomplete="off" style="font-weight: 600; font-size: 13.5px;">
+                                    <button type="button" class="btn-customer-dropdown" id="btnPayeeDropdown" tabindex="-1" title="เลือกจากรายชื่อคู่ค้า">
+                                        <svg class="customer-dropdown-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </button>
+                                    <div class="customer-dropdown-menu" id="payeeDropdownMenu" style="display: none;"></div>
+                                </div>
+                            </div>
+
+                            <div class="wht-form-row">
+                                <span class="wht-form-label">เลขประจำตัว 13 หลัก:</span>
+                                <div style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                                    <input type="text" id="payeeTaxId" class="wht-input-inline" value="" placeholder="กรอกเลขประจำตัว 13 หลัก" maxlength="13" inputmode="numeric" required style="max-width: 220px; font-weight: 600;">
+                                    <span class="wht-taxid-hint no-print" id="payeeTaxIdHint" style="font-size: 11.5px; color: #64748b;">(เลข 13 หลักจะแสดงในช่องด้านบนอัตโนมัติ)</span>
+                                </div>
+                            </div>
+
+                            <div class="wht-form-row">
+                                <span class="wht-form-label">ที่อยู่:</span>
+                                <input type="text" id="payeeAddress" class="wht-input-inline" placeholder="ที่อยู่ตามแบบ ภ.พ.20 หรือที่อยู่ตามบัตรประชาชน" value="">
+                            </div>
+                        </div>
+
+                        <!-- Section 3: ลำดับที่ และ แบบยื่นภาษี -->
+                        <div class="wht-section-box">
+                            <div class="wht-form-row">
+                                <span style="font-weight: 600;">ลำดับที่ในแบบยื่นรายการภาษี:</span>
+                                <input type="text" id="sequenceNo" value="1" class="wht-input-inline" style="width: 80px; text-align: center;">
+                                <span style="margin-left: 20px; font-weight: 600;">วันที่ออกหนังสือรับรอง:</span>
+                                <input type="date" id="docDate" class="wht-input-inline" style="width: 150px;">
+                            </div>
+
+                            <div class="wht-checkbox-row">
+                                <span style="font-weight: 600; margin-right: 6px;">แบบที่ยื่น:</span>
+                                <label class="wht-checkbox-label">
+                                    <input type="radio" name="form_type" value="ภ.ง.ด.1"> (1) ภ.ง.ด.1ก
+                                </label>
+                                <label class="wht-checkbox-label">
+                                    <input type="radio" name="form_type" value="ภ.ง.ด.2"> (2) ภ.ง.ด.2
+                                </label>
+                                <label class="wht-checkbox-label">
+                                    <input type="radio" name="form_type" value="ภ.ง.ด.3"> (3) ภ.ง.ด.3 (บุคคลธรรมดา)
+                                </label>
+                                <label class="wht-checkbox-label">
+                                    <input type="radio" name="form_type" value="ภ.ง.ด.53" checked> (4) ภ.ง.ด.53 (นิติบุคคล)
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Section 4: รายการเงินได้พึงประเมินที่จ่าย Table (Multi-row FlowAccount Style) -->
+                        <table class="wht-official-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45%;">ประเภทเงินได้พึงประเมินที่จ่าย</th>
+                                    <th style="width: 18%;">วัน เดือน ปี ที่จ่าย</th>
+                                    <th style="width: 18%;">จำนวนเงินที่จ่าย (บาท)</th>
+                                    <th style="width: 19%;">ภาษีที่หักและนำส่ง (บาท)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="whtTableBody">
+                                <tr>
+                                    <td>1. เงินเดือน ค่าจ้าง เบี้ยเลี้ยง โบนัส ฯลฯ ตาม ม.40 (1)</td>
+                                    <td class="text-center">-</td>
+                                    <td class="text-right">-</td>
+                                    <td class="text-right">-</td>
+                                </tr>
+                                <tr>
+                                    <td>2. ค่าธรรมเนียม ค่านายหน้า ฯลฯ ตาม ม.40 (2)</td>
+                                    <td class="text-center">-</td>
+                                    <td class="text-right">-</td>
+                                    <td class="text-right">-</td>
+                                </tr>
+                                <tr>
+                                    <td>3. ค่าแห่งลิขสิทธิ์ ฯลฯ ตาม ม.40 (3)</td>
+                                    <td class="text-center">-</td>
+                                    <td class="text-right">-</td>
+                                    <td class="text-right">-</td>
+                                </tr>
+                                <tr>
+                                    <td>4. ดอกเบี้ย เงินปันผล ฯลฯ ตาม ม.40 (4)</td>
+                                    <td class="text-center">-</td>
+                                    <td class="text-right">-</td>
+                                    <td class="text-right">-</td>
+                                </tr>
+
+                                <!-- Row 5: Header -->
+                                <tr style="background-color: #fefce8; border-bottom: none;">
+                                    <td colspan="4" style="padding: 6px 8px; font-weight: 700; color: #854d0e;">
+                                        5. การจ่ายเงินได้ตามมาตรา 40 (8) / ม.3 เตรส (ค่าบริการ, ค่าเช่า, ค่าโฆษณา ฯลฯ):
+                                    </td>
+                                </tr>
+
+                                <!-- Dynamic Income Rows populated by JS -->
+                            </tbody>
+                            <tfoot>
+                                <!-- Add Row Button (Hidden during print) -->
+                                <tr class="no-print">
+                                    <td colspan="4" style="padding: 6px 8px; background: #fff;">
+                                        <button type="button" class="btn-add-income-row" id="btnAddIncomeRow">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none">
+                                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                            </svg>
+                                            <span>+ เพิ่มรายการเงินได้</span>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <tr class="wht-total-row">
+                                    <td style="text-align: center; font-weight: 700;">รวมยอดเงินได้ที่จ่ายและภาษีที่หักนำส่ง</td>
+                                    <td class="text-center">-</td>
+                                    <td class="text-right" id="totalIncomeDisplay" style="font-weight: 700;">0.00</td>
+                                    <td class="text-right" id="totalTaxDisplay" style="font-weight: 700; color: #059669;">0.00</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <!-- Summary Thai Baht Text -->
+                        <div class="wht-total-text">
+                            <span>รวมเงินภาษีที่หักและนำส่ง (ตัวอักษร):</span>
+                            <strong id="thaiBahtTextDisplay" style="margin-left: 8px; font-size: 14px; color: #0f172a;">ศูนย์บาทถ้วน</strong>
+                        </div>
+
+                        <!-- Section 5: ผู้จ่ายเงิน เงื่อนไข และ ลายมือชื่อ -->
+                        <div class="wht-conditions-box">
+                            <div class="wht-checkbox-row">
+                                <span style="font-weight: 600;">ผู้จ่ายเงิน:</span>
+                                <label class="wht-checkbox-label">
+                                    <input type="radio" name="tax_condition" value="withheld" checked> (1) หัก ณ ที่จ่าย
+                                </label>
+                                <label class="wht-checkbox-label">
+                                    <input type="radio" name="tax_condition" value="always"> (2) ออกให้ตลอดไป
+                                </label>
+                                <label class="wht-checkbox-label">
+                                    <input type="radio" name="tax_condition" value="once"> (3) ออกให้ครั้งเดียว
+                                </label>
+                            </div>
+
+                            <div style="font-size: 11.5px; color: #475569; margin-top: 10px; text-align: center;">
+                                ขอรับรองว่าข้อความและตัวเลขดังกล่าวข้างต้นถูกต้องตรงกับความเป็นจริงทุกประการ
+                            </div>
+
+                            <div class="wht-signatures-grid">
+                                <div>
+                                    <div class="signature-line" style="position: relative;">
+                                        <div class="signature-img-preview" id="signatureImgPreview" style="position: absolute; bottom: 4px; left: 0; right: 0; text-align: center;">
+                                            Itsarapong P.
+                                        </div>
+                                    </div>
+                                    <div style="font-weight: 600; font-size: 12.5px;" id="signatureSignerName">(คุณอิศรพงศ์ โพธิ์งาม)</div>
+                                    <div style="font-size: 11.5px; color: #475569;">ผู้มีอำนาจลงนาม / ผู้จ่ายเงิน</div>
+                                    <div style="font-size: 11px; color: #64748b; margin-top: 4px;" id="signatureDateText">วันที่ ........../........../..........</div>
+                                </div>
+
+                                <div>
+                                    <div class="company-seal-box" id="companySealContainer">
+                                        <img src="../assets/images/mam-stamp.svg" class="company-seal-img" id="companySealImg" alt="MAM Official Seal">
+                                    </div>
+                                    <div style="font-size: 11.5px; color: #475569;">ประทับตรานิติบุคคล</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Link to Ref Expense (Optional) -->
+                        <div class="no-print" style="margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 12.5px; color: #475569;">เลขที่บิลค่าใช้จ่ายที่เกี่ยวข้อง (ถ้ามี):</span>
+                            <input type="text" id="refExpenseNumber" class="form-control" style="max-width: 200px; height: 32px; font-size: 12px;" placeholder="EXP-202610-002">
+                        </div>
+
+                    </div>
+                    <!-- End Sheet 1 -->
+
+                </div>
+                <!-- End Container -->
+
+                </fieldset>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Add Vendor Modal -->
+    <div class="wht-modal-overlay" id="quickVendorModal" style="display: none;">
+        <div class="wht-modal-card">
+            <div class="wht-modal-header">
+                <div class="wht-modal-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" stroke="#7D0A0A" stroke-width="2" fill="none">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
+                    <span>เพิ่มข้อมูลคู่ค้าใหม่</span>
+                </div>
+                <button type="button" class="wht-modal-close" id="btnCloseQuickVendor">&times;</button>
+            </div>
+            <div class="wht-modal-body">
+                <form id="quickVendorForm">
+                    <div style="margin-bottom: 12px;">
+                        <label style="font-size: 12.5px; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">ประเภทคู่ค้า:</label>
+                        <div style="display: flex; gap: 16px;">
+                            <label style="font-size: 13px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="radio" name="quickVendorEntity" value="JURISTIC" checked> นิติบุคคล (บริษัท/ห้างหุ้นส่วน)
+                            </label>
+                            <label style="font-size: 13px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+                                <input type="radio" name="quickVendorEntity" value="INDIVIDUAL"> บุคคลธรรมดา
+                            </label>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label for="quickVendorName" style="font-size: 12.5px; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">ชื่อบริษัท / ผู้ถูกหักภาษี *:</label>
+                        <input type="text" id="quickVendorName" required placeholder="เช่น บริษัท สยาม ซัพพลาย จำกัด" style="width: 100%; height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 13px;">
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label for="quickVendorTaxId" style="font-size: 12.5px; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">เลขประจำตัวผู้เสียภาษี (13 หลัก) *:</label>
+                        <input type="text" id="quickVendorTaxId" required maxlength="13" inputmode="numeric" placeholder="ตัวเลข 13 หลัก" style="width: 100%; height: 36px; padding: 0 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 13px;">
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <label for="quickVendorAddress" style="font-size: 12.5px; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">ที่อยู่ตามแบบ ภ.พ.20 หรือบัตรประชาชน:</label>
+                        <textarea id="quickVendorAddress" rows="2" placeholder="เลขที่ ถนน แขวง/ตำบล เขต/อำเภอ จังหวัด รหัสไปรษณีย์" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 13px; font-family: inherit; resize: vertical;"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="wht-modal-footer">
+                <button type="button" class="btn-save-draft" id="btnCancelQuickVendor" style="height: 36px; padding: 0 14px;">ยกเลิก</button>
+                <button type="button" class="btn-save-approve" id="btnSaveQuickVendor" style="height: 36px; padding: 0 18px;">บันทึกและเลือกใช้งาน</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/modules/doc-toast.js"></script>
+    <script src="../assets/js/auth-guard.js?v=15"></script>
+    <script src="../assets/js/withholding-tax-editor.js?v=5"></script>
+</body>
+</html>

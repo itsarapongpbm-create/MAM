@@ -1,0 +1,24 @@
+{
+  "name": "mam",
+  "version": "1.0.0",
+  "description": "เทมเพลตหน้าเว็บไซต์สำหรับระบบยืนยันตัวตน (Authentication) ออกแบบตามอัตลักษณ์และโครงสร้างของเว็บไซต์ **FlowAccount** ([auth.flowaccount.com](https://auth.flowaccount.com/Account/Login?returnUrl=%2FAccount%2FSelectCompany?returnUrl=%2FAccount%2FSelectCompany)) ด้วยดีไซน์ที่ทันสมัย Responsive 100% สวยงาม และรองรับการทำงานทั้งบน Desktop, Tablet และ Mobile",
+  "main": "server/server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node --watch server/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "imapflow": "^2.5.8",
+    "mailparser": "^3.10.0",
+    "nodemailer": "^10.1.7",
+    "sqlite3": "^6.0.1"
+  }
+}

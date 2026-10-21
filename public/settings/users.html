@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการผู้ใช้งานและสิทธิ์ (User Roles) | MAM DESIGN AND SERVICE</title>
+    <link rel="icon" href="../assets/images/mam-logo.png" type="image/png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/auth.css?v=30">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=30">
+    <link rel="stylesheet" href="../assets/css/document-editor.css?v=25">
+    <link rel="stylesheet" href="../assets/css/theme.css?v=31">
+</head>
+<body class="dashboard-body">
+
+    <!-- Top Navigation Bar -->
+        <!-- ================= Top Navigation Bar (Global Standard Component) ================= -->
+    <header class="top-navbar" id="globalTopNavbar">
+        <div class="nav-left">
+            <button class="btn-toggle-sidebar" id="toggleSidebarBtn" aria-label="Toggle menu" title="เปิด/ปิด เมนูด้านข้าง">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <a href="/dashboard/index.html" class="topbar-logo" title="หน้าหลักภาพรวมธุรกิจ">
+                <img src="/assets/images/mam-logo.png" alt="MAM DESIGN AND SERVICE" style="height: 38px; width: auto; object-fit: contain;">
+            </a>
+            <div class="topbar-divider"></div>
+            <div class="topbar-company-info">
+                <span class="topbar-company-name" id="topbarCompanyName">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</span>
+                <span class="badge-advance">INTERNAL CRM</span>
+            </div>
+        </div>
+
+        <!-- Actions & User Profile -->
+        <div class="nav-right">
+            <!-- Notification Bell -->
+            <button class="icon-button" id="topbarNotificationBtn" title="การแจ้งเตือน">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notification-badge" id="topbarNotificationBadge">3</span>
+            </button>
+
+            <!-- Help & Support -->
+            <button class="icon-button" id="topbarHelpBtn" title="ช่วยเหลือ / คู่มือ">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </button>
+
+            <div class="topbar-divider"></div>
+
+            <!-- User Menu -->
+            <div class="user-profile-menu">
+                <button class="user-avatar-btn" id="userMenuBtn" type="button" aria-expanded="false" title="โปรไฟล์ผู้ใช้งาน">
+                    <img src="https://ui-avatars.com/api/?name=Itsarapong+Po&background=7D0A0A&color=fff&size=64" alt="User Avatar" class="user-avatar-img" id="topbarUserAvatar">
+                    <span class="user-display-name" id="topbarUserDisplayName">คุณอิศรพงศ์ โพธิ์งาม</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div class="user-dropdown-menu" id="userDropdownContent">
+                    <div class="user-dropdown-header">
+                        <strong id="dropdownUserFullName">Itsarapong P.</strong>
+                        <small id="dropdownUserEmail">itsarapong@mamdesign.co.th</small>
+                    </div>
+                    <a href="/settings/users.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>จัดการผู้ใช้งานและสิทธิ์</span>
+                    </a>
+                    <a href="#" class="dropdown-item" id="openCompanyInfoLink">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="6" x2="9" y2="6.01"></line><line x1="15" y1="6" x2="15" y2="6.01"></line><line x1="9" y1="10" x2="9" y2="10.01"></line><line x1="15" y1="10" x2="15" y2="10.01"></line><line x1="9" y1="14" x2="9" y2="14.01"></line><line x1="15" y1="14" x2="15" y2="14.01"></line><line x1="9" y1="18" x2="9" y2="18.01"></line><line x1="15" y1="18" x2="15" y2="18.01"></line></svg>
+                        <span>ข้อมูลองค์กร (MAM DESIGN AND SERVICE)</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/auth/login.html" class="dropdown-item text-danger" id="topbarLogoutBtn">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>ออกจากระบบ (Logout)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar-nav" id="sidebarNav">
+            <nav class="sidebar-menu">
+                <div class="menu-section-title">เมนูหลัก</div>
+                <a href="../dashboard/index.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <rect x="3" y="3" width="7" height="9"></rect>
+                        <rect x="14" y="3" width="7" height="5"></rect>
+                        <rect x="14" y="12" width="7" height="9"></rect>
+                        <rect x="3" y="16" width="7" height="5"></rect>
+                    </svg>
+                    <span>ภาพรวมธุรกิจ</span>
+                </a>
+
+                <!-- Dropdown: เอกสารการขาย -->
+                <div class="menu-dropdown-group" id="salesDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="salesDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            <span>เอกสารการขาย</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../documents/quotations.html" class="submenu-item">
+                            <span>• ใบเสนอราคา</span>
+                            <span class="submenu-badge" style="display: none;">0</span>
+                        </a>
+                        <a href="../documents/billing-notes.html" class="submenu-item">
+                            <span>• ใบวางบิล</span>
+                        </a>
+                        <a href="../documents/invoices.html" class="submenu-item">
+                            <span>• ใบกำกับภาษี</span>
+                        </a>
+                        <a href="../documents/receipts.html" class="submenu-item">
+                            <span>• ใบเสร็จรับเงิน</span>
+                        </a>
+                        <a href="../documents/cash-sales.html" class="submenu-item">
+                            <span>• ขายสด / บิลเงินสด</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dropdown: จัดซื้อ (Purchases) -->
+                <div class="menu-dropdown-group" id="purchaseDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="purchaseDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <span>จัดซื้อ (Purchases)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../documents/purchase-orders.html" class="submenu-item">
+                            <span>• ใบสั่งซื้อ (PO)</span>
+                        </a>
+                        <a href="../expenses/expenses.html" class="submenu-item">
+                            <span>• ค่าใช้จ่าย (Expenses)</span>
+                        </a>
+                    </div>
+                </div>
+                <a href="../withholding-tax/withholding-tax.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>ภาษีหัก ณ ที่จ่าย (50 ทวิ)</span>
+                </a>
+                <!-- Dropdown: สต็อกสินค้าและกระเช้า -->
+                <div class="menu-dropdown-group" id="inventoryDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="inventoryDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                            <span>สต็อกสินค้า (Inventory)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../inventory/inventory.html" class="submenu-item">
+                            <span>• ขนม / โบว์ / ตะกร้า</span>
+                        </a>
+                        <a href="../inventory/gift-sets.html" class="submenu-item">
+                            <span>• Gift Set ตามกระเช้า</span>
+                        </a>
+                        <a href="../inventory/gift-set-builder.html" class="submenu-item">
+                            <span>• จัด Gift Set ใหม่</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dropdown: สมุดรายชื่อ (Contacts) -->
+                <div class="menu-dropdown-group" id="contactsDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="contactsDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span>ข้อมูลคู่ค้า (Contacts)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../contacts/customers.html" class="submenu-item">
+                            <span>• ลูกค้า (Customers)</span>
+                        </a>
+                        <a href="../contacts/vendors.html" class="submenu-item">
+                            <span>• ผู้ขาย / คู่ค้า (Vendors)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="menu-section-title">การตั้งค่าระบบ</div>
+                <a href="users.html" class="menu-item active">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>จัดการสิทธิ์ผู้ใช้งาน</span>
+                </a>
+            </nav>
+            <!-- Internal Organization Portal Footer -->
+            <div style="margin-top: auto; padding: 14px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin: 16px 12px; font-size: 12px; color: #64748b;">
+                <div style="font-weight: 600; color: #1e293b; margin-bottom: 2px; display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #059669;"></span>
+                    MAM DESIGN &amp; SERVICE CRM
+                </div>
+                <div style="font-size: 11px;">ระบบจัดการภายในองค์กร</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">ผู้ใช้งานและสิทธิ์ (User Roles & Permissions)</h1>
+                    <p class="page-subtitle">จัดการผู้ใช้งานในองค์กร และควบคุมสิทธิ์การเข้าถึงข้อมูลทางการเงินและสต็อกสินค้า</p>
+                </div>
+                <div class="header-controls">
+                    <button type="button" class="btn-primary" onclick="openAddUserModal()" style="height: 38px; padding: 0 16px; margin: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 600; font-size: 13.5px; cursor: pointer; white-space: nowrap; box-sizing: border-box;">
+                        <span>+ เพิ่มผู้ใช้งานใหม่</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Role Summary Cards -->
+            <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 24px;">
+                <div class="kpi-card" style="border-top: 3px solid #7D0A0A;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="kpi-label" style="display: inline-flex; align-items: center; gap: 6px;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="#7D0A0A" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            เจ้าของกิจการ (Admin)
+                        </span>
+                        <span class="role-badge-pill badge-role-admin">Full Access</span>
+                    </div>
+                    <div class="kpi-value" id="countAdmin" style="font-size: 24px; margin: 8px 0;">1 คน</div>
+                    <span class="trend-note">เข้าถึงได้ทุกส่วน: บัญชี, สต็อก, ผู้ใช้งาน, ตั้งค่าระบบ</span>
+                </div>
+                <div class="kpi-card" style="border-top: 3px solid #059669;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="kpi-label" style="display: inline-flex; align-items: center; gap: 6px;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="#059669" stroke-width="2" fill="none"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                            นักบัญชี (Accountant)
+                        </span>
+                        <span class="role-badge-pill badge-role-accountant">Financial</span>
+                    </div>
+                    <div class="kpi-value" id="countAccountant" style="font-size: 24px; margin: 8px 0;">1 คน</div>
+                    <span class="trend-note">ดู/สร้างบิลขาย, บันทึกค่าใช้จ่าย, ภาษี 50 ทวิ, ตรวจนับสต็อก</span>
+                </div>
+                <div class="kpi-card" style="border-top: 3px solid #d97706;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="kpi-label" style="display: inline-flex; align-items: center; gap: 6px;">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="#d97706" stroke-width="2" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                            พนักงานขาย (Sales)
+                        </span>
+                        <span class="role-badge-pill badge-role-sales">Sales Only</span>
+                    </div>
+                    <div class="kpi-value" id="countSales" style="font-size: 24px; margin: 8px 0;">1 คน</div>
+                    <span class="trend-note">สร้างใบเสนอราคา, เช็คจำนวนสต็อก (ซ่อนค่าใช้จ่าย/กำไร)</span>
+                </div>
+            </div>
+
+            <!-- Users Table Panel -->
+            <div class="content-panel">
+                <div class="panel-header" style="padding: 16px; border-bottom: 1px solid #f1f5f9;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #0f172a; margin: 0;">รายชื่อผู้ใช้งานทั้งหมดในบริษัท</h3>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="min-width: 190px; text-align: left;">ผู้ใช้งาน</th>
+                                <th style="min-width: 190px; text-align: left;">อีเมล / ชื่อผู้ใช้</th>
+                                <th style="width: 140px; min-width: 140px; text-align: center;" class="text-center">บทบาท (Role)</th>
+                                <th style="width: 130px; min-width: 130px; text-align: left;">เบอร์โทรศัพท์</th>
+                                <th style="width: 160px; min-width: 160px; text-align: left;">เข้าสู่ระบบล่าสุด</th>
+                                <th style="width: 120px; min-width: 120px; text-align: center;" class="text-center">สถานะ</th>
+                                <th style="width: 110px; min-width: 110px; text-align: center;" class="text-center">การจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Add/Edit User -->
+    <div class="modal-overlay" id="userModal" style="display: none;">
+        <div class="modal-card" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3 id="userModalTitle">เพิ่มผู้ใช้งานใหม่</h3>
+                <button type="button" class="modal-close" onclick="closeUserModal()">&times;</button>
+            </div>
+            <form id="userForm" style="padding: 20px;">
+                <input type="hidden" id="userId">
+                
+                <div class="input-group">
+                    <label class="input-label required">ชื่อ-นามสกุล</label>
+                    <input type="text" id="userNameInput" class="form-control" required placeholder="เช่น คุณวิภาดา สดใส">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label required">อีเมลสำหรับเข้าสู่ระบบ</label>
+                    <input type="email" id="userEmailInput" class="form-control" required placeholder="name@company.com">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label required">บทบาทและสิทธิ์การเข้าถึง (Role)</label>
+                    <select id="userRoleSelect" class="form-control" required>
+                        <option value="ADMIN">เจ้าของกิจการ (Admin) - สิทธิ์เต็มทุกระบบ</option>
+                        <option value="ACCOUNTANT">นักบัญชี (Accountant) - บัญชี, ภาษี, ค่าใช้จ่าย, สต็อก</option>
+                        <option value="SALES" selected>พนักงานขาย (Sales) - เปิดบิลขาย, เช็คสต็อกสินค้า</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">เบอร์โทรศัพท์</label>
+                    <input type="tel" id="userPhoneInput" class="form-control" placeholder="08x-xxx-xxxx">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">รหัสผ่าน (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)</label>
+                    <input type="password" id="userPasswordInput" class="form-control" placeholder="กำหนดรหัสผ่านอย่างน้อย 6 ตัวอักษร">
+                </div>
+
+                <div class="modal-footer" style="margin: 24px -20px -20px -20px;">
+                    <button type="button" class="btn-secondary" onclick="closeUserModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-primary">บันทึกข้อมูลผู้ใช้งาน</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        let allUsers = [];
+
+        document.addEventListener('DOMContentLoaded', loadUsers);
+
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/users');
+                if (!res.ok) throw new Error('Failed to load users');
+                allUsers = await res.json();
+                renderUsersTable();
+                updateUserCounts();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function updateUserCounts() {
+            let admin = 0, acc = 0, sales = 0;
+            allUsers.forEach(u => {
+                if (u.role === 'ADMIN') admin++;
+                else if (u.role === 'ACCOUNTANT') acc++;
+                else if (u.role === 'SALES') sales++;
+            });
+            document.getElementById('countAdmin').textContent = `${admin} คน`;
+            document.getElementById('countAccountant').textContent = `${acc} คน`;
+            document.getElementById('countSales').textContent = `${sales} คน`;
+        }
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = allUsers.map(u => {
+                let roleBadge = `<span class="role-badge-pill badge-role-sales" style="display: inline-flex; align-items: center; gap: 4px;"><svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="2" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>Sales</span>`;
+                if (u.role === 'ADMIN') roleBadge = `<span class="role-badge-pill badge-role-admin" style="display: inline-flex; align-items: center; gap: 4px;"><svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>Admin</span>`;
+                else if (u.role === 'ACCOUNTANT') roleBadge = `<span class="role-badge-pill badge-role-accountant" style="display: inline-flex; align-items: center; gap: 4px;"><svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>Accountant</span>`;
+
+                let statusBadge = `<span class="badge-status approved">เปิดใช้งาน</span>`;
+                if (u.status === 'PENDING') {
+                    statusBadge = `<span class="badge-status waiting"><svg viewBox="0 0 24 24" width="11" height="11" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span>รออนุมัติ</span></span>`;
+                } else if (u.status === 'REJECTED') {
+                    statusBadge = `<span class="badge-status rejected">ปฏิเสธ</span>`;
+                } else if (u.status !== 'ACTIVE') {
+                    statusBadge = `<span class="badge-status draft">ระงับ</span>`;
+                }
+
+                return `
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <img src="${u.avatar || 'https://ui-avatars.com/api/?name=U'}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #e2e8f0;">
+                                <strong>${u.name}</strong>
+                            </div>
+                        </td>
+                        <td>
+                            <div>${u.email}</div>
+                            <small style="color: #64748b;">@${u.username}</small>
+                        </td>
+                        <td style="text-align: center;">${roleBadge}</td>
+                        <td>${u.phone || '-'}</td>
+                        <td>${u.last_login ? new Date(u.last_login).toLocaleString('th-TH') : 'ยังไม่เคยเข้าใช้งาน'}</td>
+                        <td style="text-align: center;">${statusBadge}</td>
+                        <td style="text-align: center; white-space: nowrap;">
+                            <div style="display: inline-flex; gap: 6px; justify-content: center;">
+                                ${u.status === 'PENDING' ? `
+                                    <button class="btn-action-small text-success" onclick="approveUserDirect(${u.id}, '${u.name}')">
+                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        <span>อนุมัติ</span>
+                                    </button>
+                                    <button class="btn-action-small text-danger" onclick="rejectUserDirect(${u.id}, '${u.name}')">
+                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        <span>ปฏิเสธ</span>
+                                    </button>
+                                ` : `
+                                    <button class="btn-action-small" onclick="openEditUserModal(${u.id})">
+                                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                        <span>แก้ไข</span>
+                                    </button>
+                                    ${u.id !== 1 ? `
+                                        <button class="btn-action-small text-danger" onclick="deleteUser(${u.id}, '${u.name}')">
+                                            <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                            <span>ลบ</span>
+                                        </button>
+                                    ` : ''}
+                                `}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function approveUserDirect(id, name) {
+            if (!confirm(`ต้องการอนุมัติสิทธิ์ให้ "${name}" ใช่หรือไม่?`)) return;
+            try {
+                const res = await fetch(`/api/users/${id}/approve`, { method: 'POST' });
+                if (res.ok) {
+                    if (typeof window.showToast === 'function') {
+                        window.showToast({
+                            type: 'success',
+                            title: 'อนุมัติสิทธิ์สำเร็จ',
+                            message: `อนุมัติสิทธิ์ให้ "${name}" เรียบร้อยแล้ว`,
+                            duration: 3200
+                        });
+                    }
+                    loadUsers();
+                } else {
+                    const err = await res.json().catch(() => ({}));
+                    if (typeof window.showToast === 'function') {
+                        window.showToast({
+                            type: 'error',
+                            title: 'ไม่สามารถอนุมัติได้',
+                            message: err.error || 'กรุณาลองใหม่อีกครั้ง',
+                            duration: 3500
+                        });
+                    } else {
+                        alert('ไม่สามารถอนุมัติได้');
+                    }
+                }
+            } catch (err) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast({ type: 'error', title: 'เกิดข้อผิดพลาด', message: err.message });
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + err.message);
+                }
+            }
+        }
+
+        async function rejectUserDirect(id, name) {
+            if (!confirm(`ต้องการปฏิเสธคำขอของ "${name}" ใช่หรือไม่?`)) return;
+            try {
+                const res = await fetch(`/api/users/${id}/reject`, { method: 'POST' });
+                if (res.ok) {
+                    if (typeof window.showToast === 'function') {
+                        window.showToast({
+                            type: 'warning',
+                            title: 'ปฏิเสธคำขอเรียบร้อย',
+                            message: `ปฏิเสธคำขอของ "${name}" เรียบร้อยแล้ว`,
+                            duration: 3200
+                        });
+                    }
+                    loadUsers();
+                } else {
+                    const err = await res.json().catch(() => ({}));
+                    if (typeof window.showToast === 'function') {
+                        window.showToast({
+                            type: 'error',
+                            title: 'ไม่สามารถปฏิเสธได้',
+                            message: err.error || 'กรุณาลองใหม่อีกครั้ง',
+                            duration: 3500
+                        });
+                    } else {
+                        alert('ไม่สามารถปฏิเสธได้');
+                    }
+                }
+            } catch (err) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast({ type: 'error', title: 'เกิดข้อผิดพลาด', message: err.message });
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + err.message);
+                }
+            }
+        }
+
+        function openAddUserModal() {
+            document.getElementById('userId').value = '';
+            document.getElementById('userModalTitle').textContent = 'เพิ่มผู้ใช้งานใหม่';
+            document.getElementById('userForm').reset();
+            document.getElementById('userEmailInput').readOnly = false;
+            document.getElementById('userModal').style.display = 'flex';
+        }
+
+        function openEditUserModal(id) {
+            const u = allUsers.find(x => x.id === id);
+            if (!u) return;
+            document.getElementById('userId').value = u.id;
+            document.getElementById('userModalTitle').textContent = `แก้ไขสิทธิ์ผู้ใช้งาน: ${u.name}`;
+            document.getElementById('userNameInput').value = u.name;
+            document.getElementById('userEmailInput').value = u.email;
+            document.getElementById('userEmailInput').readOnly = true;
+            document.getElementById('userRoleSelect').value = u.role;
+            document.getElementById('userPhoneInput').value = u.phone || '';
+            document.getElementById('userPasswordInput').value = '';
+            document.getElementById('userModal').style.display = 'flex';
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').style.display = 'none';
+        }
+
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('userId').value;
+            const payload = {
+                name: document.getElementById('userNameInput').value.trim(),
+                email: document.getElementById('userEmailInput').value.trim(),
+                role: document.getElementById('userRoleSelect').value,
+                phone: document.getElementById('userPhoneInput').value.trim(),
+                password: document.getElementById('userPasswordInput').value || undefined
+            };
+
+            const url = id ? `/api/users/${id}` : '/api/users';
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || 'บันทึกข้อมูลไม่สำเร็จ');
+                }
+                closeUserModal();
+                await loadUsers();
+                if (typeof window.showToast === 'function') {
+                    window.showToast({
+                        type: 'success',
+                        title: id ? 'แก้ไขข้อมูลสำเร็จ!' : 'เพิ่มผู้ใช้งานสำเร็จ!',
+                        message: `บันทึกข้อมูล "${payload.name}" เรียบร้อยแล้ว`,
+                        duration: 3200
+                    });
+                }
+            } catch (err) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast({
+                        type: 'error',
+                        title: 'บันทึกไม่สำเร็จ',
+                        message: err.message,
+                        duration: 3500
+                    });
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + err.message);
+                }
+            }
+        });
+
+        async function deleteUser(id, name) {
+            if (!confirm(`ยืนยันการลบผู้ใช้งาน "${name}" ออกจากระบบ?`)) return;
+            try {
+                const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error('Failed to delete');
+                await loadUsers();
+                if (typeof window.showToast === 'function') {
+                    window.showToast({
+                        type: 'success',
+                        title: 'ลบผู้ใช้งานสำเร็จ',
+                        message: `ลบผู้ใช้งาน "${name}" ออกจากระบบเรียบร้อยแล้ว`,
+                        duration: 3000
+                    });
+                }
+            } catch (err) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast({
+                        type: 'error',
+                        title: 'ลบไม่สำเร็จ',
+                        message: err.message,
+                        duration: 3500
+                    });
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + err.message);
+                }
+            }
+        }
+    </script>
+    <script src="../assets/js/modules/doc-toast.js"></script>
+    <script src="../assets/js/auth-guard.js?v=15"></script>
+    <script src="../assets/js/theme-manager.js"></script>
+    <script src="/assets/js/global-navbar.js"></script>
+</body>
+</html>
+

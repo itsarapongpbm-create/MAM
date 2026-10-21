@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+
+<html lang="th">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ภาพรวมธุรกิจ (Dashboard) | MAM DESIGN AND SERVICE</title>
+
+    <link rel="icon" href="../assets/images/mam-logo.png" type="image/png">
+
+
+
+    <!-- Google Fonts -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+
+
+    <!-- Chart.js for Financial Data Visualization -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+    <!-- Stylesheets -->
+
+    <link rel="stylesheet" href="../assets/css/auth.css?v=30">
+
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=30">
+
+    <link rel="stylesheet" href="../assets/css/theme.css?v=31">
+
+</head>
+
+<body class="dashboard-body">
+
+
+
+        <!-- ================= Top Navigation Bar (Global Standard Component) ================= -->
+    <header class="top-navbar" id="globalTopNavbar">
+        <div class="nav-left">
+            <button class="btn-toggle-sidebar" id="toggleSidebarBtn" aria-label="Toggle menu" title="เปิด/ปิด เมนูด้านข้าง">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <a href="/dashboard/index.html" class="topbar-logo" title="หน้าหลักภาพรวมธุรกิจ">
+                <img src="/assets/images/mam-logo.png" alt="MAM DESIGN AND SERVICE" style="height: 38px; width: auto; object-fit: contain;">
+            </a>
+            <div class="topbar-divider"></div>
+            <div class="topbar-company-info">
+                <span class="topbar-company-name" id="topbarCompanyName">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</span>
+                <span class="badge-advance">INTERNAL CRM</span>
+            </div>
+        </div>
+
+        <!-- Actions & User Profile -->
+        <div class="nav-right">
+            <!-- Notification Bell -->
+            <button class="icon-button" id="topbarNotificationBtn" title="การแจ้งเตือน">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notification-badge" id="topbarNotificationBadge">3</span>
+            </button>
+
+            <!-- Help & Support -->
+            <button class="icon-button" id="topbarHelpBtn" title="ช่วยเหลือ / คู่มือ">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </button>
+
+            <div class="topbar-divider"></div>
+
+            <!-- User Menu -->
+            <div class="user-profile-menu">
+                <button class="user-avatar-btn" id="userMenuBtn" type="button" aria-expanded="false" title="โปรไฟล์ผู้ใช้งาน">
+                    <img src="https://ui-avatars.com/api/?name=Itsarapong+Po&background=7D0A0A&color=fff&size=64" alt="User Avatar" class="user-avatar-img" id="topbarUserAvatar">
+                    <span class="user-display-name" id="topbarUserDisplayName">คุณอิศรพงศ์ โพธิ์งาม</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div class="user-dropdown-menu" id="userDropdownContent">
+                    <div class="user-dropdown-header">
+                        <strong id="dropdownUserFullName">Itsarapong P.</strong>
+                        <small id="dropdownUserEmail">itsarapong@mamdesign.co.th</small>
+                    </div>
+                    <a href="/settings/users.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>จัดการผู้ใช้งานและสิทธิ์</span>
+                    </a>
+                    <a href="#" class="dropdown-item" id="openCompanyInfoLink">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="6" x2="9" y2="6.01"></line><line x1="15" y1="6" x2="15" y2="6.01"></line><line x1="9" y1="10" x2="9" y2="10.01"></line><line x1="15" y1="10" x2="15" y2="10.01"></line><line x1="9" y1="14" x2="9" y2="14.01"></line><line x1="15" y1="14" x2="15" y2="14.01"></line><line x1="9" y1="18" x2="9" y2="18.01"></line><line x1="15" y1="18" x2="15" y2="18.01"></line></svg>
+                        <span>ข้อมูลองค์กร (MAM DESIGN AND SERVICE)</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/auth/login.html" class="dropdown-item text-danger" id="topbarLogoutBtn">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>ออกจากระบบ (Logout)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+
+    <!-- ================= App Container ================= -->
+
+    <div class="app-layout">
+
+        
+
+        <!-- Sidebar Navigation -->
+
+        <aside class="sidebar-nav" id="sidebarNav">
+
+            <nav class="sidebar-menu">
+
+                <div class="menu-section-title">เมนูหลัก</div>
+
+                <a href="index.html" class="menu-item active">
+
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+
+                        <rect x="3" y="3" width="7" height="9"></rect>
+
+                        <rect x="14" y="3" width="7" height="5"></rect>
+
+                        <rect x="14" y="12" width="7" height="9"></rect>
+
+                        <rect x="3" y="16" width="7" height="5"></rect>
+
+                    </svg>
+
+                    <span>ภาพรวมธุรกิจ</span>
+
+                </a>
+
+
+
+                <!-- Dropdown: เอกสารการขาย -->
+
+                <div class="menu-dropdown-group" id="salesDropdownGroup">
+
+                    <button type="button" class="menu-dropdown-toggle" id="salesDropdownToggle">
+
+                        <div class="menu-toggle-content">
+
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+
+                                <polyline points="14 2 14 8 20 8"></polyline>
+
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+
+                                <polyline points="10 9 9 9 8 9"></polyline>
+
+                            </svg>
+
+                            <span>เอกสารการขาย</span>
+
+                        </div>
+
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+
+                            <polyline points="6 9 12 15 18 9"></polyline>
+
+                        </svg>
+
+                    </button>
+
+                    <div class="menu-dropdown-list">
+
+                        <a href="../documents/quotations.html" class="submenu-item">
+
+                            <span>• ใบเสนอราคา</span>
+
+                            <span class="submenu-badge" style="display: none;">0</span>
+
+                        </a>
+
+                        <a href="../documents/billing-notes.html" class="submenu-item">
+
+                            <span>• ใบวางบิล</span>
+
+                        </a>
+
+                        <a href="../documents/invoices.html" class="submenu-item">
+
+                            <span>• ใบกำกับภาษี</span>
+
+                        </a>
+
+                        <a href="../documents/receipts.html" class="submenu-item">
+
+                            <span>• ใบเสร็จรับเงิน</span>
+
+                        </a>
+
+                        <a href="../documents/cash-sales.html" class="submenu-item">
+
+                            <span>• ขายสด / บิลเงินสด</span>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Dropdown: จัดซื้อ (Purchases) -->
+
+                <div class="menu-dropdown-group" id="purchaseDropdownGroup">
+
+                    <button type="button" class="menu-dropdown-toggle" id="purchaseDropdownToggle">
+
+                        <div class="menu-toggle-content">
+
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+
+                                <circle cx="9" cy="21" r="1"></circle>
+
+                                <circle cx="20" cy="21" r="1"></circle>
+
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+
+                            </svg>
+
+                            <span>จัดซื้อ (Purchases)</span>
+
+                        </div>
+
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+
+                            <polyline points="6 9 12 15 18 9"></polyline>
+
+                        </svg>
+
+                    </button>
+
+                    <div class="menu-dropdown-list">
+
+                        <a href="../documents/purchase-orders.html" class="submenu-item">
+
+                            <span>• ใบสั่งซื้อ (PO)</span>
+
+                        </a>
+
+                        <a href="../expenses/expenses.html" class="submenu-item">
+
+                            <span>• ค่าใช้จ่าย (Expenses)</span>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+
+                <a href="../withholding-tax/withholding-tax.html" class="menu-item">
+
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+
+                    </svg>
+
+                    <span>ภาษีหัก ณ ที่จ่าย (50 ทวิ)</span>
+
+                </a>
+
+
+
+                <!-- Dropdown: สต็อกสินค้าและกระเช้า -->
+
+                <div class="menu-dropdown-group" id="inventoryDropdownGroup">
+
+                    <button type="button" class="menu-dropdown-toggle" id="inventoryDropdownToggle">
+
+                        <div class="menu-toggle-content">
+
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+
+                            </svg>
+
+                            <span>สต็อกสินค้า (Inventory)</span>
+
+                        </div>
+
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+
+                            <polyline points="6 9 12 15 18 9"></polyline>
+
+                        </svg>
+
+                    </button>
+
+                    <div class="menu-dropdown-list">
+
+                        <a href="../inventory/inventory.html" class="submenu-item">
+
+                            <span>• ขนม / โบว์ / ตะกร้า</span>
+
+                        </a>
+
+                        <a href="../inventory/gift-sets.html" class="submenu-item">
+
+                            <span>• Gift Set ตามกระเช้า</span>
+
+                        </a>
+
+                        <a href="../inventory/gift-set-builder.html" class="submenu-item">
+
+                            <span>• จัด Gift Set ใหม่</span>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+
+                <a href="#banking" class="menu-item">
+
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+
+                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+
+                        <line x1="2" y1="10" x2="22" y2="10"></line>
+
+                    </svg>
+
+                    <span>การเงิน / ธนาคาร</span>
+
+                </a>
+
+
+
+                <!-- Dropdown: สมุดรายชื่อ (Contacts) -->
+
+                <div class="menu-dropdown-group" id="contactsDropdownGroup">
+
+                    <button type="button" class="menu-dropdown-toggle" id="contactsDropdownToggle">
+
+                        <div class="menu-toggle-content">
+
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+
+                                <circle cx="9" cy="7" r="4"></circle>
+
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+
+                            </svg>
+
+                            <span>ข้อมูลคู่ค้า (Contacts)</span>
+
+                        </div>
+
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+
+                            <polyline points="6 9 12 15 18 9"></polyline>
+
+                        </svg>
+
+                    </button>
+
+                    <div class="menu-dropdown-list">
+
+                        <a href="../contacts/customers.html" class="submenu-item">
+
+                            <span>• ลูกค้า (Customers)</span>
+
+                        </a>
+
+                        <a href="../contacts/vendors.html" class="submenu-item">
+
+                            <span>• ผู้ขาย / คู่ค้า (Vendors)</span>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+
+                
+                <!-- หมวดระบบอีเมล (Email) -->
+                <div class="menu-section-title">ระบบอีเมล (Email)</div>
+                <div class="menu-dropdown-group" id="emailDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="emailDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <span>ระบบอีเมล (Email)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../email/campaign.html" class="submenu-item">
+                            <span>• เสนอขายกระเช้า (Giftory)</span>
+                        </a>
+                        <a href="../email/inbox.html" class="submenu-item">
+                            <span>• กล่องข้อความ (Inbox)</span>
+                        </a>
+                    </div>
+                </div>
+
+<div class="menu-section-title">วิเคราะห์ & การจัดการ</div>
+
+
+
+                <a href="#reports" class="menu-item">
+
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+
+                    </svg>
+
+                    <span>รายงาน (Reports)</span>
+
+                </a>
+
+
+
+                <a href="#payroll" class="menu-item">
+
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+
+                        <circle cx="9" cy="7" r="4"></circle>
+
+                        <polyline points="16 11 18 13 22 9"></polyline>
+
+                    </svg>
+
+                    <span>เงินเดือน (Payroll)</span>
+
+                </a>
+
+
+
+                <!-- Draft Section: Admin Web (แทรกก่อน การตั้งค่าระบบ) -->
+                <div class="menu-section-title">Admin Web</div>
+
+                <!-- 1. ภาพรวมเว็บ (Web Overview) -->
+                <a href="/admin-web/overview.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <span>ภาพรวมเว็บ (Web Overview)</span>
+                </a>
+
+                <!-- 2. ตั้งค่าเว็บไซต์ & Edit -->
+                <a href="/admin-web/settings.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    <span>ตั้งค่าเว็บไซต์ &amp; Edit</span>
+                </a>
+
+                <div class="menu-section-title">การตั้งค่าระบบ</div>
+
+                <a href="../settings/users.html" class="menu-item">
+
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+
+                        <circle cx="9" cy="7" r="4"></circle>
+
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+
+                    </svg>
+
+                    <span>จัดการสิทธิ์ผู้ใช้งาน</span>
+
+                </a>
+
+            </nav>
+
+
+
+            <!-- Internal Organization Portal Footer -->
+
+            <div style="margin-top: auto; padding: 14px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin: 16px 12px; font-size: 12px; color: #64748b;">
+
+                <div style="font-weight: 600; color: #1e293b; margin-bottom: 2px; display: flex; align-items: center; gap: 6px;">
+
+                    <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #059669;"></span>
+
+                    MAM DESIGN &amp; SERVICE CRM
+
+                </div>
+
+                <div style="font-size: 11px;">ระบบจัดการภายในองค์กร</div>
+
+            </div>
+
+        </aside>
+
+
+
+        <!-- Main Dashboard Viewport -->
+
+        <main class="dashboard-content">
+
+            
+
+            <!-- Dashboard Page Header & Period Filter -->
+
+            <div class="page-header">
+
+                <div>
+
+                    <h1 class="page-title">ภาพรวมธุรกิจ (Business Dashboard)</h1>
+
+                    <p class="page-subtitle">สรุปสถานะการเงิน รายได้ ค่าใช้จ่าย และสภาพคล่องของกิจการ</p>
+
+                </div>
+
+                <div class="header-controls">
+
+                    <!-- Period Select Dropdown -->
+
+                    <div class="period-select-wrapper">
+
+                        <select id="periodFilter" class="period-select">
+
+                            <option value="this_month" selected>เดือนนี้ (ตุลาคม 2026)</option>
+
+                            <option value="last_month">เดือนที่แล้ว (กันยายน 2026)</option>
+
+                            <option value="this_quarter">ไตรมาสที่ 4 (Q4/2026)</option>
+
+                            <option value="this_year">ทั้งปี 2026</option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- Export Report Button -->
+
+                    <button class="btn-secondary" id="exportDashboardBtn">
+
+                        <svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+
+                            <polyline points="7 10 12 15 17 10"></polyline>
+
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+
+                        </svg>
+
+                        <span>ส่งออกรายงาน</span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- 1. KPI Metric Summary Cards -->
+
+            <section class="kpi-grid">
+
+                
+
+                <!-- Card 1: Total Revenue -->
+
+                <div class="kpi-card card-revenue">
+
+                    <div class="kpi-header">
+
+                        <span class="kpi-label">รายได้รวมทั้งหมด</span>
+
+                        <div class="kpi-icon-wrap bg-blue">
+
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="#7D0A0A" stroke-width="2" fill="none">
+
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+
+                                <polyline points="17 6 23 6 23 12"></polyline>
+
+                            </svg>
+
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-value" id="kpiRevenue">฿ 0.00</div>
+
+                    <div class="kpi-footer">
+
+                        <span class="trend-badge trend-up" id="kpiRevenueTrend">↑ +0.0%</span>
+
+                        <span class="trend-note" id="kpiRevenueNote">เทียบกับเดือนที่แล้ว</span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Card 2: Accounts Receivable (Uncollected) -->
+
+                <div class="kpi-card card-receivable">
+
+                    <div class="kpi-header">
+
+                        <span class="kpi-label">ยอดค้างรับ (ยังไม่เก็บเงิน)</span>
+
+                        <div class="kpi-icon-wrap bg-amber">
+
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="#d97706" stroke-width="2" fill="none">
+
+                                <circle cx="12" cy="12" r="10"></circle>
+
+                                <polyline points="12 6 12 12 16 14"></polyline>
+
+                            </svg>
+
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-value" id="kpiReceivable">฿ 0.00</div>
+
+                    <div class="kpi-footer">
+
+                        <span class="badge-count" id="kpiReceivableCount">0 เอกสาร</span>
+
+                        <span class="trend-note text-warning" id="kpiReceivableNote">ไม่มีรายการเกินกำหนด</span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Card 3: Total Expenses -->
+
+                <div class="kpi-card card-expenses">
+
+                    <div class="kpi-header">
+
+                        <span class="kpi-label">ค่าใช้จ่ายรวมทั้งหมด</span>
+
+                        <div class="kpi-icon-wrap bg-rose">
+
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="#e11d48" stroke-width="2" fill="none">
+
+                                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+
+                                <polyline points="17 18 23 18 23 12"></polyline>
+
+                            </svg>
+
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-value" id="kpiExpenses">฿ 0.00</div>
+
+                    <div class="kpi-footer">
+
+                        <span class="trend-badge trend-down" id="kpiExpensesTrend">↓ 0.0%</span>
+
+                        <span class="trend-note" id="kpiExpensesNote">ประหยัดลงจากเดือนก่อน</span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Card 4: Accounts Payable (Pending Bills) -->
+
+                <div class="kpi-card card-payable">
+
+                    <div class="kpi-header">
+
+                        <span class="kpi-label">ยอดค้างจ่าย (รอชำระ)</span>
+
+                        <div class="kpi-icon-wrap bg-purple">
+
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="#7c3aed" stroke-width="2" fill="none">
+
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+
+                                <line x1="1" y1="10" x2="23" y2="10"></line>
+
+                            </svg>
+
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-value" id="kpiPayable">฿ 0.00</div>
+
+                    <div class="kpi-footer">
+
+                        <span class="badge-count" id="kpiPayableCount">0 บิล</span>
+
+                        <span class="trend-note" id="kpiPayableNote">ครบกำหนดใน 7 วัน</span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Card 5: Net Profit -->
+
+                <div class="kpi-card card-profit">
+
+                    <div class="kpi-header">
+
+                        <span class="kpi-label">กำไรสุทธิเบื้องต้น (Net Profit)</span>
+
+                        <div class="kpi-icon-wrap bg-emerald">
+
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="#059669" stroke-width="2" fill="none">
+
+                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+
+                            </svg>
+
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-value text-success" id="kpiProfit">฿ 0.00</div>
+
+                    <div class="kpi-footer">
+
+                        <span class="trend-badge trend-up" id="kpiProfitMargin">Margin 0.0%</span>
+
+                        <span class="trend-note" id="kpiProfitHealth">สุขภาพการเงินยอดเยี่ยม</span>
+
+                    </div>
+
+                </div>
+
+
+
+            </section>
+
+
+
+            <!-- 2. Charts Section (Revenue vs Expenses & Expense Breakdown) -->
+
+            <div class="dashboard-chart-row">
+
+                
+
+                <!-- Main Trend Chart -->
+
+                <div class="chart-panel panel-trend">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h2 class="panel-title">เทรนด์รายได้เทียบกับค่าใช้จ่าย</h2>
+
+                            <p class="panel-subtitle">เปรียบเทียบผลการดำเนินงานรายเดือน (ปี 2026)</p>
+
+                        </div>
+
+                        <div class="chart-legend-custom">
+
+                            <span class="legend-item"><span class="legend-color color-rev"></span> รายได้</span>
+
+                            <span class="legend-item"><span class="legend-color color-exp"></span> ค่าใช้จ่าย</span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="chart-container">
+
+                        <canvas id="revenueExpenseChart"></canvas>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Donut Chart: Expense Breakdown -->
+
+                <div class="chart-panel panel-donut">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h2 class="panel-title">สัดส่วนค่าใช้จ่ายตามหมวดหมู่</h2>
+
+                            <p class="panel-subtitle">การจัดสรรงบประมาณเดือนนี้</p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="donut-container">
+
+                        <canvas id="expenseCategoryChart"></canvas>
+
+                    </div>
+
+                    <div class="expense-breakdown-list" id="expenseBreakdownList">
+
+                        <div class="breakdown-item">
+
+                            <span><span class="dot dot-blue"></span> ต้นทุนสินค้าและบริการ</span>
+
+                            <strong>42% (฿ 229,400)</strong>
+
+                        </div>
+
+                        <div class="breakdown-item">
+
+                            <span><span class="dot dot-indigo"></span> เงินเดือนและบุคลากร</span>
+
+                            <strong>28% (฿ 152,900)</strong>
+
+                        </div>
+
+                        <div class="breakdown-item">
+
+                            <span><span class="dot dot-amber"></span> ค่าเช่าและสำนักงาน</span>
+
+                            <strong>16% (฿ 87,400)</strong>
+
+                        </div>
+
+                        <div class="breakdown-item">
+
+                            <span><span class="dot dot-rose"></span> การตลาดและโฆษณา</span>
+
+                            <strong>14% (฿ 76,500)</strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+            </div>
+
+
+
+            <!-- 3. Operational Tables & Banking Status -->
+
+            <div class="dashboard-table-row">
+
+                
+
+                <!-- Table 1: Uncollected Receivables -->
+
+                <div class="content-panel panel-table">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h2 class="panel-title">รายการรอเก็บเงินจากลูกค้า (Uncollected Invoices)</h2>
+
+                            <p class="panel-subtitle">เอกสารใบแจ้งหนี้/ใบวางบิลที่ยังไม่ได้รับชำระเงิน</p>
+
+                        </div>
+
+                        <a href="../documents/invoices.html" class="panel-action-link" id="viewAllReceivablesLink">ดูทั้งหมด &rarr;</a>
+
+                    </div>
+
+                    <div class="table-responsive">
+
+                        <table class="data-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th style="width: 160px; text-align: left;">เลขที่เอกสาร</th>
+
+                                    <th style="text-align: left;">ชื่อลูกค้า</th>
+
+                                    <th style="width: 120px; text-align: left;">วันครบกำหนด</th>
+
+                                    <th style="width: 150px; text-align: right;" class="text-right">ยอดเงิน (บาท)</th>
+
+                                    <th style="width: 130px; text-align: center;" class="text-center">สถานะ</th>
+
+                                    <th style="width: 110px; text-align: center;" class="text-center">จัดการ</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="uncollectedInvoicesTableBody">
+
+                                <tr>
+
+                                    <td><a href="#" class="doc-link">INV-202610-001</a></td>
+
+                                    <td><strong>บริษัท สยาม รีเทล จำกัด (มหาชน)</strong></td>
+
+                                    <td>15 ต.ค. 2026</td>
+
+                                    <td class="text-right"><strong>125,000.00</strong></td>
+
+                                    <td class="text-center"><span class="status-badge status-pending">รอชำระ (อีก 10 วัน)</span></td>
+
+                                    <td class="text-center">
+
+                                        <button class="btn-table-action" title="แจ้งเตือนลูกค้า">ส่งแจ้งเตือน</button>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td><a href="#" class="doc-link">INV-202609-042</a></td>
+
+                                    <td><strong>หจก. พีเค โซลูชั่น</strong></td>
+
+                                    <td>28 ก.ย. 2026</td>
+
+                                    <td class="text-right"><strong>68,400.00</strong></td>
+
+                                    <td class="text-center"><span class="status-badge status-overdue">เกินกำหนด 7 วัน</span></td>
+
+                                    <td class="text-center">
+
+                                        <button class="btn-table-action btn-danger-action" title="ตามหนี้">ติดตาม</button>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td><a href="#" class="doc-link">INV-202610-008</a></td>
+
+                                    <td><strong>คุณกิตติศักดิ์ วิชัยดิษฐ์</strong></td>
+
+                                    <td>20 ต.ค. 2026</td>
+
+                                    <td class="text-right"><strong>45,000.00</strong></td>
+
+                                    <td><span class="status-badge status-pending">รอชำระ</span></td>
+
+                                    <td class="text-center">
+
+                                        <button class="btn-table-action">ส่งแจ้งเตือน</button>
+
+                                    </td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td><a href="#" class="doc-link">INV-202610-015</a></td>
+
+                                    <td><strong>บริษัท ไทยซอฟต์แวร์ กรุ๊ป</strong></td>
+
+                                    <td>25 ต.ค. 2026</td>
+
+                                    <td class="text-right"><strong>104,400.00</strong></td>
+
+                                    <td><span class="status-badge status-pending">รอชำระ</span></td>
+
+                                    <td class="text-center">
+
+                                        <button class="btn-table-action">ส่งแจ้งเตือน</button>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Banking & Cash Flow Status Widget -->
+
+                <div class="content-panel panel-bank">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <h2 class="panel-title">กระแสเงินสดและบัญชีธนาคาร</h2>
+
+                            <p class="panel-subtitle">ยอดเงินคงเหลือในระบบเทียบกระทบยอด</p>
+
+                        </div>
+
+                        <button class="panel-action-link" id="addBankAccountBtn" style="background: none; border: none; font-size: inherit; font-family: inherit; cursor: pointer; color: #7D0A0A;">+ เพิ่มบัญชี</button>
+
+                    </div>
+
+                    
+
+                    <div class="bank-accounts-list" id="bankAccountsList">
+
+                        <!-- SCB -->
+
+                        <div class="bank-card">
+
+                            <div class="bank-icon scb">SCB</div>
+
+                            <div class="bank-details">
+
+                                <div class="bank-title">ไทยพาณิชย์ (กระแสรายวัน)</div>
+
+                                <div class="bank-acc-no">xxx-x-xx892-1</div>
+
+                            </div>
+
+                            <div class="bank-balance text-right">
+
+                                <div class="balance-amt">฿ 0.00</div>
+
+                                <span class="sync-status text-success">กระทบยอดแล้ว</span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- KBANK -->
+
+                        <div class="bank-card">
+
+                            <div class="bank-icon kbank">KBANK</div>
+
+                            <div class="bank-details">
+
+                                <div class="bank-title">กสิกรไทย (ออมทรัพย์)</div>
+
+                                <div class="bank-acc-no">xxx-x-xx415-8</div>
+
+                            </div>
+
+                            <div class="bank-balance text-right">
+
+                                <div class="balance-amt">฿ 0.00</div>
+
+                                <span class="sync-status text-warning">รอตรวจสอบ 3 รายการ</span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- Petty Cash -->
+
+                        <div class="bank-card">
+
+                            <div class="bank-icon cash">CASH</div>
+
+                            <div class="bank-details">
+
+                                <div class="bank-title">เงินสดย่อยสำนักงาน</div>
+
+                                <div class="bank-acc-no">สำนักงานใหญ่</div>
+
+                            </div>
+
+                            <div class="bank-balance text-right">
+
+                                <div class="balance-amt">฿ 0.00</div>
+
+                                <span class="sync-status text-success">ยอดคงเหลือตรง</span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="bank-summary-footer">
+
+                        <span>ยอดรวมเงินสดและเงินฝากทั้งหมด:</span>
+
+                        <strong class="total-cash" id="totalCashAmount">฿ 0.00</strong>
+
+                    </div>
+
+                </div>
+
+
+
+            </div>
+
+
+
+        </main>
+
+    </div>
+
+
+
+    <!-- ================= Quick Create Modal ================= -->
+
+    <div class="modal-overlay" id="quickCreateModal" style="display: none;">
+
+        <div class="modal-card">
+
+            <div class="modal-header">
+
+                <h3>สร้างเอกสารใหม่ด่วน</h3>
+
+                <button class="modal-close" id="closeQuickModal">&times;</button>
+
+            </div>
+
+            <div class="quick-doc-grid">
+
+                <a href="../documents/quotation-new.html" class="doc-type-card">
+
+                    <div class="doc-icon color-crimson">
+
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+
+                    </div>
+
+                    <div class="doc-text">
+
+                        <strong>ใบเสนอราคา (Quotation)</strong>
+
+                        <small>เสนอราคาสินค้าหรือบริการให้ลูกค้า</small>
+
+                    </div>
+
+                </a>
+
+                <a href="../documents/billing-note-new.html" class="doc-type-card">
+
+                    <div class="doc-icon color-crimson">
+
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+
+                    </div>
+
+                    <div class="doc-text">
+
+                        <strong>ใบวางบิล / แจ้งหนี้ (Billing)</strong>
+
+                        <small>แจ้งยอดเรียกเก็บเงินเมื่อส่งมอบงาน</small>
+
+                    </div>
+
+                </a>
+
+                <a href="../documents/cash-invoice-new.html" class="doc-type-card">
+
+                    <div class="doc-icon color-emerald">
+
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+
+                    </div>
+
+                    <div class="doc-text">
+
+                        <strong>ใบเสร็จรับเงิน (Receipt)</strong>
+
+                        <small>ออกเอกสารเมื่อได้รับเงินชำระครบแล้ว</small>
+
+                    </div>
+
+                </a>
+
+                <a href="../documents/invoice-new.html" class="doc-type-card">
+
+                    <div class="doc-icon color-rose">
+
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+
+                    </div>
+
+                    <div class="doc-text">
+
+                        <strong>ใบกำกับภาษี / ส่งของ (Tax Invoice)</strong>
+
+                        <small>ส่งมอบสินค้าและออกใบกำกับภาษี</small>
+
+                    </div>
+
+                </a>
+
+                <a href="../expenses/expense-new.html" class="doc-type-card">
+
+                    <div class="doc-icon color-rose">
+
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+
+                    </div>
+
+                    <div class="doc-text">
+
+                        <strong>บันทึกค่าใช้จ่าย (Expense)</strong>
+
+                        <small>บันทึกบิลค่าใช้จ่ายและแนบรูปสลิป</small>
+
+                    </div>
+
+                </a>
+
+                <a href="../withholding-tax/withholding-tax-new.html" class="doc-type-card">
+
+                    <div class="doc-icon color-crimson">
+
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+
+                    </div>
+
+                    <div class="doc-text">
+
+                        <strong>หัก ณ ที่จ่าย (50 ทวิ)</strong>
+
+                        <small>หนังสือรับรองตามแบบสรรพากร</small>
+
+                    </div>
+
+                </a>
+
+                <a href="../documents/purchase-order-new.html" class="doc-type-card">
+
+                    <div class="doc-icon color-crimson">
+
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+
+                    </div>
+
+                    <div class="doc-text">
+
+                        <strong>ใบสั่งซื้อ (Purchase Order)</strong>
+
+                        <small>สั่งซื้อสินค้าหรือบริการจากคู่ค้า</small>
+
+                    </div>
+
+                </a>
+
+                <a href="../documents/cash-sale-new.html" class="doc-type-card">
+
+                    <div class="doc-icon color-emerald">
+
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+
+                    </div>
+
+                    <div class="doc-text">
+
+                        <strong>บิลขายเงินสด (Cash Sale)</strong>
+
+                        <small>ขายสินค้าและรับชำระเงินสดทันที</small>
+
+                    </div>
+
+                </a>
+
+                <a href="javascript:void(0)" class="doc-type-card" id="openQuickCustomerBtn">
+
+                    <div class="doc-icon color-amber">
+
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+
+                    </div>
+
+                    <div class="doc-text">
+
+                        <strong>เพิ่มลูกค้า / คู่ค้าใหม่</strong>
+
+                        <small>สร้างประวัติและเลขประจำตัวผู้เสียภาษี</small>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Quick Add Customer Modal -->
+
+    <div class="modal-overlay" id="quickAddCustomerModal" style="display: none;">
+
+        <div class="modal-card" style="max-width: 520px;">
+
+            <div class="modal-header">
+
+                <h3>+ เพิ่มลูกค้า / คู่ค้าใหม่</h3>
+
+                <button class="modal-close" id="closeCustomerModal">&times;</button>
+
+            </div>
+
+            <form id="quickCustomerForm" style="padding: 16px 20px;">
+
+                <div style="margin-bottom: 12px;">
+
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px;">ชื่อลูกค้า / บริษัท <span style="color:red;">*</span></label>
+
+                    <input type="text" id="custName" required placeholder="เช่น บริษัท สยาม คอนซัลติ้ง จำกัด" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit;">
+
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+
+                    <div>
+
+                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px;">เลขประจำตัวผู้เสียภาษี</label>
+
+                        <input type="text" id="custTaxId" placeholder="13 หลัก" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit;">
+
+                    </div>
+
+                    <div>
+
+                        <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px;">เบอร์โทรศัพท์</label>
+
+                        <input type="text" id="custPhone" placeholder="02-xxx-xxxx" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit;">
+
+                    </div>
+
+                </div>
+
+                <div style="margin-bottom: 12px;">
+
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px;">อีเมล</label>
+
+                    <input type="email" id="custEmail" placeholder="billing@example.com" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit;">
+
+                </div>
+
+                <div style="margin-bottom: 16px;">
+
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px;">ที่อยู่</label>
+
+                    <textarea id="custAddress" rows="2" placeholder="ที่อยู่สำนักงาน..." style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit;"></textarea>
+
+                </div>
+
+                <div class="modal-footer" style="margin: 20px -20px -16px -20px;">
+
+                    <button type="button" class="btn-secondary" id="cancelCustomerBtn">ยกเลิก</button>
+
+                    <button type="submit" class="btn-primary">บันทึกลูกค้า</button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Quick Add Bank Account Modal -->
+
+    <div class="modal-overlay" id="quickBankModal" style="display: none;">
+
+        <div class="modal-card" style="max-width: 480px;">
+
+            <div class="modal-header">
+
+                <h3>+ เพิ่ม / อัปเดตบัญชีการเงิน</h3>
+
+                <button class="modal-close" id="closeBankModal">&times;</button>
+
+            </div>
+
+            <form id="quickBankForm" style="padding: 16px 20px;">
+
+                <div style="margin-bottom: 12px;">
+
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px;">ธนาคาร / ประเภทบัญชี <span style="color:red;">*</span></label>
+
+                    <select id="bankCode" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit;">
+
+                        <option value="SCB">ไทยพาณิชย์ (SCB)</option>
+
+                        <option value="KBANK">กสิกรไทย (KBANK)</option>
+
+                        <option value="BBL">กรุงเทพ (BBL)</option>
+
+                        <option value="KTB">กรุงไทย (KTB)</option>
+
+                        <option value="TTB">ทหารไทยธนชาต (TTB)</option>
+
+                        <option value="CASH">เงินสดในมือ / เงินสดย่อย</option>
+
+                    </select>
+
+                </div>
+
+                <div style="margin-bottom: 12px;">
+
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px;">ชื่อเรียกบัญชี <span style="color:red;">*</span></label>
+
+                    <input type="text" id="bankTitle" required placeholder="เช่น ไทยพาณิชย์ (กระแสรายวันสาขาสาทร)" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit;">
+
+                </div>
+
+                <div style="margin-bottom: 12px;">
+
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px;">เลขที่บัญชี</label>
+
+                    <input type="text" id="bankAccNo" placeholder="xxx-x-xxxxx-x" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit;">
+
+                </div>
+
+                <div style="margin-bottom: 16px;">
+
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px;">ยอดเงินคงเหลือปัจจุบัน (บาท) <span style="color:red;">*</span></label>
+
+                    <input type="number" step="0.01" id="bankBalance" required placeholder="0.00" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit;">
+
+                </div>
+
+                <div class="modal-footer" style="margin: 20px -20px -16px -20px;">
+
+                    <button type="button" class="btn-secondary" id="cancelBankBtn">ยกเลิก</button>
+
+                    <button type="submit" class="btn-primary">บันทึกบัญชี</button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Export Report Preview Modal -->
+
+    <div class="modal-overlay" id="reportPreviewModal" style="display: none;">
+
+        <div class="report-modal-content">
+
+            <div class="report-header-print">
+
+                <div style="display: flex; align-items: center; gap: 12px;">
+
+                    <img src="../assets/images/mam-logo.png" alt="MAM DESIGN AND SERVICE" style="height: 44px; width: auto; object-fit: contain;">
+
+                    <div>
+
+                        <h2 style="margin: 0; font-size: 18px; color: #1e293b;">รายงานสรุปผลการดำเนินงานและภาพรวมธุรกิจ</h2>
+
+                        <small style="color: #64748b;" id="reportCompanySubtitle">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด (MAM DESIGN AND SERVICE CO., LTD.)</small>
+
+                    </div>
+
+                </div>
+
+                <button class="modal-close" id="closeReportModal">&times;</button>
+
+            </div>
+
+            
+
+            <div id="reportPrintArea" style="line-height: 1.6; font-size: 13.5px; color: #334155;">
+
+                <!-- Dynamically filled with current period's financial metrics -->
+
+            </div>
+
+
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+
+                <button type="button" class="btn-secondary" id="closeReportBtn">ปิดหน้าต่าง</button>
+
+                <button type="button" class="btn-primary" id="triggerPrintBtn" style="padding: 8px 20px; border-radius: 6px; border: none; color: white; background: #7D0A0A; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+
+                    <span>พิมพ์รายงาน / ดาวน์โหลด PDF</span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Toast Notification Container -->
+
+    <div class="dashboard-toast-container" id="dashboardToastContainer"></div>
+
+
+
+    <!-- Dashboard JavaScript & Auth Guard -->
+
+    <script src="../assets/js/auth-guard.js?v=15"></script>
+
+    <script src="../assets/js/.js?v=20"></script>
+
+    <script src="../assets/js/theme-manager.js"></script>
+
+    <script src="/assets/js/global-navbar.js"></script>
+</body>
+
+</html>
+
+

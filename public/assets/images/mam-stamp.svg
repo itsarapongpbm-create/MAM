@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="120" height="120">
+  <!-- Outer Ring -->
+  <circle cx="80" cy="80" r="74" fill="none" stroke="#dc2626" stroke-width="3" stroke-dasharray="10 3" opacity="0.85"/>
+  <circle cx="80" cy="80" r="66" fill="none" stroke="#dc2626" stroke-width="2" opacity="0.85"/>
+  <!-- Inner Ring -->
+  <circle cx="80" cy="80" r="46" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.85"/>
+  
+  <!-- Curved Text Top -->
+  <path id="curveTop" fill="none" d="M 18 80 A 62 62 0 0 1 142 80"/>
+  <text font-family="'Prompt', 'Inter', sans-serif" font-size="10.5" font-weight="700" fill="#dc2626" letter-spacing="1" opacity="0.9">
+    <textPath href="#curveTop" startOffset="50%" text-anchor="middle">
+      MAM DESIGN &amp; SERVICE CO., LTD.
+    </textPath>
+  </text>
+
+  <!-- Curved Text Bottom -->
+  <path id="curveBottom" fill="none" d="M 142 80 A 62 62 0 0 1 18 80"/>
+  <text font-family="'Prompt', 'Inter', sans-serif" font-size="9.5" font-weight="600" fill="#dc2626" letter-spacing="1.5" opacity="0.9">
+    <textPath href="#curveBottom" startOffset="50%" text-anchor="middle">
+      ★ CERTIFIED OFFICIAL ★
+    </textPath>
+  </text>
+
+  <!-- Center Text -->
+  <text x="80" y="74" font-family="'Prompt', 'Inter', sans-serif" font-size="15" font-weight="800" fill="#dc2626" text-anchor="middle" letter-spacing="1" opacity="0.9">MAM</text>
+  <line x1="48" y1="80" x2="112" y2="80" stroke="#dc2626" stroke-width="1.5" opacity="0.85"/>
+  <text x="80" y="93" font-family="'Prompt', 'Inter', sans-serif" font-size="8.5" font-weight="700" fill="#dc2626" text-anchor="middle" letter-spacing="1.5" opacity="0.85">AUTHORIZED</text>
+</svg>
