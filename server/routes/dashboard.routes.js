@@ -118,14 +118,16 @@ router.get('/metrics', async (req, res) => {
         let expGrowth = prevExpenses > 0 ? ((curExpenses - prevExpenses) / prevExpenses * 100) : 0;
 
         // 4. เจ้าหนี้การค้าค้างจ่าย (Accounts Payable)
+        const in7DaysDate = new Date(Date.now() + 7 * 86400000);
+        const in7DaysStr = in7DaysDate.toISOString().split('T')[0];
         const payRow = await db.getAsync(`
             SELECT 
                 COUNT(*) as count,
                 COALESCE(SUM(net_total), 0) as total,
-                SUM(CASE WHEN due_date IS NOT NULL AND due_date <= date(?, '+7 days') THEN 1 ELSE 0 END) as due_soon_count
+                SUM(CASE WHEN due_date IS NOT NULL AND due_date <= ? THEN 1 ELSE 0 END) as due_soon_count
             FROM expenses 
             WHERE payment_status = 'UNPAID'
-        `, [todayStr]);
+        `, [in7DaysStr]);
 
         // 5. กำไรสุทธิและอัตรากำไร (Net Profit & Margin)
         const netProfit = curRevenue - curExpenses;

@@ -234,7 +234,7 @@ router.post('/adjust', async (req, res) => {
     }
 });
 
-// 5.1 อัปโหลดไฟล์รูปภาพสินค้าเข้าเซิร์ฟเวอร์ (Base64 -> File on Disk)
+// 5.1 อัปโหลดไฟล์รูปภาพสินค้าเข้า MinIO Object Storage (S3)
 router.post('/upload-image', async (req, res) => {
     try {
         const { image, filename } = req.body;
@@ -242,13 +242,16 @@ router.post('/upload-image', async (req, res) => {
             return res.status(400).json({ error: 'ไม่พบข้อมูลรูปภาพ (Missing image data)' });
         }
 
+        const { uploadFile } = require('../services/storage.service');
+
         // Match base64 data URI format
         const matches = image.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
         let buffer;
+        let mimeType = 'image/jpeg';
         let ext = '.jpg';
 
         if (matches && matches.length === 3) {
-            const mimeType = matches[1];
+            mimeType = matches[1];
             buffer = Buffer.from(matches[2], 'base64');
             if (mimeType.includes('png')) ext = '.png';
             else if (mimeType.includes('webp')) ext = '.webp';
@@ -259,26 +262,26 @@ router.post('/upload-image', async (req, res) => {
             buffer = Buffer.from(image, 'base64');
         }
 
-        // Folder: public/uploads/products/
-        const uploadDir = path.join(__dirname, '..', '..', 'public', 'uploads', 'products');
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-
         const safeRandom = crypto.randomBytes(4).toString('hex');
         const timestamp = Date.now();
         const rawName = (filename || 'item').replace(/\.[^/.]+$/, '');
         const cleanName = rawName.replace(/[^a-zA-Z0-9_\u0E00-\u0E7F-]/g, '_').slice(0, 25);
         const finalFilename = `${timestamp}_${safeRandom}_${cleanName}${ext}`;
-        const filePath = path.join(uploadDir, finalFilename);
 
-        await fs.promises.writeFile(filePath, buffer);
+        // อัปโหลดเข้า MinIO Bucket: giftory-products
+        const uploadResult = await uploadFile({
+            buffer,
+            filename: finalFilename,
+            mimetype: mimeType,
+            bucket: process.env.MINIO_BUCKET_PRODUCTS || 'giftory-products',
+            prefix: 'products'
+        });
 
-        const publicUrl = `/uploads/products/${finalFilename}`;
         res.json({
             success: true,
-            url: publicUrl,
+            url: uploadResult.publicUrl,
             filename: finalFilename,
+            key: uploadResult.key,
             size: buffer.length
         });
     } catch (err) {

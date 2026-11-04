@@ -1,19 +1,26 @@
-@echo off
+﻿@echo off
 chcp 65001 >nul
-:: ตรวจสอบสิทธิ์ Administrator หากยังไม่ได้รันแบบ Admin ให้ขอสิทธิ์อัตโนมัติ
 net session >nul 2>&1
 if %errorLevel% neq 0 (
-    echo กำลังขอสิทธิ์ผู้ดูแลระบบ (Administrator) เพื่อเปิดพอร์ต 3000 ใน Windows Firewall...
+    echo [Requesting Administrator privilege...]
     powershell -Command "Start-Process '%~f0' -Verb RunAs"
     exit /b
 )
 
 echo =======================================================
-echo   กำลังเปิดพอร์ต TCP 3000 ใน Windows Defender Firewall
+echo   Opening Giftory Firewall Ports (3000 and 9000)
 echo =======================================================
-netsh advfirewall firewall delete rule name="MAM Server Port 3000" >nul 2>&1
-netsh advfirewall firewall add rule name="MAM Server Port 3000" dir=in action=allow protocol=TCP localport=3000
+netsh advfirewall firewall delete rule name="Giftory Server Port 3000" >nul 2>&1
+netsh advfirewall firewall add rule name="Giftory Server Port 3000" dir=in action=allow protocol=TCP localport=3000
+
+netsh advfirewall firewall delete rule name="Giftory MinIO Port 9000" >nul 2>&1
+netsh advfirewall firewall add rule name="Giftory MinIO Port 9000" dir=in action=allow protocol=TCP localport=9000
+
 echo.
-echo [สำเร็จ] เปิดพอร์ต 3000 สำหรับเครื่องอื่นในวงแลน/Wi-Fi เรียบร้อยแล้ว!
+echo =======================================================
+echo   [SUCCESS] Firewall ports 3000 and 9000 are opened!
+echo   LAN URL for other devices in office:
+echo   http://192.168.1.34:3000
+echo =======================================================
 echo.
 pause

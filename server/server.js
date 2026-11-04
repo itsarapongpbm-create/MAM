@@ -25,6 +25,8 @@ const userRoutes = require('./routes/users.routes');
 const inventoryRoutes = require('./routes/inventory.routes');
 const giftSetRoutes = require('./routes/gift-sets.routes');
 const emailRoutes = require('./routes/email.routes');
+const uploadRoutes = require('./routes/upload.routes');
+const { checkStorageHealth } = require('./services/storage.service');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -40,6 +42,32 @@ app.use('/dashboard/assets', express.static(path.join(__dirname, '..', 'public',
 app.use('/inventory/assets', express.static(path.join(__dirname, '..', 'public', 'assets')));
 app.use('/documents/assets', express.static(path.join(__dirname, '..', 'public', 'assets')));
 app.use('/email/assets', express.static(path.join(__dirname, '..', 'public', 'assets')));
+
+// ==========================================================================
+// Health Check Endpoint (PostgreSQL + MinIO Status)
+// ==========================================================================
+app.get('/api/health', async (req, res) => {
+    try {
+        const dbCheck = await require('./config/db').getAsync('SELECT NOW() as now, current_database() as db');
+        const storageCheck = await checkStorageHealth();
+        res.json({
+            status: 'HEALTHY',
+            timestamp: new Date().toISOString(),
+            database: {
+                engine: 'PostgreSQL 16',
+                connected: Boolean(dbCheck),
+                current_database: dbCheck?.db,
+                server_time: dbCheck?.now
+            },
+            storage: {
+                engine: 'MinIO (S3-Compatible)',
+                ...storageCheck
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ status: 'UNHEALTHY', error: err.message });
+    }
+});
 
 // ==========================================================================
 // API Routes Registration (เชื่อมโยงเส้นทาง API ทั้งหมด)
@@ -58,6 +86,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/gift-sets', giftSetRoutes);
 app.use('/api/email', emailRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Auto-redirect incorrect nested inventory paths (e.g. /dashboard/inventory/xxx -> /inventory/xxx)
 app.use('/dashboard/inventory', (req, res) => {
@@ -76,12 +105,12 @@ app.use((req, res) => {
 initDatabase().then(() => {
     app.listen(PORT, () => {
         console.log(`=======================================================`);
-        console.log(`FlowAccount Advance Server running on http://localhost:${PORT}`);
-        console.log(`Database: SQLite (server/flowaccount.db)`);
-        console.log(`App URL:   http://localhost:${PORT}`);
+        console.log(`Giftory Platform Server running on http://localhost:${PORT}`);
+        console.log(`Database: PostgreSQL 16 (giftory_db on Docker port 5432)`);
+        console.log(`Storage:  MinIO S3 (Buckets: giftory-products, documents, slips)`);
+        console.log(`API URL:  http://localhost:${PORT}/api`);
+        console.log(`Health:   http://localhost:${PORT}/api/health`);
         console.log(`Dashboard: http://localhost:${PORT}/dashboard/`);
-        console.log(`Quotations: http://localhost:${PORT}/documents/quotations.html`);
-        console.log(`Architecture: Modular Clean Architecture (Routes & Models split)`);
         console.log(`=======================================================`);
     });
 }).catch(err => {

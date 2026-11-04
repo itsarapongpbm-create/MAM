@@ -1,7 +1,7 @@
 /**
  * Database Module Facade
  * รวมศูนย์การเชื่อมต่อฐานข้อมูล ตาราง ไมเกรชัน การรันเลขที่เอกสาร และข้อมูลเริ่มต้น
- * (แยกโมดูลย่อยไว้ใน server/config, server/models, server/services เพื่อให้อ่านง่ายและประหยัด Token)
+ * รองรับทั้ง PostgreSQL (Engine หลัก) และ SQLite (Auto-Fallback)
  */
 
 const db = require('./config/db');
@@ -13,21 +13,25 @@ const { seedInitialData } = require('./models/seed');
 
 // ฟังก์ชันหลักสำหรับเริ่มต้นฐานข้อมูลเมื่อเซิร์ฟเวอร์เปิดทำงาน
 async function initDatabase() {
+    if (db.pool) {
+        try {
+            const testRes = await db.pool.query('SELECT current_database() as db_name, version()');
+            console.log(`Connected to PostgreSQL database: [${testRes.rows[0].db_name}]`);
+            await syncDocumentSequences(db);
+            return;
+        } catch (err) {
+            console.warn(`[NOTICE] PostgreSQL on Docker is starting or paused (${err.code || err.message}).`);
+            console.log(`[INFO] Auto-switched to SQLite fallback mode so the system stays 100% online.`);
+            db.switchToSqlite();
+        }
+    }
+
+    // ทำงานบน SQLite
     await db.runAsync('PRAGMA foreign_keys = ON;');
-
-    // 1. สร้างตารางทั้งหมด (ถ้ายังไม่มี)
     await createTables(db);
-
-    // 2. ตรวจสอบและไมเกรชันตาราง documents
     await migrateDocumentsTable(db);
-
-    // 3. ตรวจสอบคอลัมน์ใหม่ (Alter Table)
     await runColumnMigrations(db);
-
-    // 4. ซิงค์เลขที่เอกสารล่าสุด
     await syncDocumentSequences(db);
-
-    // 5. ใส่ข้อมูลตัวอย่างตั้งต้น (ถ้ายังว่างอยู่)
     await seedInitialData(db);
 }
 

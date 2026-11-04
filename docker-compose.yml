@@ -1,0 +1,50 @@
+# ==============================================================================
+# Giftory Platform - Local Infrastructure Setup (Step 1)
+# Services: PostgreSQL 16 (Database) + MinIO (S3-Compatible Object Storage)
+# ==============================================================================
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. PostgreSQL 16 - ฐานข้อมูลหลัก (Relational Database)
+  # ----------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: giftory-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-giftory_db}
+      POSTGRES_USER: ${POSTGRES_USER:-giftory_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-giftory_secret123}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-giftory_user} -d ${POSTGRES_DB:-giftory_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ----------------------------------------------------------------------------
+  # 2. MinIO - ศูนย์กลางจัดเก็บไฟล์ (Object Storage / S3-Compatible)
+  # ----------------------------------------------------------------------------
+  minio:
+    image: ghcr.io/coollabsio/minio:latest
+    container_name: giftory-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+    ports:
+      - "${MINIO_API_PORT:-9000}:9000"       # Port สำหรับ API เชื่อมต่อกับ Backend (S3 API)
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"   # Port สำหรับเปิดดูหน้า MinIO Web Console
+    volumes:
+      - minio_data:/data
+
+volumes:
+  postgres_data:
+    name: giftory_postgres_data
+  minio_data:
+    name: giftory_minio_data

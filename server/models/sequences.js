@@ -37,7 +37,7 @@ async function getNextDocNumber(companyId = 1, docType, issueDate = null) {
         INSERT INTO document_sequences (company_id, doc_type, period, last_no)
         VALUES (?, ?, ?, 1)
         ON CONFLICT(company_id, doc_type, period)
-        DO UPDATE SET last_no = last_no + 1, updated_at = CURRENT_TIMESTAMP
+        DO UPDATE SET last_no = document_sequences.last_no + 1, updated_at = CURRENT_TIMESTAMP
     `, [companyId, docType, period]);
 
     const row = await db.getAsync(`
