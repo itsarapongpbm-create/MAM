@@ -7,14 +7,14 @@ const ROLE_PERMISSIONS = {
     ADMIN: {
         title: 'เจ้าของกิจการ (Admin)',
         badgeClass: 'badge-role-admin',
-        allowedPaths: ['dashboard', 'documents', 'expenses', 'withholding-tax', 'inventory', 'contacts', 'email', 'settings'],
+        allowedPaths: ['dashboard', 'documents', 'expenses', 'withholding-tax', 'inventory', 'banking', 'contacts', 'email', 'admin-web', 'settings'],
         canManageUsers: true,
         canViewFinancialMetrics: true
     },
     ACCOUNTANT: {
         title: 'นักบัญชี (Accountant)',
         badgeClass: 'badge-role-accountant',
-        allowedPaths: ['dashboard', 'documents', 'expenses', 'withholding-tax', 'inventory', 'contacts', 'email'],
+        allowedPaths: ['dashboard', 'documents', 'expenses', 'withholding-tax', 'inventory', 'banking', 'contacts', 'email', 'admin-web'],
         canManageUsers: false,
         canViewFinancialMetrics: true
     },
@@ -28,8 +28,10 @@ const ROLE_PERMISSIONS = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    ensureBankingMenu();
     ensureEmailMenu();
     ensureAdminWebMenu();
+    cleanupDeadSidebarLinks();
     enforceAuthGuard();
     applyRolePermissions();
     setupUserDropdown();
@@ -39,33 +41,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function getCurrentUser() {
     try {
-        const stored = localStorage.getItem('flowUser');
+        const stored = localStorage.getItem('flowUser') ||
+                       sessionStorage.getItem('currentUser') ||
+                       localStorage.getItem('user') ||
+                       localStorage.getItem('flowaccount_user');
         if (stored) return JSON.parse(stored);
     } catch (e) {
         console.error('Error parsing stored user:', e);
     }
-    // Default fallback to Admin for demo convenience if not logged in
-    const defaultAdmin = {
-        id: 1,
-        username: 'admin',
-        email: 'admin@mamdesign.co.th',
-        name: 'คุณอิศรพงศ์ โพธิ์งาม',
-        role: 'ADMIN',
-        avatar: 'https://ui-avatars.com/api/?name=Itsarapong+Po&background=7D0A0A&color=fff&size=128'
-    };
-    localStorage.setItem('flowUser', JSON.stringify(defaultAdmin));
-    return defaultAdmin;
+    return null;
 }
+window.getCurrentUser = getCurrentUser;
 
 function enforceAuthGuard() {
     const user = getCurrentUser();
     const currentPath = window.location.pathname.toLowerCase();
+    const isRootLogin = currentPath === '/' || (currentPath.endsWith('/index.html') && !currentPath.includes('/dashboard/') && !currentPath.includes('/banking/'));
+    const isAuthPage = isRootLogin || currentPath.includes('/auth/');
+
+    if (!user) {
+        if (!isAuthPage) {
+            window.location.href = '/auth/login.html';
+        }
+        return;
+    }
 
     // Check restricted modules for Sales
     if (user.role === 'SALES') {
-        if (currentPath.includes('/expenses/') || currentPath.includes('/withholding-tax/') || currentPath.includes('/settings/users')) {
-            alert(`จำกัดสิทธิ์การเข้าถึง!\n\nบทบาทของคุณคือ "${ROLE_PERMISSIONS.SALES.title}"\nไม่มีสิทธิ์เข้าถึงระบบค่าใช้จ่ายหรือภาษีหัก ณ ที่จ่าย`);
-            window.location.href = '../documents/quotations.html';
+        if (
+            currentPath.includes('/expenses/') ||
+            currentPath.includes('/withholding-tax/') ||
+            currentPath.includes('/banking/') ||
+            currentPath.includes('/admin-web/') ||
+            currentPath.includes('/settings/users')
+        ) {
+            alert(`จำกัดสิทธิ์การเข้าถึง!\n\nบทบาทของคุณคือ "${ROLE_PERMISSIONS.SALES.title}"\nไม่มีสิทธิ์เข้าถึงส่วนงานบัญชี การเงิน หรือการตั้งค่าระบบ`);
+            window.location.href = '/documents/quotations.html';
             return;
         }
     }
@@ -74,7 +85,7 @@ function enforceAuthGuard() {
     if (user.role === 'ACCOUNTANT') {
         if (currentPath.includes('/settings/users')) {
             alert(`จำกัดสิทธิ์การเข้าถึง!\n\nเฉพาะ "เจ้าของกิจการ (Admin)" เท่านั้นที่สามารถจัดการผู้ใช้งานและสิทธิ์ได้`);
-            window.location.href = '../dashboard/index.html';
+            window.location.href = '/dashboard/index.html';
             return;
         }
     }
@@ -82,6 +93,7 @@ function enforceAuthGuard() {
 
 function applyRolePermissions() {
     const user = getCurrentUser();
+    if (!user) return;
     const roleConfig = ROLE_PERMISSIONS[user.role] || ROLE_PERMISSIONS.ADMIN;
 
     // 1. Update user info in topbar
@@ -98,17 +110,22 @@ function applyRolePermissions() {
     const dropdownHeader = document.querySelector('.user-dropdown-header');
     if (dropdownHeader) {
         dropdownHeader.innerHTML = `
-            <strong>${user.name}</strong>
-            <small>${user.email}</small>
+            <strong id="dropdownUserFullName">${user.name}</strong>
+            <small id="dropdownUserEmail">${user.email}</small>
             <div style="margin-top: 4px;"><span class="role-badge-pill ${roleConfig.badgeClass}">${roleConfig.title}</span></div>
         `;
     }
 
     // 2. Adjust navigation based on role
     if (user.role === 'SALES') {
-        // Hide expenses & withholding tax links from sidebar
-        document.querySelectorAll('a[href*="expenses"], a[href*="withholding-tax"]').forEach(el => {
+        // Hide expenses, withholding tax, banking & admin-web links from sidebar
+        document.querySelectorAll('a[href*="expenses"], a[href*="withholding-tax"], a[href*="banking"], a[href*="admin-web"]').forEach(el => {
             el.style.display = 'none';
+        });
+        document.querySelectorAll('.menu-section-title').forEach(el => {
+            if (el.textContent.includes('Admin Web')) {
+                el.style.display = 'none';
+            }
         });
 
         // Hide sensitive profit & cost elements if on dashboard
@@ -122,8 +139,14 @@ function applyRolePermissions() {
         document.querySelectorAll('a[href*="users.html"]').forEach(el => {
             el.style.display = 'none';
         });
+        document.querySelectorAll('.menu-section-title').forEach(el => {
+            if (el.textContent.includes('การตั้งค่าระบบ')) {
+                el.style.display = 'none';
+            }
+        });
     }
 }
+window.applyRolePermissions = applyRolePermissions;
 
 function setupUserDropdown() {
     const userBtn = document.getElementById('userMenuBtn');
@@ -381,5 +404,75 @@ function ensureAdminWebMenu() {
     }
 }
 window.ensureAdminWebMenu = ensureAdminWebMenu;
+
+/**
+ * Ensure Banking menu item is present in sidebarNav and rewrite any #banking links
+ */
+function ensureBankingMenu() {
+    const sidebar = document.getElementById('sidebarNav') || document.querySelector('.sidebar-nav');
+    if (!sidebar) return;
+
+    const isBankingActive = window.location.pathname.includes('/banking/');
+
+    // Rewrite any placeholder #banking link
+    const hashBanking = sidebar.querySelector('a[href="#banking"]');
+    if (hashBanking) {
+        hashBanking.setAttribute('href', '/banking/index.html');
+        if (isBankingActive) hashBanking.classList.add('active');
+        return;
+    }
+
+    // Check if already present
+    const existingBanking = sidebar.querySelector('a[href*="banking/index.html"]') ||
+                            (isBankingActive && sidebar.querySelector('a[href="index.html"]'));
+    if (existingBanking) {
+        if (isBankingActive) existingBanking.classList.add('active');
+        return;
+    }
+
+    const bankingLink = document.createElement('a');
+    bankingLink.href = '/banking/index.html';
+    bankingLink.className = `menu-item ${isBankingActive ? 'active' : ''}`;
+    bankingLink.innerHTML = `
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+        </svg>
+        <span>การเงิน / ธนาคาร</span>
+    `;
+
+    const contactsGroup = sidebar.querySelector('#contactsDropdownGroup');
+    const inventoryGroup = sidebar.querySelector('#inventoryDropdownGroup');
+    const menuContainer = sidebar.querySelector('.sidebar-menu') || sidebar;
+
+    if (contactsGroup && contactsGroup.parentNode) {
+        contactsGroup.parentNode.insertBefore(bankingLink, contactsGroup);
+    } else if (inventoryGroup && inventoryGroup.parentNode) {
+        inventoryGroup.parentNode.insertBefore(bankingLink, inventoryGroup.nextSibling);
+    } else {
+        menuContainer.appendChild(bankingLink);
+    }
+}
+window.ensureBankingMenu = ensureBankingMenu;
+
+/**
+ * Remove dead #reports and #payroll sidebar links
+ */
+function cleanupDeadSidebarLinks() {
+    const sidebar = document.getElementById('sidebarNav') || document.querySelector('.sidebar-nav');
+    if (!sidebar) return;
+
+    sidebar.querySelectorAll('a[href="#reports"], a[href="#payroll"]').forEach(el => {
+        el.remove();
+    });
+
+    sidebar.querySelectorAll('.menu-section-title').forEach(el => {
+        if (el.textContent.includes('วิเคราะห์')) {
+            el.remove();
+        }
+    });
+}
+window.cleanupDeadSidebarLinks = cleanupDeadSidebarLinks;
+
 
 

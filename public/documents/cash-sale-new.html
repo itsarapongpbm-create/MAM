@@ -50,12 +50,12 @@
                     <div class="company-logo-placeholder">
                         <img id="docCompanyLogo" src="../assets/images/mam-logo.png" alt="MAM DESIGN AND SERVICE" style="height: 48px; width: auto; object-fit: contain;">
                     </div>
-                    <div class="company-title-text">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</div>
+                    <div class="company-title-text">บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด</div>
                     <div style="font-size: 13px; font-weight: 600; color: #475569; margin-top: -2px; margin-bottom: 4px;">MAM DESIGN AND SERVICE CO., LTD.</div>
                     <div class="company-details-block">
-                        123 อาคารสาทรซิตี้ ทาวเวอร์ ชั้น 15 ถนนสาทรใต้ แขวงทุ่งมหาเมฆ เขตสาทร กรุงเทพฯ 10120<br>
-                        เลขประจำตัวผู้เสียภาษี: 0105562089456 (สำนักงานใหญ่)<br>
-                        โทรศัพท์: 02-821-5555 | อีเมล: contact@mamdesign.co.th
+                        46/14 ถนนริมคลองบางค้อ แขวงบางค้อ เขตจอมทอง กรุงเทพมหานคร 10150<br>
+                        เลขประจำตัวผู้เสียภาษี: 0105565160161 (สำนักงานใหญ่)<br>
+                        โทรศัพท์: 02-415-1946
                     </div>
                 </div>
 
@@ -87,7 +87,9 @@
                     </div>
                     <div class="meta-field-row">
                         <span class="meta-field-label">พนักงานขาย:</span>
-                        <input type="text" id="salespersonInput" class="meta-field-input" value="อิศรพงศ์ โพธิ์งาม">
+                        <select id="salespersonSelect" class="meta-field-input meta-field-select" title="เลือกพนักงานขาย">
+                            <option value="">กำลังโหลดรายชื่อ...</option>
+                        </select>
                     </div>
                 </div>
             </section>
@@ -338,7 +340,7 @@
                 <div class="sig-card sig-card-stamp" id="centerStampBox">
                     <div class="stamp-center-wrapper">
                         <img id="companyStampImg" src="../assets/images/mam-stamp.svg" class="company-stamp-center-img" alt="Official Stamp">
-                        <div class="company-stamp-label" id="companyStampLabel">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</div>
+                        <div class="company-stamp-label" id="companyStampLabel">บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด</div>
                     </div>
                 </div>
 
@@ -553,11 +555,12 @@
     </div>
 
     <!-- Scripts -->
+    <script src="../assets/js/auth-guard.js"></script>
     <script src="../assets/js/theme-manager.js"></script>
     <script src="../assets/js/modules/doc-toast.js"></script>
     <script src="../assets/js/modules/doc-datepicker.js"></script>
     <script src="../assets/js/modules/doc-branding-modal.js?v=clean_remarks_v4"></script>
-    <script src="../assets/js/.js?v=20?v=clean_remarks_v4"></script>
+    <script src="../assets/js/document-editor.js?v=sp_v1"></script>
 </body>
 </html>
 

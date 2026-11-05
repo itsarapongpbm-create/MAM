@@ -15,7 +15,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     await initExpenseEditor();
 });
 
+async function syncExpenseCompanyHeader() {
+    try {
+        const res = await fetch('/api/company');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data) return;
+        const companyName = data.name || data.name_th || 'บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด';
+        const companyAddress = data.address || '46/14 ถนนริมคลองบางค้อ แขวงบางค้อ เขตจอมทอง กรุงเทพมหานคร 10150';
+        const companyTaxId = data.tax_id || '0105565160161';
+        const companyPhone = data.phone || '02-415-1946';
+
+        const titleEl = document.querySelector('.company-title-text');
+        if (titleEl) titleEl.textContent = companyName;
+
+        const detailsEl = document.querySelector('.company-details-block');
+        if (detailsEl) {
+            detailsEl.innerHTML = `${escapeHtml(companyAddress)}<br>เลขประจำตัวผู้เสียภาษี: <strong>${escapeHtml(companyTaxId)}</strong> (สำนักงานใหญ่)<br>โทรศัพท์: ${escapeHtml(companyPhone)}`;
+        }
+    } catch (e) {}
+}
+
 async function initExpenseEditor() {
+    syncExpenseCompanyHeader();
     const urlParams = new URLSearchParams(window.location.search);
     const idParam = urlParams.get('id');
     const copyParam = urlParams.get('copy');
@@ -504,7 +526,7 @@ function escapeHtml(str) {
 function thaiBahtText(amount) {
     if (isNaN(amount) || amount === null || amount === undefined) return 'ศูนย์บาทถ้วน';
     amount = Math.round(amount * 100) / 100;
-    if (amount === 0) return 'ศูนย์บาทถ้วน';
+    if (amount <= 0) return 'ศูนย์บาทถ้วน';
 
     const numbers = ['ศูนย์', 'หนึ่ง', 'สอง', 'สาม', 'สี่', 'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า'];
     const units = ['', 'สิบ', 'ร้อย', 'พัน', 'หมื่น', 'แสน', 'ล้าน'];
@@ -516,7 +538,8 @@ function thaiBahtText(amount) {
             const digit = parseInt(valStr.charAt(i), 10);
             const pos = len - i - 1;
             if (digit !== 0) {
-                if (pos === 0 && digit === 1 && len > 1) {
+                const hasHigherNonZero = valStr.slice(0, i).split('').some(ch => ch !== '0');
+                if (pos === 0 && digit === 1 && hasHigherNonZero) {
                     res += 'เอ็ด';
                 } else if (pos === 1 && digit === 2) {
                     res += 'ยี่สิบ';
@@ -535,16 +558,18 @@ function thaiBahtText(amount) {
     const fractionPart = parts[1];
 
     let bahtText = '';
-    if (integerPart.length > 6) {
+    if (parseInt(integerPart, 10) === 0) {
+        bahtText = 'ศูนย์บาท';
+    } else if (integerPart.length > 6) {
         const millionGroup = integerPart.substring(0, integerPart.length - 6);
         const remainGroup = integerPart.substring(integerPart.length - 6);
         bahtText = convertGroup(millionGroup) + 'ล้าน' + convertGroup(remainGroup) + 'บาท';
     } else {
-        bahtText = (integerPart === '0' ? '' : convertGroup(integerPart)) + 'บาท';
+        bahtText = convertGroup(integerPart) + 'บาท';
     }
 
     let satangText = '';
-    if (fractionPart === '00') {
+    if (parseInt(fractionPart, 10) === 0) {
         satangText = 'ถ้วน';
     } else {
         satangText = convertGroup(fractionPart) + 'สตางค์';

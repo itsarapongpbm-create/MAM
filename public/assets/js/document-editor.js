@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const isPo = getDocType() === 'PURCHASE_ORDER';
         const url = isPo ? '/api/vendors' : '/api/customers';
         const urlParams = new URLSearchParams(window.location.search);
-        const hasIdOrRef = urlParams.has('id') || urlParams.has('doc') || urlParams.has('num') || urlParams.has('ref');
+        const hasIdOrRef = urlParams.has('id') || urlParams.has('doc') || urlParams.has('num') || urlParams.has('ref') || urlParams.has('copy');
 
         customersLoadedPromise = (async () => {
             try {
@@ -126,6 +126,146 @@ document.addEventListener('DOMContentLoaded', () => {
         return customersLoadedPromise;
     }
     loadCustomersFromApi();
+
+    // =========================================================================
+    // Salesperson / Purchaser Dropdown Setup
+    // =========================================================================
+    let salespersonsLoadedPromise = null;
+    let globalSalespersonList = [];
+
+    function getSalespersonElement() {
+        return document.getElementById('salespersonSelect') || document.getElementById('salespersonInput');
+    }
+
+    function setSalespersonValue(name) {
+        const el = getSalespersonElement();
+        if (!el) return;
+        const cleanName = (name || '').trim();
+        if (!cleanName) return;
+
+        if (el.tagName.toLowerCase() === 'select') {
+            let matched = false;
+            for (let i = 0; i < el.options.length; i++) {
+                if (el.options[i].value.trim().toLowerCase() === cleanName.toLowerCase()) {
+                    el.selectedIndex = i;
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) {
+                const opt = document.createElement('option');
+                opt.value = cleanName;
+                opt.textContent = cleanName;
+                const customOpt = el.querySelector('option[value="__custom__"]');
+                if (customOpt) {
+                    el.insertBefore(opt, customOpt);
+                } else {
+                    el.appendChild(opt);
+                }
+                opt.selected = true;
+            }
+        } else {
+            el.value = cleanName;
+        }
+    }
+
+    function loadSalespersonsFromApi() {
+        const el = getSalespersonElement();
+        if (!el) return Promise.resolve();
+
+        salespersonsLoadedPromise = (async () => {
+            // Detect current logged-in user
+            let currentUserName = '';
+            if (typeof getCurrentUser === 'function') {
+                try {
+                    const u = getCurrentUser();
+                    if (u && u.name) currentUserName = u.name.trim();
+                } catch (e) {}
+            }
+            if (!currentUserName) {
+                try {
+                    const stored = localStorage.getItem('flowUser');
+                    if (stored) {
+                        const u = JSON.parse(stored);
+                        if (u && u.name) currentUserName = u.name.trim();
+                    }
+                } catch (e) {}
+            }
+
+            try {
+                const res = await fetch('/api/users');
+                if (res.ok) {
+                    const users = await res.json();
+                    if (Array.isArray(users) && users.length > 0) {
+                        globalSalespersonList = users.filter(u => u.status !== 'REJECTED' && u.status !== 'INACTIVE');
+                    }
+                }
+            } catch (err) {
+                console.warn('Could not load users for salesperson list:', err);
+            }
+
+            if (globalSalespersonList.length === 0) {
+                globalSalespersonList = [
+                    { name: currentUserName || 'คุณอิศรพงศ์ โพธิ์งาม' }
+                ];
+            }
+
+            if (el.tagName.toLowerCase() === 'select') {
+                const previousVal = el.value && el.value !== '__custom__' ? el.value : '';
+                el.innerHTML = '';
+
+                // Add active users from system
+                globalSalespersonList.forEach(u => {
+                    if (u && u.name) {
+                        const opt = document.createElement('option');
+                        opt.value = u.name.trim();
+                        opt.textContent = u.name.trim();
+                        el.appendChild(opt);
+                    }
+                });
+
+                // Add option to type custom salesperson
+                const customOpt = document.createElement('option');
+                customOpt.value = '__custom__';
+                customOpt.textContent = '+ ระบุชื่ออื่น...';
+                el.appendChild(customOpt);
+
+                // Handle custom selection
+                let lastSelected = el.value;
+                el.onchange = () => {
+                    if (el.value === '__custom__') {
+                        const isPo = getDocType() === 'PURCHASE_ORDER';
+                        const label = isPo ? 'ผู้สั่งซื้อ / ผู้ติดต่อ' : 'พนักงานขาย';
+                        const customName = prompt(`กรุณาระบุชื่อ${label}:`, '');
+                        if (customName && customName.trim()) {
+                            setSalespersonValue(customName.trim());
+                            lastSelected = el.value;
+                        } else {
+                            el.value = lastSelected;
+                        }
+                    } else {
+                        lastSelected = el.value;
+                    }
+                };
+
+                // Select initial value
+                if (previousVal) {
+                    setSalespersonValue(previousVal);
+                } else if (currentUserName) {
+                    setSalespersonValue(currentUserName);
+                } else if (el.options.length > 0) {
+                    el.selectedIndex = 0;
+                }
+            } else {
+                if (!el.value || el.value.trim() === 'อิศรพงศ์ โพธิ์งาม') {
+                    if (currentUserName) el.value = currentUserName;
+                }
+            }
+        })();
+
+        return salespersonsLoadedPromise;
+    }
+    loadSalespersonsFromApi();
 
     function selectCustomerByNameOrId(name, id, fallbackAddress = '', fallbackTaxId = '', fallbackBranch = 'สำนักงานใหญ่', fallbackPhone = '', fallbackContact = '', fallbackCreditTerms = '') {
         if (!customerSelect) return;
@@ -599,7 +739,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize rows in table
     const urlParams = new URLSearchParams(window.location.search);
-    const hasIdOrRef = urlParams.has('id') || urlParams.has('doc') || urlParams.has('num') || urlParams.has('ref');
+    const hasIdOrRef = urlParams.has('id') || urlParams.has('doc') || urlParams.has('num') || urlParams.has('ref') || urlParams.has('copy');
     const hasPrefill = urlParams.has('prefill_hmp');
 
     if (itemsTbody) {
@@ -835,7 +975,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function arabicToThaiBahtText(num) {
         if (isNaN(num) || num === null) return 'ศูนย์บาทถ้วน';
         num = Math.round(num * 100) / 100;
-        if (num === 0) return 'ศูนย์บาทถ้วน';
+        if (num <= 0) return 'ศูนย์บาทถ้วน';
 
         const thaiNumbers = ['ศูนย์', 'หนึ่ง', 'สอง', 'สาม', 'สี่', 'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า'];
         const thaiUnits = ['', 'สิบ', 'ร้อย', 'พัน', 'หมื่น', 'แสน', 'ล้าน'];
@@ -847,7 +987,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const digit = parseInt(str.charAt(i), 10);
                 const pos = len - i - 1;
                 if (digit !== 0) {
-                    if (pos === 0 && digit === 1 && len > 1) {
+                    const hasHigherNonZero = str.slice(0, i).split('').some(ch => ch !== '0');
+                    if (pos === 0 && digit === 1 && hasHigherNonZero) {
                         res += 'เอ็ด';
                     } else if (pos === 1 && digit === 2) {
                         res += 'ยี่สิบ';
@@ -866,13 +1007,16 @@ document.addEventListener('DOMContentLoaded', () => {
         let satangPart = parts[1];
 
         let result = '';
-        if (integerPart.length > 6) {
-            const millions = integerPart.substring(0, integerPart.length - 6);
-            integerPart = integerPart.substring(integerPart.length - 6);
-            result += convertBlock(millions) + 'ล้าน';
+        if (parseInt(integerPart, 10) === 0) {
+            result = 'ศูนย์บาท';
+        } else {
+            if (integerPart.length > 6) {
+                const millions = integerPart.substring(0, integerPart.length - 6);
+                integerPart = integerPart.substring(integerPart.length - 6);
+                result += convertBlock(millions) + 'ล้าน';
+            }
+            result += convertBlock(integerPart) + 'บาท';
         }
-
-        result += convertBlock(integerPart) + 'บาท';
 
         if (parseInt(satangPart, 10) === 0) {
             result += 'ถ้วน';
@@ -923,6 +1067,68 @@ document.addEventListener('DOMContentLoaded', () => {
         if (type === 'TAX_INVOICE') return 'invoices.html';
         if (type === 'RECEIPT') return 'receipts.html';
         return 'quotations.html';
+    }
+
+    function getPaymentChannelTerm() {
+        if (customerCreditTerms) {
+            return customerCreditTerms.value.trim();
+        }
+        const receiptChannelSelect = document.getElementById('receiptChannelSelect');
+        const receiptAccountInput = document.getElementById('receiptAccountInput');
+        if (receiptChannelSelect) {
+            const ch = receiptChannelSelect.value;
+            let channelLabel = 'โอนเงินผ่านธนาคาร';
+            if (ch === 'CHEQUE') channelLabel = 'เช็คธนาคาร';
+            else if (ch === 'CASH') channelLabel = 'เงินสด';
+            else if (ch === 'CREDIT') channelLabel = 'บัตรเครดิต';
+            const acc = receiptAccountInput?.value?.trim() || '';
+            return acc ? `${channelLabel} (${acc})` : channelLabel;
+        }
+        const paymentMethodSelect = document.getElementById('paymentMethodSelect');
+        if (paymentMethodSelect) {
+            const pm = paymentMethodSelect.value;
+            if (pm === 'TRANSFER') return 'โอนเงินผ่านธนาคาร';
+            if (pm === 'CREDIT_CARD') return 'บัตรเครดิต';
+            return 'เงินสด (Cash)';
+        }
+        return '';
+    }
+
+    function restorePaymentChannelControls(doc) {
+        if (!doc) return;
+        const termStr = String(doc.payment_method || doc.credit_terms || '').trim();
+        if (customerCreditTerms && doc.credit_terms) {
+            customerCreditTerms.value = doc.credit_terms;
+        }
+        const receiptChannelSelect = document.getElementById('receiptChannelSelect');
+        const receiptAccountInput = document.getElementById('receiptAccountInput');
+        if (receiptChannelSelect && termStr) {
+            if (termStr.includes('เช็ค') || termStr.toUpperCase().includes('CHEQUE')) {
+                receiptChannelSelect.value = 'CHEQUE';
+            } else if (termStr.includes('เงินสด') || termStr.toUpperCase().includes('CASH')) {
+                receiptChannelSelect.value = 'CASH';
+            } else if (termStr.includes('บัตรเครดิต') || termStr.toUpperCase().includes('CREDIT')) {
+                receiptChannelSelect.value = 'CREDIT';
+            } else {
+                receiptChannelSelect.value = 'TRANSFER';
+            }
+            if (receiptAccountInput) {
+                const match = termStr.match(/\((.+)\)$/);
+                if (match && match[1]) {
+                    receiptAccountInput.value = match[1].trim();
+                }
+            }
+        }
+        const paymentMethodSelect = document.getElementById('paymentMethodSelect');
+        if (paymentMethodSelect && termStr) {
+            if (termStr.includes('โอน') || termStr.toUpperCase().includes('TRANSFER')) {
+                paymentMethodSelect.value = 'TRANSFER';
+            } else if (termStr.includes('บัตรเครดิต') || termStr.toUpperCase().includes('CREDIT')) {
+                paymentMethodSelect.value = 'CREDIT_CARD';
+            } else {
+                paymentMethodSelect.value = 'CASH';
+            }
+        }
     }
 
     async function saveDocument(targetStatus = 'WAITING') {
@@ -979,16 +1185,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const discountAmt = parseFloat(discountAmountDisplay?.textContent?.replace(/,/g, '')) || 0;
         const vatAmt = parseFloat(vatAmountDisplay?.textContent?.replace(/,/g, '')) || 0;
         const whtAmt = parseFloat(whtAmountDisplay?.textContent?.replace(/,/g, '')) || 0;
-        const totalWithVatStr = totalWithVatDisplay?.textContent?.replace(/฿|,|\s/g, '') || '0';
+        const totalWithVatEl = document.getElementById('totalWithVatDisplay');
+        const totalWithVatStr = totalWithVatEl?.textContent?.replace(/฿|,|\s/g, '') || '0';
         const totalWithVat = parseFloat(totalWithVatStr) || (subtotal - discountAmt + (document.getElementById('chkVatEnabled')?.checked && vatTypeSelect?.value === 'exclude' ? vatAmt : 0));
         const grandTotalStr = grandTotalDisplay?.textContent?.replace(/฿|,|\s/g, '') || '0';
         const netPayment = parseFloat(grandTotalStr) || Math.max(0, totalWithVat - whtAmt);
 
         const projectName = document.getElementById('projectNameInput')?.value?.trim() || null;
         const validUntil = document.getElementById('validUntilInput')?.value || dueDate || null;
-        const salesperson = document.getElementById('salespersonInput')?.value?.trim() || 'อิศรพงศ์ โพธิ์งาม';
+        const spVal = (getSalespersonElement()?.value || '').trim();
+        const salesperson = (spVal === '__custom__' || !spVal) ? '' : spVal;
 
-        const creditTermsVal = customerCreditTerms?.value?.trim() || '';
+        const creditTermsVal = getPaymentChannelTerm();
         const creditDaysVal = parseInt(creditTermsVal.match(/\d+/)?.[0]) || 30;
 
         const docType = getDocType();
@@ -999,6 +1207,7 @@ document.addEventListener('DOMContentLoaded', () => {
             due_date: dueDate || validUntil,
             valid_until: validUntil,
             credit_terms: creditTermsVal,
+            payment_method: creditTermsVal,
             credit_days: creditDaysVal,
             project_name: projectName,
             ref_doc_number: refDocNumber,
@@ -1087,29 +1296,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const errData = await res.json().catch(() => ({}));
                 showDocToast({
                     type: 'error',
-                    title: 'บันทึกไม่สำเร็จ',
-                    message: errData.error || 'กรุณาตรวจสอบข้อมูลและลองใหม่อีกครั้ง',
+                    title: 'ไม่สามารถบันทึกเอกสารได้',
+                    message: 'ไม่สามารถบันทึกเอกสารได้: ' + (errData.error || 'กรุณาตรวจสอบข้อมูลและลองใหม่อีกครั้ง'),
                     duration: 4500
                 });
                 return;
             }
         } catch (err) {
-            // Offline fallback
+            setSavingState(false);
+            showDocToast({
+                type: 'error',
+                title: 'ไม่สามารถบันทึกเอกสารได้',
+                message: 'ไม่สามารถบันทึกเอกสารได้: ' + (err.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ'),
+                duration: 4500
+            });
         }
-
-        setSavingState(false);
-        const displayStatus = statusMap[targetStatus] || targetStatus;
-        showDocToast({
-            type: 'info',
-            title: 'บันทึกเอกสารเรียบร้อย',
-            message: 'บันทึกข้อมูลในโหมดออฟไลน์',
-            docNumber: payload.doc_number || '(ฉบับร่าง)',
-            grandTotal: Number(payload.grand_total || 0),
-            status: targetStatus,
-            statusText: displayStatus,
-            redirectUrl: targetList,
-            duration: 3000
-        });
     }
 
     const btnSaveSubmit = document.getElementById('btnSaveSubmit');
@@ -1186,6 +1387,69 @@ document.addEventListener('DOMContentLoaded', () => {
         window.initGoogleCalendarDatePicker();
     }
 
+    window.applyRefSplitOrDeposit = function(mode = 'percent', value = 50) {
+        const refDoc = window._refOriginalDoc;
+        if (!refDoc || !itemsTbody) return;
+        const urlParams = new URLSearchParams(window.location.search);
+        const isDeposit = urlParams.get('deposit') === 'true';
+        const labelType = isDeposit ? 'มัดจำ' : 'แบ่งชำระงวด';
+        const origItems = Array.isArray(refDoc.items) ? refDoc.items : [];
+
+        itemsTbody.innerHTML = '';
+
+        if (mode === 'amount') {
+            const customAmt = Math.max(0, parseFloat(value) || 0);
+            const descLines = origItems.map(it => `- ${it.item_name || ''} (${it.quantity || 1} ${it.unit || 'ชิ้น'})`).filter(Boolean);
+            const row = createRow(
+                `ค่า${labelType}ตามเอกสารอ้างอิง ${refDoc.doc_number || ''}`,
+                descLines.join('\n'),
+                1,
+                'งวด',
+                customAmt,
+                null
+            );
+            const descArea = row.querySelector('.item-desc');
+            if (descArea && descLines.length > 0) {
+                descArea.style.height = 'auto';
+                descArea.style.height = Math.max(36, descArea.scrollHeight) + 'px';
+            }
+            if (discountValueInput) discountValueInput.value = 0;
+        } else {
+            const pct = Math.max(1, Math.min(100, parseFloat(value) || 50));
+            const pctInput = document.getElementById('splitPercentInput');
+            if (pctInput) pctInput.value = pct;
+            const ratio = pct / 100;
+
+            origItems.forEach(it => {
+                const origName = it.item_name || '';
+                const suffix = pct < 100 ? ` (${labelType} ${pct}% อ้างอิง ${refDoc.doc_number || ''})` : '';
+                const newPrice = Math.round((parseFloat(it.unit_price) || 0) * ratio * 100) / 100;
+                const row = createRow(
+                    origName + suffix,
+                    it.description || '',
+                    it.quantity || 1,
+                    it.unit || 'ชิ้น',
+                    newPrice,
+                    it.product_id || null
+                );
+                const descArea = row.querySelector('.item-desc');
+                if (descArea && it.description) {
+                    descArea.style.height = 'auto';
+                    descArea.style.height = Math.max(36, descArea.scrollHeight) + 'px';
+                }
+            });
+
+            if (discountValueInput && refDoc.discount_value !== undefined) {
+                if (refDoc.discount_type === 'percent') {
+                    discountValueInput.value = refDoc.discount_value;
+                } else {
+                    discountValueInput.value = Math.round((parseFloat(refDoc.discount_value) || 0) * ratio * 100) / 100;
+                }
+            }
+        }
+        calculateAll();
+    };
+
     function renderLinkedDocBanner(refDoc, opts = {}) {
         const toolbar = document.querySelector('.editor-toolbar');
         const oldBanner = document.getElementById('linkedDocBanner');
@@ -1196,6 +1460,30 @@ document.addEventListener('DOMContentLoaded', () => {
             badgeHtml = '<span style="background: #fef3c7; color: #b45309; padding: 3px 9px; border-radius: 999px; font-weight: 600; font-size: 11.5px; border: 1px solid #fde68a;">แบ่งจ่ายตามงวด</span>';
         } else if (opts.isDeposit) {
             badgeHtml = '<span style="background: #e0f2fe; color: #0369a1; padding: 3px 9px; border-radius: 999px; font-weight: 600; font-size: 11.5px; border: 1px solid #bae6fd;">เงินมัดจำ</span>';
+        }
+
+        let splitControlsHtml = '';
+        if (opts.isSplit || opts.isDeposit) {
+            const defaultPct = parseFloat(new URLSearchParams(window.location.search).get('percent')) || 50;
+            const defaultAmt = Math.round((parseFloat(refDoc.subtotal || refDoc.grand_total) || 0) * (defaultPct / 100) * 100) / 100;
+            splitControlsHtml = `
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: #ffffff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 5px 10px; margin-left: 6px;">
+                    <span style="font-size: 12px; font-weight: 600; color: #1e3a8a;">สัดส่วน${opts.isDeposit ? 'มัดจำ' : 'แบ่งชำระ'}:</span>
+                    <button type="button" onclick="window.applyRefSplitOrDeposit('percent', 30)" style="padding: 2px 8px; font-size: 11.5px; border-radius: 4px; border: 1px solid #93c5fd; background: #eff6ff; color: #1d4ed8; cursor: pointer; font-weight: 600;">30%</button>
+                    <button type="button" onclick="window.applyRefSplitOrDeposit('percent', 50)" style="padding: 2px 8px; font-size: 11.5px; border-radius: 4px; border: 1px solid #93c5fd; background: #eff6ff; color: #1d4ed8; cursor: pointer; font-weight: 600;">50%</button>
+                    <button type="button" onclick="window.applyRefSplitOrDeposit('percent', 100)" style="padding: 2px 8px; font-size: 11.5px; border-radius: 4px; border: 1px solid #93c5fd; background: #eff6ff; color: #1d4ed8; cursor: pointer; font-weight: 600;">100%</button>
+                    <div style="display: inline-flex; align-items: center; gap: 4px;">
+                        <input type="number" id="splitPercentInput" value="${defaultPct}" min="1" max="100" step="1" style="width: 56px; padding: 2px 6px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: right;">
+                        <span style="font-size: 12px;">%</span>
+                        <button type="button" onclick="window.applyRefSplitOrDeposit('percent', document.getElementById('splitPercentInput').value)" style="padding: 2px 8px; font-size: 11.5px; border-radius: 4px; border: none; background: #2563eb; color: #fff; cursor: pointer; font-weight: 600;">คำนวณ %</button>
+                    </div>
+                    <span style="color: #cbd5e1;">|</span>
+                    <div style="display: inline-flex; align-items: center; gap: 4px;">
+                        <input type="number" id="splitAmountInput" value="${defaultAmt}" min="0" step="0.01" placeholder="ระบุยอดเงิน" style="width: 95px; padding: 2px 6px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: right;">
+                        <button type="button" onclick="window.applyRefSplitOrDeposit('amount', document.getElementById('splitAmountInput').value)" style="padding: 2px 8px; font-size: 11.5px; border-radius: 4px; border: 1px solid #059669; background: #ecfdf5; color: #047857; cursor: pointer; font-weight: 600;">ใช้ยอดเงินนี้</button>
+                    </div>
+                </div>
+            `;
         }
 
         const banner = document.createElement('div');
@@ -1215,12 +1503,15 @@ document.addEventListener('DOMContentLoaded', () => {
             z-index: 80;
             width: 100%;
             box-sizing: border-box;
+            flex-wrap: wrap;
+            gap: 8px;
         `;
         banner.innerHTML = `
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" style="flex-shrink: 0;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                 <span>ดึงข้อมูลต่อเนื่องจากเอกสาร: <strong style="color: #1d4ed8;">${escapeHtml(refDoc.doc_number || '')}</strong> (ลูกค้า: <strong>${escapeHtml(refDoc.customer_name || 'ทั่วไป')}</strong>) เรียบร้อยแล้ว</span>
                 ${badgeHtml}
+                ${splitControlsHtml}
             </div>
             <div style="display: flex; align-items: center; gap: 16px;">
                 <a href="print.html?id=${refDoc.id}" target="_blank" style="color: #2563eb; font-weight: 600; text-decoration: underline; display: flex; align-items: center; gap: 4px;" title="คลิกเพื่อเปิดดูเอกสารต้นทาง">
@@ -1283,6 +1574,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window._sourceDocId = detail.id;
             window._sourceCustomerId = detail.customer_id;
             window._sourceCustomerName = detail.customer_name;
+            window._refOriginalDoc = JSON.parse(JSON.stringify(detail));
 
             // 1. Set Reference input
             const refInput = document.getElementById('refDocNumberInput') || document.querySelector('input[placeholder*="อ้างอิง"]');
@@ -1302,9 +1594,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 detail.credit_terms
             );
 
-            if (detail.credit_terms && customerCreditTerms) {
-                customerCreditTerms.value = detail.credit_terms;
-            }
+            restorePaymentChannelControls(detail);
 
             // 3. Due Date: calculate from issue date + credit terms
             if (typeof updateDueDateFromCredit === 'function') {
@@ -1312,8 +1602,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // 4. Salesperson & Project Name
-            if (detail.salesperson && document.getElementById('salespersonInput')) {
-                document.getElementById('salespersonInput').value = detail.salesperson;
+            if (detail.salesperson) {
+                setSalespersonValue(detail.salesperson);
             }
             if (detail.project_name && document.getElementById('projectNameInput')) {
                 document.getElementById('projectNameInput').value = detail.project_name;
@@ -1380,13 +1670,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (internalArea) internalArea.value = detail.terms;
             }
 
-            // 11. Recalculate totals
-            calculateAll();
-
-            // 12. Linked Doc Banner
+            // 11. Linked Doc Banner & Split/Deposit adjustment
             const urlParams = new URLSearchParams(window.location.search);
             const isSplit = urlParams.get('split') === 'true';
             const isDeposit = urlParams.get('deposit') === 'true';
+            if (isSplit || isDeposit) {
+                const initialPct = parseFloat(urlParams.get('percent')) || 50;
+                window.applyRefSplitOrDeposit('percent', initialPct);
+            } else {
+                calculateAll();
+            }
             renderLinkedDocBanner(detail, { isSplit, isDeposit });
 
             return detail;
@@ -1396,16 +1689,143 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function populateDocumentForm(doc, options = {}) {
+        if (!doc) return;
+        const isCopy = Boolean(options.isCopy);
+        const docNumberInput = document.querySelector('.meta-field-row input[type="text"]');
+
+        if (isCopy) {
+            currentLoadedDocId = null;
+            const todayStr = new Date().toISOString().split('T')[0];
+            const issueEl = document.getElementById('issueDateInput') || document.querySelectorAll('.meta-field-row input[type="date"]')[0];
+            if (issueEl) issueEl.value = todayStr;
+        } else {
+            currentLoadedDocId = doc.id;
+            if (docNumberInput) docNumberInput.value = doc.doc_number || '(ฉบับร่าง)';
+            if (doc.issue_date) {
+                const issueEl = document.getElementById('issueDateInput') || document.querySelectorAll('.meta-field-row input[type="date"]')[0];
+                const dueEl = document.getElementById('dueDateInput') || document.querySelectorAll('.meta-field-row input[type="date"]')[1];
+                if (issueEl) issueEl.value = doc.issue_date;
+                if (dueEl && doc.due_date) dueEl.value = doc.due_date;
+            }
+            if (doc.valid_until && document.getElementById('validUntilInput')) {
+                document.getElementById('validUntilInput').value = doc.valid_until;
+            }
+        }
+
+        if (doc.customer_name) {
+            selectCustomerByNameOrId(
+                doc.customer_name,
+                doc.customer_id,
+                doc.customer_address,
+                doc.customer_tax_id,
+                doc.customer_branch,
+                doc.customer_phone,
+                doc.customer_contact,
+                doc.credit_terms
+            );
+        }
+
+        restorePaymentChannelControls(doc);
+
+        if (isCopy && typeof updateDueDateFromCredit === 'function') {
+            updateDueDateFromCredit();
+        }
+
+        if (doc.ref_doc_number && !isCopy) {
+            const refInput = document.getElementById('refDocNumberInput') || document.querySelector('input[placeholder*="อ้างอิง"]');
+            if (refInput) refInput.value = doc.ref_doc_number;
+        }
+        if (doc.project_name && document.getElementById('projectNameInput')) {
+            document.getElementById('projectNameInput').value = doc.project_name;
+        }
+        if (doc.salesperson) {
+            setSalespersonValue(doc.salesperson);
+        }
+        if (Array.isArray(doc.items) && doc.items.length > 0) {
+            itemsTbody.innerHTML = '';
+            doc.items.forEach(it => {
+                const tr = createRow(it.item_name || '', it.description || '', it.quantity || 1, it.unit || 'ชิ้น', it.unit_price || 0, it.product_id || null);
+                const descArea = tr.querySelector('.item-desc');
+                if (descArea && it.description) {
+                    descArea.style.height = 'auto';
+                    descArea.style.height = Math.max(36, descArea.scrollHeight) + 'px';
+                }
+            });
+        }
+        if (doc.remarks) {
+            const remArea = document.getElementById('docRemarks') || document.querySelector('.remarks-textarea');
+            if (remArea) remArea.value = doc.remarks;
+            const chkRemarks = document.getElementById('chkShowRemarksOnDoc');
+            if (chkRemarks) chkRemarks.checked = true;
+        }
+        if (doc.terms) {
+            const internalArea = document.getElementById('docInternalNotes');
+            if (internalArea) internalArea.value = doc.terms;
+        }
+        if (discountTypeSelect && doc.discount_type) discountTypeSelect.value = doc.discount_type;
+        if (discountValueInput && doc.discount_value !== undefined) discountValueInput.value = doc.discount_value;
+        const chkVat = document.getElementById('chkVatEnabled');
+        if (chkVat) {
+            chkVat.checked = (doc.vat_type !== 'none');
+            if (vatTypeSelect) {
+                vatTypeSelect.disabled = !chkVat.checked;
+                if (doc.vat_type && doc.vat_type !== 'none') vatTypeSelect.value = doc.vat_type;
+            }
+        }
+        const chkWht = document.getElementById('chkWhtEnabled');
+        if (chkWht) {
+            chkWht.checked = (parseFloat(doc.wht_rate) > 0 || parseFloat(doc.wht_amount) > 0 || (doc.wht_type && doc.wht_type !== '0'));
+            if (whtTypeSelect) {
+                whtTypeSelect.disabled = !chkWht.checked;
+                if (doc.wht_type && doc.wht_type !== '0') whtTypeSelect.value = doc.wht_type;
+            }
+        }
+        calculateAll();
+    }
+    window.populateDocumentForm = populateDocumentForm;
+
+    async function syncCompanyHeaderFromApi() {
+        try {
+            const res = await fetch('/api/company');
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!data) return;
+            const companyName = data.name || data.name_th || 'บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด';
+            const companyAddress = data.address || '46/14 ถนนริมคลองบางค้อ แขวงบางค้อ เขตจอมทอง กรุงเทพมหานคร 10150';
+            const companyTaxId = data.tax_id || '0105565160161';
+            const companyPhone = data.phone || '02-415-1946';
+
+            const titleEl = document.querySelector('.company-title-text');
+            if (titleEl) titleEl.textContent = companyName;
+
+            const detailsEl = document.querySelector('.company-details-block');
+            if (detailsEl) {
+                detailsEl.innerHTML = `${escapeHtml(companyAddress)}<br>เลขประจำตัวผู้เสียภาษี ${escapeHtml(companyTaxId)} (สำนักงานใหญ่)<br>โทร. ${escapeHtml(companyPhone)}`;
+            }
+
+            const stampLabel = document.getElementById('companyStampLabel');
+            if (stampLabel) stampLabel.textContent = companyName;
+        } catch (err) {
+            // Ignore fetch errors
+        }
+    }
+
     // Auto-init document info, sequence numbers, and references
     async function initEditor() {
+        syncCompanyHeaderFromApi();
         const urlParams = new URLSearchParams(window.location.search);
         let docId = urlParams.get('id') || urlParams.get('doc') || urlParams.get('num') || urlParams.get('doc_number');
+        const copyId = urlParams.get('copy');
         const refParam = urlParams.get('ref');
         const docNumberInput = document.querySelector('.meta-field-row input[type="text"]');
 
-        // Ensure customer catalog is loaded first
+        // Ensure customer and salesperson catalogs are loaded first
         if (customersLoadedPromise) {
             await customersLoadedPromise;
+        }
+        if (salespersonsLoadedPromise) {
+            await salespersonsLoadedPromise;
         }
 
         if (docId) {
@@ -1413,86 +1833,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const res = await fetch(`/api/documents/${encodeURIComponent(docId)}`);
                 if (res.ok) {
                     const doc = await res.json();
-                    currentLoadedDocId = doc.id;
-                    if (docNumberInput) docNumberInput.value = doc.doc_number || '(ฉบับร่าง)';
-                    if (doc.issue_date) {
-                        const issueEl = document.getElementById('issueDateInput') || document.querySelectorAll('.meta-field-row input[type="date"]')[0];
-                        const dueEl = document.getElementById('dueDateInput') || document.querySelectorAll('.meta-field-row input[type="date"]')[1];
-                        if (issueEl) issueEl.value = doc.issue_date;
-                        if (dueEl && doc.due_date) dueEl.value = doc.due_date;
-                    }
-                    if (doc.customer_name) {
-                        selectCustomerByNameOrId(
-                            doc.customer_name,
-                            doc.customer_id,
-                            doc.customer_address,
-                            doc.customer_tax_id,
-                            doc.customer_branch,
-                            doc.customer_phone,
-                            doc.customer_contact,
-                            doc.credit_terms
-                        );
-                    }
-                    if (doc.credit_terms && customerCreditTerms) {
-                        customerCreditTerms.value = doc.credit_terms;
-                    }
-                    if (doc.ref_doc_number) {
-                        const refInput = document.getElementById('refDocNumberInput') || document.querySelector('input[placeholder*="อ้างอิง"]');
-                        if (refInput) refInput.value = doc.ref_doc_number;
-                    }
-                    if (doc.project_name && document.getElementById('projectNameInput')) {
-                        document.getElementById('projectNameInput').value = doc.project_name;
-                    }
-                    if (doc.valid_until && document.getElementById('validUntilInput')) {
-                        document.getElementById('validUntilInput').value = doc.valid_until;
-                    }
-                    if (doc.salesperson && document.getElementById('salespersonInput')) {
-                        document.getElementById('salespersonInput').value = doc.salesperson;
-                    }
-                    if (Array.isArray(doc.items) && doc.items.length > 0) {
-                        itemsTbody.innerHTML = '';
-                        doc.items.forEach(it => {
-                            const tr = createRow(it.item_name || '', it.description || '', it.quantity || 1, it.unit || 'ชิ้น', it.unit_price || 0, it.product_id || null);
-                            const descArea = tr.querySelector('.item-desc');
-                            if (descArea && it.description) {
-                                descArea.style.height = 'auto';
-                                descArea.style.height = Math.max(36, descArea.scrollHeight) + 'px';
-                            }
-                        });
-                    }
-                    if (doc.remarks) {
-                        const remArea = document.getElementById('docRemarks') || document.querySelector('.remarks-textarea');
-                        if (remArea) remArea.value = doc.remarks;
-                        const chkRemarks = document.getElementById('chkShowRemarksOnDoc');
-                        if (chkRemarks) chkRemarks.checked = true;
-                    }
-                    if (doc.terms) {
-                        const internalArea = document.getElementById('docInternalNotes');
-                        if (internalArea) internalArea.value = doc.terms;
-                    }
-                    if (discountTypeSelect && doc.discount_type) discountTypeSelect.value = doc.discount_type;
-                    if (discountValueInput && doc.discount_value !== undefined) discountValueInput.value = doc.discount_value;
-                    const chkVat = document.getElementById('chkVatEnabled');
-                    if (chkVat) {
-                        chkVat.checked = (doc.vat_type !== 'none');
-                        if (vatTypeSelect) {
-                            vatTypeSelect.disabled = !chkVat.checked;
-                            if (doc.vat_type && doc.vat_type !== 'none') vatTypeSelect.value = doc.vat_type;
-                        }
-                    }
-                    const chkWht = document.getElementById('chkWhtEnabled');
-                    if (chkWht) {
-                        chkWht.checked = (parseFloat(doc.wht_rate) > 0 || parseFloat(doc.wht_amount) > 0 || (doc.wht_type && doc.wht_type !== '0'));
-                        if (whtTypeSelect) {
-                            whtTypeSelect.disabled = !chkWht.checked;
-                            if (doc.wht_type && doc.wht_type !== '0') whtTypeSelect.value = doc.wht_type;
-                        }
-                    }
-                    calculateAll();
+                    populateDocumentForm(doc, { isCopy: false });
                     return;
                 }
             } catch (err) {
                 console.error('Error loading document by id:', err);
+            }
+        } else if (copyId) {
+            try {
+                const res = await fetch(`/api/documents/${encodeURIComponent(copyId)}`);
+                if (res.ok) {
+                    const doc = await res.json();
+                    populateDocumentForm(doc, { isCopy: true });
+                }
+            } catch (err) {
+                console.error('Error copying document by id:', err);
             }
         } else if (refParam) {
             await loadReferenceDocument(refParam);
@@ -1522,7 +1877,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (rawStored) selectedHamperData = JSON.parse(rawStored);
         } catch (e) {}
 
-        if (!docId && !refParam && (prefillHmp || selectedHamperData)) {
+        if (!docId && !copyId && !refParam && (prefillHmp || selectedHamperData)) {
             try {
                 const targetCode = prefillHmp || (selectedHamperData ? selectedHamperData.code : null);
                 if (targetCode) {
@@ -1564,7 +1919,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        if (!docId && !refParam && !prefillHmp && !selectedHamperData) {
+        if (!docId && !copyId && !refParam && !prefillHmp && !selectedHamperData) {
             // New blank document: start completely clean
             if (customerSelect) customerSelect.value = '';
             if (customerAddress) customerAddress.value = '';
@@ -1577,7 +1932,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Apply default remarks and show-remarks toggle from branding settings on new documents
-        if (!docId && !refParam) {
+        if (!docId && !copyId && !refParam) {
             try {
                 const remArea = document.getElementById('docRemarks') || document.querySelector('.remarks-textarea');
                 const chkShow = document.getElementById('chkShowRemarksOnDoc');

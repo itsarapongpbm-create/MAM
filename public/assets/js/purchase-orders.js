@@ -498,7 +498,7 @@ window.shareDocument = function(docNum, id) {
 // Delete / Cancel document helper with Action Modal Dialog & Toast
 window.deleteDocument = async function(id, docNum, status, vendorName = '-', grandTotal = 0) {
     // If already confirmed/approved/waiting, offer cancellation with reason
-    if (status && status !== 'DRAFT') {
+    if (status && status !== 'DRAFT' && status !== 'CANCELLED') {
         if (window.openActionDialog) {
             const dialogRes = await window.openActionDialog({
                 action: 'cancel',

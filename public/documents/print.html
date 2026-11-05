@@ -714,7 +714,10 @@
                 <button type="button" class="copy-tab active" data-copy="ORIGINAL">ต้นฉบับ</button>
                 <button type="button" class="copy-tab" data-copy="COPY">สำเนา</button>
                 <button type="button" class="copy-tab" data-copy="BOTH">ทั้งสองหน้า</button>
-                <button type="button" class="copy-tab" data-copy="ENVELOPE">✉️ หน้าซอง</button>
+                <button type="button" class="copy-tab" data-copy="ENVELOPE" style="display: inline-flex; align-items: center; gap: 5px;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    <span>หน้าซอง</span>
+                </button>
             </div>
             <button type="button" class="btn-toolbar btn-secondary" id="btnSavePdf" title="บันทึกเป็นไฟล์ PDF (Save as PDF)">
                 <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
@@ -733,11 +736,22 @@
     </div>
 
     <script>
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const docId = urlParams.get('id') || '1';
+            const docId = urlParams.get('id') || urlParams.get('doc') || urlParams.get('num') || '';
             const docTypeParam = (urlParams.get('type') || '').toLowerCase();
-            const isExpenseMode = docTypeParam === 'expense';
+            const isExpenseMode = docTypeParam === 'expense' || docTypeParam === 'payment_voucher';
+            const isGoodsReceiptMode = docTypeParam === 'goods_receipt';
             const isDownloadMode = urlParams.get('download') === 'true';
             const isEnvelopeMode = urlParams.get('envelope') === 'true';
 
@@ -745,9 +759,9 @@
             let compData = null;
 
             try {
-                if (isExpenseMode) {
+                if (isExpenseMode && docId) {
                     const [rExp, rComp] = await Promise.all([
-                        fetch(`/api/expenses/${docId}`),
+                        fetch(`/api/expenses/${encodeURIComponent(docId)}`),
                         fetch('/api/company')
                     ]);
                     if (rExp.ok) {
@@ -756,9 +770,9 @@
                             id: exp.id,
                             doc_type: 'EXPENSE',
                             doc_number: exp.doc_number,
-                            issue_date: exp.transaction_date,
-                            due_date: exp.due_date,
-                            ref_doc_number: exp.ref_doc_number || '-',
+                            issue_date: exp.expense_date || exp.transaction_date,
+                            due_date: exp.due_date || exp.expense_date || exp.transaction_date,
+                            ref_doc_number: exp.ref_doc_number || exp.reference_no || '-',
                             customer_name: exp.vendor_name,
                             customer_tax_id: exp.vendor_tax_id || '',
                             customer_branch: exp.vendor_branch || 'สำนักงานใหญ่',
@@ -770,16 +784,16 @@
                             vat_type: exp.vat_type || 'exclude',
                             vat_amount: exp.vat_amount || 0,
                             wht_amount: exp.wht_amount || 0,
-                            grand_total: exp.net_total || 0,
-                            status: exp.payment_status || 'PAID',
+                            grand_total: exp.grand_total || exp.net_amount || exp.net_total || 0,
+                            status: exp.payment_status || exp.status || 'PAID',
                             remarks: exp.remarks || '',
                             terms: exp.category || '',
                             items: (exp.items && exp.items.length > 0) ? exp.items.map(it => ({
-                                item_name: it.description || it.category || 'รายการค่าใช้จ่าย',
-                                description: it.category ? `หมวดหมู่: ${it.category}` : '',
-                                quantity: 1,
-                                unit: 'รายการ',
-                                unit_price: it.amount || it.total_amount || 0,
+                                item_name: it.item_name || it.description || it.category || 'รายการค่าใช้จ่าย',
+                                description: it.category && it.item_name ? `หมวดหมู่: ${it.category}` : (it.description && it.item_name ? it.description : ''),
+                                quantity: it.quantity || 1,
+                                unit: it.unit || 'รายการ',
+                                unit_price: it.unit_price || it.amount || it.total_amount || 0,
                                 discount: 0,
                                 vat_rate: it.vat_rate !== undefined ? it.vat_rate : 7,
                                 total_amount: it.total_amount || it.amount || 0
@@ -789,68 +803,69 @@
                                     description: exp.remarks || '',
                                     quantity: 1,
                                     unit: 'รายการ',
-                                    unit_price: exp.subtotal || exp.net_total || 0,
+                                    unit_price: exp.subtotal || exp.grand_total || exp.net_total || 0,
                                     discount: 0,
                                     vat_rate: exp.vat_rate || 7,
-                                    total_amount: exp.subtotal || exp.net_total || 0
+                                    total_amount: exp.subtotal || exp.grand_total || exp.net_total || 0
                                 }
                             ]
                         };
                     }
                     if (rComp.ok) compData = await rComp.json();
-                } else {
+                } else if (docId) {
                     const [rDoc, rComp] = await Promise.all([
-                        fetch(`/api/documents/${docId}`),
+                        fetch(`/api/documents/${encodeURIComponent(docId)}`),
                         fetch('/api/company')
                     ]);
                     if (rDoc.ok) docData = await rDoc.json();
+                    if (rComp.ok) compData = await rComp.json();
+                } else {
+                    const rComp = await fetch('/api/company');
                     if (rComp.ok) compData = await rComp.json();
                 }
             } catch (err) {
                 console.error('Fetch error:', err);
             }
 
-            if (!docData) {
-                // Rich Local Fallback for Demo
-                docData = {
-                    id: 1,
-                    doc_type: 'QUOTATION',
-                    doc_number: 'QT-202610-0001',
-                    issue_date: '2026-10-02',
-                    due_date: '2026-11-01',
-                    credit_terms: 'เครดิต 30 วัน',
-                    ref_doc_number: '-',
-                    customer_name: 'บริษัท สยาม รีเทล คอร์ปอเรชั่น จำกัด (มหาชน)',
-                    customer_tax_id: '0107536000123',
-                    customer_branch: 'สำนักงานใหญ่',
-                    customer_address: '88/1 อาคารสยามทาวเวอร์ ชั้น 18 ถนนพระราม 1 แขวงปทุมวัน เขตปทุมวัน กรุงเทพฯ 10330',
-                    salesperson: 'คุณอิศรพงศ์ โพธิ์งาม',
-                    subtotal: 120000,
-                    discount_amount: 0,
-                    vat_type: 'exclude',
-                    vat_amount: 8400,
-                    wht_amount: 0,
-                    grand_total: 128400,
-                    status: 'APPROVED',
-                    remarks: 'ใบเสนอราคานี้มีผลบังคับใช้ 30 วันนับจากวันที่ออกเอกสาร',
-                    terms: '',
-                    items: [
-                        { item_name: 'บริการออกแบบและพัฒนาระบบซอฟต์แวร์ MAM', description: 'บริการงานออกแบบและพัฒนาเชื่อมต่อระบบภายในองค์กร Phase 1', quantity: 1, unit: 'โครงการ', unit_price: 120000, discount: 0, vat_rate: 7, total_amount: 120000 }
-                    ]
-                };
-            }
-
             if (!compData) {
                 compData = {
-                    name: 'บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด',
+                    name: 'บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด',
                     name_en: 'MAM DESIGN AND SERVICE CO., LTD.',
-                    tax_id: '0105562089456',
+                    tax_id: '0105565160161',
                     branch: 'สำนักงานใหญ่',
-                    address: '123 อาคารสาทรซิตี้ ทาวเวอร์ ชั้น 15 ถนนสาทรใต้ แขวงทุ่งมหาเมฆ เขตสาทร กรุงเทพฯ 10120',
-                    phone: '02-821-5555',
+                    address: '46/14 ถนนริมคลองบางค้อ แขวงบางค้อ เขตจอมทอง กรุงเทพมหานคร 10150',
+                    phone: '02-415-1946',
                     email: 'contact@mamdesign.co.th',
                     logo_url: '../assets/images/mam-logo.png'
                 };
+            } else {
+                compData.name = compData.name || compData.name_th || 'บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด';
+                compData.name_en = compData.name_en || 'MAM DESIGN AND SERVICE CO., LTD.';
+                compData.tax_id = compData.tax_id || '0105565160161';
+                compData.branch = compData.branch || 'สำนักงานใหญ่';
+                compData.address = compData.address || '46/14 ถนนริมคลองบางค้อ แขวงบางค้อ เขตจอมทอง กรุงเทพมหานคร 10150';
+                compData.phone = compData.phone || '02-415-1946';
+                compData.email = compData.email || 'contact@mamdesign.co.th';
+                compData.logo_url = compData.logo_url || '../assets/images/mam-logo.png';
+            }
+
+            const container = document.getElementById('pagesContainer');
+            if (!docData) {
+                const tbNum = document.getElementById('toolbarDocNum');
+                const tbStatus = document.getElementById('toolbarDocStatus');
+                if (tbNum) tbNum.textContent = 'ไม่พบเอกสาร';
+                if (tbStatus) tbStatus.style.display = 'none';
+                if (container) {
+                    container.innerHTML = `
+                        <div class="a4-page" style="justify-content: center; align-items: center; text-align: center; color: #64748b;">
+                            <div>
+                                <div style="font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">ไม่พบข้อมูลเอกสารที่ต้องการพิมพ์</div>
+                                <div style="font-size: 13px;">กรุณาตรวจสอบเลขที่เอกสาร หรือกลับไปยังหน้ารายการเอกสารเพื่อเลือกใหม่อีกครั้ง</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                return;
             }
 
             // Apply saved custom branding if exists
@@ -964,8 +979,19 @@
                     termsLabel: 'เงื่อนไขจัดซื้อ:',
                     dueDateLabel: 'กำหนดส่งมอบสินค้า:'
                 },
+                GOODS_RECEIPT: {
+                    th: 'ใบตรวจรับสินค้า',
+                    en: 'GOODS RECEIPT',
+                    partyLabel: 'ข้อมูลผู้ขาย / Vendor Information',
+                    isVendor: true,
+                    sigBuyer: 'ผู้ส่งมอบสินค้า / ผู้ขาย',
+                    sigApprover: 'ผู้ตรวจรับสินค้า / ผู้อนุมัติ',
+                    dateLabel: 'วันที่ตรวจรับ:',
+                    termsLabel: 'เงื่อนไขจัดซื้อ:',
+                    dueDateLabel: 'วันที่ส่งมอบ:'
+                },
                 EXPENSE: {
-                    th: 'ใบสำคัญจ่าย / บันทึกค่าใช้จ่าย',
+                    th: 'ใบสำคัญจ่าย',
                     en: 'PAYMENT VOUCHER',
                     partyLabel: 'ข้อมูลผู้รับเงิน / ผู้จำหน่าย (Payee / Vendor)',
                     isVendor: true,
@@ -977,13 +1003,14 @@
                 }
             };
 
-            const tConfig = TITLE_MAP[docData.doc_type] || TITLE_MAP.QUOTATION;
+            const effectiveTypeKey = isGoodsReceiptMode ? 'GOODS_RECEIPT' : (isExpenseMode ? 'EXPENSE' : docData.doc_type);
+            const tConfig = TITLE_MAP[effectiveTypeKey] || TITLE_MAP.QUOTATION;
 
             // Generate Thai Baht Text
             function toThaiBaht(num) {
                 if (isNaN(num) || num === null || num === undefined) return 'ศูนย์บาทถ้วน';
                 num = Math.round(num * 100) / 100;
-                if (num === 0) return 'ศูนย์บาทถ้วน';
+                if (num <= 0) return 'ศูนย์บาทถ้วน';
                 const digits = ['ศูนย์', 'หนึ่ง', 'สอง', 'สาม', 'สี่', 'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า'];
                 const units = ['', 'สิบ', 'ร้อย', 'พัน', 'หมื่น', 'แสน', 'ล้าน'];
                 function block(str) {
@@ -993,7 +1020,8 @@
                         const d = parseInt(str.charAt(i), 10);
                         const pos = len - i - 1;
                         if (d !== 0) {
-                            if (pos === 0 && d === 1 && len > 1) s += 'เอ็ด';
+                            const hasHigherNonZero = str.slice(0, i).split('').some(ch => ch !== '0');
+                            if (pos === 0 && d === 1 && hasHigherNonZero) s += 'เอ็ด';
                             else if (pos === 1 && d === 2) s += 'ยี่สิบ';
                             else if (pos === 1 && d === 1) s += 'สิบ';
                             else s += digits[d] + units[pos];
@@ -1005,11 +1033,15 @@
                 let intStr = parts[0];
                 let satStr = parts[1];
                 let out = '';
-                if (intStr.length > 6) {
-                    out += block(intStr.substring(0, intStr.length - 6)) + 'ล้าน';
-                    intStr = intStr.substring(intStr.length - 6);
+                if (parseInt(intStr, 10) === 0) {
+                    out = 'ศูนย์บาท';
+                } else {
+                    if (intStr.length > 6) {
+                        out += block(intStr.substring(0, intStr.length - 6)) + 'ล้าน';
+                        intStr = intStr.substring(intStr.length - 6);
+                    }
+                    out += block(intStr) + 'บาท';
                 }
-                out += block(intStr) + 'บาท';
                 out += parseInt(satStr, 10) === 0 ? 'ถ้วน' : block(satStr) + 'สตางค์';
                 return out;
             }
@@ -1030,11 +1062,11 @@
                     <tr>
                         <td class="col-num">${idx + 1}</td>
                         <td class="col-desc">
-                            <div class="item-title">${it.item_name || '-'}</div>
-                            ${it.description ? `<div class="item-subtitle">${it.description}</div>` : ''}
+                            <div class="item-title">${escapeHtml(it.item_name || it.name || '-')}</div>
+                            ${it.description ? `<div class="item-subtitle">${escapeHtml(it.description)}</div>` : ''}
                         </td>
                         <td class="col-qty">${(it.quantity || 1).toLocaleString('th-TH')}</td>
-                        <td class="col-unit">${it.unit || 'ชิ้น'}</td>
+                        <td class="col-unit">${escapeHtml(it.unit || 'ชิ้น')}</td>
                         <td class="col-price">${(it.unit_price || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
                         <td class="col-amount">${(it.total_amount || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
                     </tr>
@@ -1081,12 +1113,12 @@
                             <header class="doc-header">
                                 <div class="company-block">
                                     <img src="${compData.logo_url || '../assets/images/mam-logo.png'}" alt="MAM" class="company-logo">
-                                    <div class="company-name-th">${compData.name}</div>
-                                    <div class="company-name-en">${compData.name_en}</div>
+                                    <div class="company-name-th">${escapeHtml(compData.name)}</div>
+                                    <div class="company-name-en">${escapeHtml(compData.name_en)}</div>
                                     <div class="company-details">
-                                        ${compData.address}<br>
-                                        เลขประจำตัวผู้เสียภาษี: <strong>${compData.tax_id}</strong> (${compData.branch})<br>
-                                        โทรศัพท์: ${compData.phone} | อีเมล: ${compData.email}
+                                        ${escapeHtml(compData.address)}<br>
+                                        เลขประจำตัวผู้เสียภาษี: <strong>${escapeHtml(compData.tax_id)}</strong> (${escapeHtml(compData.branch)})<br>
+                                        โทรศัพท์: ${escapeHtml(compData.phone)}
                                     </div>
                                 </div>
                                 <div class="title-block">
@@ -1102,53 +1134,53 @@
                                     <div class="meta-box-title">${tConfig.partyLabel}</div>
                                     <div class="meta-row">
                                         <div class="meta-label">ชื่อผู้ติดต่อ:</div>
-                                        <div class="meta-value"><strong>${docData.customer_name || '-'}</strong></div>
+                                        <div class="meta-value"><strong>${escapeHtml(docData.customer_name || '-')}</strong></div>
                                     </div>
                                     <div class="meta-row">
                                         <div class="meta-label">ที่อยู่:</div>
-                                        <div class="meta-value">${docData.customer_address || '-'}</div>
+                                        <div class="meta-value">${escapeHtml(docData.customer_address || '-')}</div>
                                     </div>
                                     <div class="meta-row">
                                         <div class="meta-label">เลขประจำตัวผู้เสียภาษี:</div>
-                                        <div class="meta-value">${docData.customer_tax_id || '-'} (${docData.customer_branch || 'สำนักงานใหญ่'})</div>
+                                        <div class="meta-value">${escapeHtml(docData.customer_tax_id || '-')} (${escapeHtml(docData.customer_branch || 'สำนักงานใหญ่')})</div>
                                     </div>
                                     ${(docData.customer_contact || docData.customer_phone) ? `
                                     <div class="meta-row">
                                         <div class="meta-label">ผู้ติดต่อ/โทรศัพท์:</div>
-                                        <div class="meta-value">${[docData.customer_contact, docData.customer_phone ? `โทร. ${docData.customer_phone}` : ''].filter(Boolean).join(' | ')}</div>
+                                        <div class="meta-value">${escapeHtml([docData.customer_contact, docData.customer_phone ? `โทร. ${docData.customer_phone}` : ''].filter(Boolean).join(' | '))}</div>
                                     </div>` : ''}
                                 </div>
                                 <div class="meta-box">
                                     <div class="meta-box-title">ข้อมูลเอกสาร / Details</div>
                                     <div class="meta-row">
                                         <div class="meta-label">เลขที่เอกสาร:</div>
-                                        <div class="meta-value"><strong style="color: var(--primary);">${docData.doc_number || 'ฉบับร่าง (DRAFT)'}</strong></div>
+                                        <div class="meta-value"><strong style="color: var(--primary);">${escapeHtml(docData.doc_number || 'ฉบับร่าง (DRAFT)')}</strong></div>
                                     </div>
                                     <div class="meta-row">
                                         <div class="meta-label">${tConfig.dateLabel}</div>
-                                        <div class="meta-value">${docData.issue_date || '-'}</div>
+                                        <div class="meta-value">${escapeHtml(docData.issue_date || '-')}</div>
                                     </div>
                                     <div class="meta-row">
                                         <div class="meta-label">${tConfig.termsLabel || 'เงื่อนไขการชำระ:'}</div>
-                                        <div class="meta-value">${paymentTermsText}</div>
+                                        <div class="meta-value">${escapeHtml(paymentTermsText)}</div>
                                     </div>
                                     <div class="meta-row">
                                         <div class="meta-label">${tConfig.dueDateLabel || 'วันครบกำหนด:'}</div>
-                                        <div class="meta-value">${docData.due_date || docData.valid_until || '-'}</div>
+                                        <div class="meta-value">${escapeHtml(docData.due_date || docData.valid_until || '-')}</div>
                                     </div>
                                     ${docData.project_name ? `
                                     <div class="meta-row">
                                         <div class="meta-label">โครงการ/ชื่องาน:</div>
-                                        <div class="meta-value"><strong>${docData.project_name}</strong></div>
+                                        <div class="meta-value"><strong>${escapeHtml(docData.project_name)}</strong></div>
                                     </div>` : ''}
                                     ${docData.ref_doc_number ? `
                                     <div class="meta-row">
                                         <div class="meta-label">เอกสารอ้างอิง:</div>
-                                        <div class="meta-value">${docData.ref_doc_number}</div>
+                                        <div class="meta-value">${escapeHtml(docData.ref_doc_number)}</div>
                                     </div>` : ''}
                                     <div class="meta-row">
                                         <div class="meta-label">พนักงานขาย:</div>
-                                        <div class="meta-value">${docData.salesperson || 'อิศรพงศ์ โพธิ์งาม'}</div>
+                                        <div class="meta-value">${escapeHtml(docData.salesperson || 'อิศรพงศ์ โพธิ์งาม')}</div>
                                     </div>
                                 </div>
                             </section>
@@ -1183,8 +1215,8 @@
                                     ${(!tConfig.isVendor && docData.doc_type !== 'RECEIPT' && docData.doc_type !== 'CASH_SALE' && savedBranding.showBankAccount !== false) ? `
                                     <div class="payment-account-box">
                                         <strong>ข้อมูลการชำระเงินผ่านธนาคาร:</strong><br>
-                                        ${savedBranding.bankName || 'ธนาคารไทยพาณิชย์ (SCB)'} ${savedBranding.bankBranch || 'สาขาสาทรซิตี้ ทาวเวอร์'}<br>
-                                        ชื่อบัญชี: ${savedBranding.bankAccountName || 'บจก. เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส'} | เลขที่: <strong>${savedBranding.bankAccountNumber || '012-3-45892-1'}</strong> (${savedBranding.bankAccountType || 'กระแสรายวัน'})
+                                        ${escapeHtml(savedBranding.bankName || 'ธนาคารกสิกรไทย (KBANK)')} ${escapeHtml(savedBranding.bankBranch || 'สาขาจอมทอง')}<br>
+                                        ชื่อบัญชี: ${escapeHtml(savedBranding.bankAccountName || 'บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด')} | เลขที่: <strong>${escapeHtml(savedBranding.bankAccountNumber || '-')}</strong> (${escapeHtml(savedBranding.bankAccountType || 'กระแสรายวัน')})
                                     </div>` : ''}
                                     ${(docData.doc_type === 'RECEIPT' || docData.doc_type === 'CASH_SALE') ? `
                                     <div class="payment-account-box" style="background: #f0fdf4; border-color: #86efac; color: #166534;" data-paid-status="true">
@@ -1192,12 +1224,12 @@
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                             ได้รับชำระเงินเรียบร้อยแล้ว (PAID)
                                         </div>
-                                        <span>วันที่รับชำระ: ${docData.issue_date || '-'} | จำนวนเงิน: <strong>฿ ${netPayment.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</strong></span>
+                                        <span>วันที่รับชำระ: ${escapeHtml(docData.issue_date || '-')} | จำนวนเงิน: <strong>฿ ${netPayment.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</strong></span>
                                     </div>` : ''}
                                     ${(savedBranding.showRemarks !== false && (docData.remarks || savedBranding.defaultRemarks)) ? `
                                     <div class="notes-box">
                                         <strong>หมายเหตุ:</strong><br>
-                                        ${((docData.remarks && docData.remarks.trim() !== '') ? docData.remarks : (savedBranding.defaultRemarks || '')).split('\n').map(l => `• ${l.replace(/^[•\-\*]\s*/, '')}`).join('<br>')}
+                                        ${((docData.remarks && docData.remarks.trim() !== '') ? docData.remarks : (savedBranding.defaultRemarks || '')).split('\n').map(l => `• ${escapeHtml(l.replace(/^[•\-\*]\s*/, ''))}`).join('<br>')}
                                     </div>` : ''}
                                 </div>
 
@@ -1289,36 +1321,34 @@
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <div class="env-sender-box">
                                 <img src="${compData.logo_url || '../assets/images/mam-logo.png'}" alt="MAM" class="env-sender-logo">
-                                <div style="font-weight: 700; color: #0f172a;">${compData.name}</div>
-                                <div>${compData.address}</div>
-                                <div>โทรศัพท์: ${compData.phone} | เลขประจำตัวผู้เสียภาษี: ${compData.tax_id}</div>
+                                <div style="font-weight: 700; color: #0f172a;">${escapeHtml(compData.name)}</div>
+                                <div>${escapeHtml(compData.address)}</div>
+                                <div>โทรศัพท์: ${escapeHtml(compData.phone)} | เลขประจำตัวผู้เสียภาษี: ${escapeHtml(compData.tax_id)}</div>
                             </div>
                             <div class="env-postage-stamp">
                                 ชำระค่าฝากส่งเป็นรายเดือน<br>
                                 <strong>ใบอนุญาตพิเศษ</strong><br>
-                                ปณ. สาทร 10120
+                                ปณ. บางขุนเทียน 10150
                             </div>
                         </div>
 
                         <div class="env-recipient-box">
                             <div class="env-recipient-label">กรุณาส่ง (TO):</div>
-                            <div class="env-recipient-name">${docData.customer_name || '-'}</div>
-                            ${(docData.customer_contact || docData.customer_phone) ? `<div style="font-size: 11.5px; font-weight: 600; color: #334155; margin-bottom: 3px;">${[docData.customer_contact ? `ผู้ติดต่อ: ${docData.customer_contact}` : '', docData.customer_phone ? `โทร: ${docData.customer_phone}` : ''].filter(Boolean).join(' | ')}</div>` : ''}
-                            <div class="env-recipient-addr">${docData.customer_address || '-'}</div>
+                            <div class="env-recipient-name">${escapeHtml(docData.customer_name || '-')}</div>
+                            ${(docData.customer_contact || docData.customer_phone) ? `<div style="font-size: 11.5px; font-weight: 600; color: #334155; margin-bottom: 3px;">${escapeHtml([docData.customer_contact ? `ผู้ติดต่อ: ${docData.customer_contact}` : '', docData.customer_phone ? `โทร: ${docData.customer_phone}` : ''].filter(Boolean).join(' | '))}</div>` : ''}
+                            <div class="env-recipient-addr">${escapeHtml(docData.customer_address || '-')}</div>
                             <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
-                                เลขประจำตัวผู้เสียภาษี: ${docData.customer_tax_id || '-'} (${docData.customer_branch || 'สำนักงานใหญ่'})
+                                เลขประจำตัวผู้เสียภาษี: ${escapeHtml(docData.customer_tax_id || '-')} (${escapeHtml(docData.customer_branch || 'สำนักงานใหญ่')})
                             </div>
                         </div>
 
                         <div class="env-footer-ref">
-                            <div>เอกสาร: <strong>${docData.doc_number || 'ฉบับร่าง'}</strong> (${tConfig.th})</div>
-                            <div>ผู้ส่ง: ${docData.salesperson || 'MAM Design and Service'}</div>
+                            <div>เอกสาร: <strong>${escapeHtml(docData.doc_number || 'ฉบับร่าง')}</strong> (${tConfig.th})</div>
+                            <div>ผู้ส่ง: ${escapeHtml(docData.salesperson || 'MAM Design and Service')}</div>
                         </div>
                     </div>
                 `;
             }
-
-            const container = document.getElementById('pagesContainer');
 
             function updateDisplay(mode = 'ORIGINAL') {
                 if (mode === 'BOTH') {

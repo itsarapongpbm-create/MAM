@@ -353,7 +353,9 @@ function renderInventoryTable() {
         tbody.innerHTML = `
             <tr>
                 <td colspan="8" style="text-align: center; padding: 48px; color: #94a3b8;">
-                    <div style="font-size: 32px; margin-bottom: 8px;">📦</div>
+                    <div style="margin-bottom: 8px; color: #94a3b8;">
+                        <svg viewBox="0 0 24 24" width="36" height="36" stroke="currentColor" stroke-width="1.75" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    </div>
                     <div style="font-size: 15px; font-weight: 600; color: #475569;">ไม่พบรายการสินค้า</div>
                     <div style="font-size: 13px; margin-top: 4px;">ลองปรับเปลี่ยนคำค้นหา หรือกดปุ่ม <strong>"+ เพิ่มสินค้าใหม่"</strong> ด้านบน</div>
                 </td>
@@ -1154,13 +1156,13 @@ window.openAdjustModal = function(productId) {
     if (statusEl) {
         const min = Number(product.min_stock_level) || 5;
         if (currentQty <= 0) {
-            statusEl.textContent = '🔴 สินค้าหมดสต็อก';
+            statusEl.innerHTML = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#dc2626;margin-right:4px;"></span> สินค้าหมดสต็อก';
             statusEl.style.color = '#dc2626';
         } else if (currentQty <= min) {
-            statusEl.textContent = '🟡 สินค้าใกล้หมด';
+            statusEl.innerHTML = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#d97706;margin-right:4px;"></span> สินค้าใกล้หมด';
             statusEl.style.color = '#d97706';
         } else {
-            statusEl.textContent = '🟢 มีของพร้อมขาย';
+            statusEl.innerHTML = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#059669;margin-right:4px;"></span> มีของพร้อมขาย';
             statusEl.style.color = '#059669';
         }
     }
@@ -1340,13 +1342,13 @@ function updateAdjustDifference() {
             warningAlertEl.style.background = '#fef2f2';
             warningAlertEl.style.color = '#b91c1c';
             warningAlertEl.style.border = '1px solid #fecaca';
-            warningAlertEl.textContent = '⚠️ หลังปรับยอด สินค้านี้จะหมดสต็อก (Out of Stock)';
+            warningAlertEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> หลังปรับยอด สินค้านี้จะหมดสต็อก (Out of Stock)';
         } else if (target <= minStock) {
             warningAlertEl.style.display = 'block';
             warningAlertEl.style.background = '#fffbeb';
             warningAlertEl.style.color = '#b45309';
             warningAlertEl.style.border = '1px solid #fde68a';
-            warningAlertEl.textContent = `⚠️ หลังปรับยอด สินค้าจะต่ำกว่าจุดสั่งซื้อขั้นต่ำ (${minStock} ${unit})`;
+            warningAlertEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> หลังปรับยอด สินค้าจะต่ำกว่าจุดสั่งซื้อขั้นต่ำ (${minStock} ${unit})`;
         } else {
             warningAlertEl.style.display = 'none';
         }

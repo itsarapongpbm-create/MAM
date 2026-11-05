@@ -54,7 +54,7 @@ function createTransporter() {
 // สร้าง IMAP Client สำหรับ ImapFlow (IMAP อ่านอีเมลสดจาก Gmail)
 function createImapClient() {
     const config = getEmailConfig();
-    return new ImapFlow({
+    const client = new ImapFlow({
         host: 'imap.gmail.com',
         port: 993,
         secure: true,
@@ -64,11 +64,19 @@ function createImapClient() {
         },
         logger: false
     });
+
+    // ดักจับ error event เพื่อป้องกัน Unhandled 'error' event (เช่น ECONNRESET, ETIMEDOUT) ทำเซิร์ฟเวอร์หลุด/แครช
+    client.on('error', (err) => {
+        console.warn('[ImapFlow Client] Network/Connection Warning:', err?.message || err);
+    });
+
+    return client;
 }
 
 // สร้างตาราง Cache และตาราง Logs ใน SQLite เพื่อให้โหลดหน้าเว็บได้ทันทีภายใน 0.05 วินาที
 async function ensureCacheTable() {
     try {
+        const dtType = db.isPostgres() ? 'TIMESTAMP' : 'DATETIME';
         await db.runAsync(`
             CREATE TABLE IF NOT EXISTS email_inbox_cache (
                 uid INTEGER PRIMARY KEY,
@@ -82,7 +90,7 @@ async function ensureCacheTable() {
                 snippet TEXT,
                 html_body TEXT,
                 text_body TEXT,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                updated_at ${dtType} DEFAULT CURRENT_TIMESTAMP
             )
         `);
         await db.runAsync(`
@@ -97,7 +105,7 @@ async function ensureCacheTable() {
                 error_message TEXT,
                 file_name TEXT,
                 sent_by TEXT,
-                sent_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                sent_at ${dtType} DEFAULT CURRENT_TIMESTAMP
             )
         `);
     } catch (err) {
@@ -224,7 +232,7 @@ router.post('/import-customers', async (req, res) => {
         for (const item of customers) {
             if (!item.company) continue;
 
-            const existing = await db.getAsync('SELECT id FROM customers WHERE name = ? OR (email = ? AND email != "")', [item.company, item.email || '']);
+            const existing = await db.getAsync("SELECT id FROM customers WHERE name = ? OR (email = ? AND email != '')", [item.company, item.email || '']);
             if (existing) {
                 skippedCount++;
                 continue;
@@ -263,6 +271,7 @@ router.post('/send-single', async (req, res) => {
             company = '',
             contact_person = '',
             doc_number = '',
+            docNumber = '',
             subject = '',
             htmlBody = '',
             attachment = null
@@ -272,7 +281,7 @@ router.post('/send-single', async (req, res) => {
             return res.status(400).json({ error: 'อีเมลผู้รับไม่ถูกต้อง' });
         }
 
-        const docNoVal = doc_number || 'QT2026-0089';
+        const docNoVal = doc_number || docNumber || 'QT2026-0089';
 
         const finalSubject = subject
             .replace(/\{\{company\}\}/gi, company)
@@ -342,12 +351,13 @@ router.post('/send-single', async (req, res) => {
 // ฟังก์ชันดึงอีเมลจาก Gmail และบันทึกลง SQLite Cache
 async function syncGmailInbox(limit = 15) {
     const client = createImapClient();
-    await client.connect();
-    let lock = await client.getMailboxLock('INBOX');
+    let lock = null;
     let emails = [];
     let status;
 
     try {
+        await client.connect();
+        lock = await client.getMailboxLock('INBOX');
         status = await client.status('INBOX', { messages: true, unseen: true });
         const total = status.messages || 0;
         if (total > 0) {
@@ -381,10 +391,14 @@ async function syncGmailInbox(limit = 15) {
                 `, [emailItem.uid, emailItem.seq, emailItem.subject, emailItem.from, emailItem.fromName, emailItem.to, emailItem.date, emailItem.unread ? 1 : 0]);
             }
         }
+    } catch (err) {
+        console.warn('[ImapFlow] syncGmailInbox warning:', err?.message || err);
     } finally {
-        lock.release();
+        if (lock) {
+            try { lock.release(); } catch (e) {}
+        }
+        try { await client.logout(); } catch (e) {}
     }
-    await client.logout();
     emails.reverse();
     return { status, emails };
 }
@@ -400,7 +414,7 @@ router.get('/inbox', async (req, res) => {
     try {
         await ensureCacheTable();
         const cached = await db.allAsync(`
-            SELECT uid, seq, subject, from_address as [from], from_name as [fromName], to_address as [to], date, unread 
+            SELECT uid, seq, subject, from_address AS "from", from_name AS "fromName", to_address AS "to", date, unread 
             FROM email_inbox_cache 
             ORDER BY uid DESC 
             LIMIT 25
@@ -426,7 +440,7 @@ router.get('/inbox', async (req, res) => {
         console.error('Read Cache Error:', cacheErr.message);
     }
 
-    // 2. ถ้ายังไม่มี Cache หรือผู้ใช้กดปุ่ม 🔄 "รีเฟรช" ให้ต่อ Gmail จริง
+    // 2. ถ้ายังไม่มี Cache หรือผู้ใช้กดปุ่ม "รีเฟรช" ให้ต่อ Gmail จริง
     try {
         const { status, emails } = await syncGmailInbox(parseInt(req.query.limit) || 15);
         res.json({
@@ -441,7 +455,7 @@ router.get('/inbox', async (req, res) => {
         // หากต่อ Gmail มีปัญหา แต่มีข้อมูลใน Cache เก่า ให้ส่ง Cache เก่ากลับไปแทนเพื่อไม่ให้หน้าจอค้าง
         try {
             const fallbackCached = await db.allAsync(`
-                SELECT uid, seq, subject, from_address as [from], from_name as [fromName], to_address as [to], date, unread 
+                SELECT uid, seq, subject, from_address AS "from", from_name AS "fromName", to_address AS "to", date, unread 
                 FROM email_inbox_cache 
                 ORDER BY uid DESC 
                 LIMIT 25
@@ -564,7 +578,8 @@ router.get('/logs', async (req, res) => {
         `);
         res.json(rows);
     } catch (err) {
-        if (err.message.includes('no such table')) {
+        if (err.message.includes('no such table') || err.message.includes('does not exist')) {
+            const dtType = db.isPostgres() ? 'TIMESTAMP' : 'DATETIME';
             await db.runAsync(`
                 CREATE TABLE IF NOT EXISTS email_campaign_logs (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -577,7 +592,7 @@ router.get('/logs', async (req, res) => {
                     error_message TEXT,
                     file_name TEXT,
                     sent_by TEXT,
-                    sent_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                    sent_at ${dtType} DEFAULT CURRENT_TIMESTAMP
                 )
             `);
             return res.json([]);

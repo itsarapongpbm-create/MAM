@@ -161,7 +161,7 @@
             </a>
             <div class="topbar-divider"></div>
             <div class="topbar-company-info">
-                <span class="topbar-company-name" id="topbarCompanyName">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</span>
+                <span class="topbar-company-name" id="topbarCompanyName">บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด</span>
                 <span class="badge-advance">INTERNAL CRM</span>
             </div>
         </div>
@@ -231,6 +231,18 @@
                         <a href="../documents/invoices.html" class="submenu-item"><span>• ใบกำกับภาษี</span></a>
                         <a href="../documents/receipts.html" class="submenu-item"><span>• ใบเสร็จรับเงิน</span></a>
                         <a href="../documents/cash-sales.html" class="submenu-item"><span>• บิลเงินสด</span></a>
+                    </div>
+                </div>
+
+                <div class="menu-dropdown-group" id="purchaseDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="purchaseDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                            <span>จัดซื้อ (Purchases)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                    <div class="menu-dropdown-list">
                         <a href="../documents/purchase-orders.html" class="submenu-item"><span>• ใบสั่งซื้อ (PO)</span></a>
                         <a href="../expenses/expenses.html" class="submenu-item"><span>• ค่าใช้จ่าย (Expenses)</span></a>
                     </div>
@@ -316,10 +328,12 @@
                 </div>
                 <div class="header-controls" style="display: flex; gap: 10px; align-items: center;">
                     <a href="../inventory/gift-sets.html" class="btn-secondary" style="height: 38px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; color: #334155; background: #fff; text-decoration: none;">
-                        <span>📦 ดูแคตตาล็อก Gift Sets (61 ชุด)</span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+                        <span>ดูแคตตาล็อก Gift Sets (61 ชุด)</span>
                     </a>
                     <a href="inbox.html" class="btn-secondary" style="height: 38px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; color: #334155; background: #fff; text-decoration: none;">
-                        <span>✉️ กล่องข้อความ (Inbox)</span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        <span>กล่องข้อความ (Inbox)</span>
                     </a>
                 </div>
             </div>
@@ -343,7 +357,10 @@
                 </div>
                 <div class="kpi-card">
                     <span class="kpi-label">สถานะระบบส่งอีเมล</span>
-                    <div class="kpi-value text-success" style="font-size: 18px; margin: 4px 0;">พร้อมใช้งาน ✅</div>
+                    <div class="kpi-value text-success" style="font-size: 18px; margin: 4px 0; display: inline-flex; align-items: center; gap: 6px;">
+                        <span>พร้อมใช้งาน</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
                     <span class="trend-note">Gmail SMTP Online</span>
                 </div>
             </div>
@@ -364,11 +381,13 @@
 
                     <!-- FlowAccount Tabs -->
                     <div class="doc-tabs" style="margin-bottom: 16px;">
-                        <button type="button" class="doc-tab-btn active" id="tabSheets" onclick="switchSourceTab('sheets')">
-                            🔗 วางลิงก์ Google Sheets (Sheet Lists)
+                        <button type="button" class="doc-tab-btn active" id="tabSheets" onclick="switchSourceTab('sheets')" style="display: inline-flex; align-items: center; gap: 6px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                            <span>วางลิงก์ Google Sheets (Sheet Lists)</span>
                         </button>
-                        <button type="button" class="doc-tab-btn" id="tabMam" onclick="switchSourceTab('mam')">
-                            📁 รายชื่อจากระบบ MAM (Customers)
+                        <button type="button" class="doc-tab-btn" id="tabMam" onclick="switchSourceTab('mam')" style="display: inline-flex; align-items: center; gap: 6px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                            <span>รายชื่อจากระบบ MAM (Customers)</span>
                         </button>
                     </div>
 
@@ -405,8 +424,9 @@
                     <div id="mamSourceBox" style="display: none;">
                         <div style="display: flex; gap: 10px; align-items: center;">
                             <input type="text" id="mamSearchInput" placeholder="ค้นหาชื่อบริษัท, ผู้ติดต่อ หรืออีเมล..." style="flex: 1; height: 38px; padding: 0 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px;" oninput="filterMamCustomers()">
-                            <button type="button" class="btn-secondary" onclick="loadMamCustomers()" style="height: 38px; padding: 0 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; font-weight: 600; cursor: pointer; font-size: 13px;">
-                                🔄 รีเฟรชรายชื่อ
+                            <button type="button" class="btn-secondary" onclick="loadMamCustomers()" style="height: 38px; padding: 0 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; font-weight: 600; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                                <span>รีเฟรชรายชื่อ</span>
                             </button>
                         </div>
                     </div>
@@ -419,8 +439,9 @@
                             <button type="button" class="doc-tab-btn" id="btnFilterSent" onclick="filterAudience('SENT')">ส่งแล้ว (<span id="filterCountSent">0</span>)</button>
                         </div>
                         <div style="display: flex; gap: 8px; align-items: center;">
-                            <button type="button" class="btn-secondary" onclick="selectOnlyPending()" style="height: 30px; padding: 0 10px; font-size: 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">
-                                ☑️ ติ๊กเลือกเฉพาะที่ "รอส่ง"
+                            <button type="button" class="btn-secondary" onclick="selectOnlyPending()" style="height: 30px; padding: 0 10px; font-size: 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                                <span>ติ๊กเลือกเฉพาะที่ "รอส่ง"</span>
                             </button>
                         </div>
                     </div>
@@ -461,7 +482,8 @@
                         </h2>
                         <div>
                             <button type="button" class="btn-secondary" id="btnTogglePreview" onclick="toggleEmailPreview()" style="height: 34px; padding: 0 14px; font-size: 12.5px; font-weight: 600; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                                <span>👁️ พรีวิวอีเมลจริง (แทนชื่อบริษัท)</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                <span>พรีวิวอีเมลจริง (แทนชื่อบริษัท)</span>
                             </button>
                         </div>
                     </div>
@@ -469,7 +491,10 @@
                     <!-- Preset Selector Bar -->
                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; background: #fdf2f2; padding: 12px 16px; border-radius: 8px; border: 1px solid #fecaca; flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-                            <span style="font-size: 13px; font-weight: 700; color: #7D0A0A; white-space: nowrap;">📋 เลือกเทมเพลตสำเร็จรูป:</span>
+                            <span style="font-size: 13px; font-weight: 700; color: #7D0A0A; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                                <span>เลือกเทมเพลตสำเร็จรูป:</span>
+                            </span>
                             <select id="templatePresetSelect" onchange="applyTemplatePreset(this.value)" style="height: 38px; padding: 0 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 13px; font-weight: 600; color: #0f172a; background: #fff; cursor: pointer; flex: 1; max-width: 560px;">
                                 <option value="1" selected>เทมเพลต 1: แนะนำชุดของขวัญ Giftory 2026 ทั่วไป (ทางการ)</option>
                                 <option value="2">เทมเพลต 2: โปรโมชันสั่งจองล่วงหน้า (Early Bird สั่งก่อนสิ้นเดือนมีส่วนลดพิเศษ)</option>
@@ -505,8 +530,9 @@
 
                         <!-- Attachments -->
                         <div style="border-top: 1px solid #f1f5f9; padding-top: 16px;">
-                            <label style="display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 8px;">
-                                📎 เอกสารแนบ / ลิงก์ดาวน์โหลดแคตตาล็อก:
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 8px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                                <span>เอกสารแนบ / ลิงก์ดาวน์โหลดแคตตาล็อก:</span>
                             </label>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
                                 <!-- File Upload -->
@@ -530,7 +556,7 @@
                     <div id="emailPreviewView" style="display: none;">
                         <div class="preview-header-meta">
                             <div><strong>หัวข้อ:</strong> <span id="previewSubjectText" style="color: #0f172a;"></span></div>
-                            <div style="margin-top: 4px;"><strong>ผู้ส่ง:</strong> ฝ่ายขายและบริการลูกค้าองค์กร | บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด &lt;sales@giftoryth.com&gt;</div>
+                            <div style="margin-top: 4px;"><strong>ผู้ส่ง:</strong> ฝ่ายขายและบริการลูกค้าองค์กร | บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด &lt;sales@giftoryth.com&gt;</div>
                             <div style="margin-top: 4px;"><strong>ตัวอย่างผู้รับ:</strong> <span id="previewRecipientText" style="color: #7D0A0A; font-weight: 600;"></span></div>
                         </div>
 
@@ -563,8 +589,9 @@
                                 <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                                 <span>เริ่มส่งอีเมล (Start Send)</span>
                             </button>
-                            <button type="button" class="btn-secondary" id="btnPauseSend" onclick="pauseBatchSending()" disabled style="height: 38px; padding: 0 14px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; font-weight: 600; font-size: 13px; cursor: pointer;">
-                                ⏸️ พักชั่วคราว
+                            <button type="button" class="btn-secondary" id="btnPauseSend" onclick="pauseBatchSending()" disabled style="height: 38px; padding: 0 14px; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                <svg id="pauseIconSvg" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                                <span>พักชั่วคราว</span>
                             </button>
                         </div>
                     </div>
@@ -606,7 +633,7 @@
 
 ทาง MAM DESIGN AND SERVICE มีความยินดีขอนำเสนอ "แคตตาล็อกชุดของขวัญและกระเช้าพรีเมียม ประจำปี 2026 (Giftory Collection)" เพื่อเป็นตัวแทนส่งมอบความสุขและความปรารถนาดีแด่คู่ค้าและลูกค้าคนสำคัญของท่านในเทศกาลปีใหม่นี้
 
-✨ จุดเด่นของชุดของขวัญ Giftory 2026:
+[จุดเด่นของชุดของขวัญ Giftory 2026]
 • คัดสรรวัตถุดิบ ขนม และสินค้านำเข้าเกรดพรีเมียม คุณภาพมาตรฐานระดับสากล
 • ดีไซน์กระเช้าหนัง ตะกร้าหวาย และงานผูกโบว์ประณีตเอกลักษณ์เฉพาะของ MAM DESIGN
 • บริการจัดชุดตามงบประมาณขององค์กร พร้อมบริการสกรีนโลโก้และพิมพ์การ์ดอวยพรฟรี
@@ -617,7 +644,7 @@
 
 ขอแสดงความนับถืออย่างสูง,
 ฝ่ายขายและบริการลูกค้าองค์กร
-บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด
+บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด
 อีเมล: sales@giftoryth.com
 โทรศัพท์ 095-939-3979 
 เว็บไซต์: https://www.giftoryth.com/`
@@ -629,7 +656,7 @@
 
 เทศกาลส่งท้ายปีเก่าต้อนรับปีใหม่ 2026 ใกล้เข้ามาแล้ว ทาง MAM DESIGN AND SERVICE ขอมอบสิทธิประโยชน์พิเศษ "Giftory Early Bird Privileges 2026" สำหรับองค์กรและคู่ค้าคนสำคัญ:
 
-🎁 สิทธิพิเศษเฉพาะการสั่งจองล่วงหน้าภายในสิ้นเดือนนี้:
+[สิทธิพิเศษเฉพาะการสั่งจองล่วงหน้าภายในสิ้นเดือนนี้]
 1. ส่วนลดพิเศษสูงสุด 10 - 15% จากราคาปกติในแคตตาล็อก
 2. ฟรี! บริการสกรีนโลโก้องค์กรบนป้าย Tag และออกแบบการ์ดอวยพรเฉพาะบริษัท
 3. การันตีสต็อกสินค้าและกำหนดวันจัดส่งตรงเวลา 100% ถึงมือผู้รับ
@@ -640,7 +667,7 @@
 
 ขอแสดงความนับถืออย่างสูง,
 ฝ่ายขายและบริการลูกค้าองค์กร
-บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด
+บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด
 อีเมล: sales@giftoryth.com
 โทรศัพท์ 095-939-3979 
 เว็บไซต์: https://www.giftoryth.com/`
@@ -650,7 +677,7 @@
                 subject: "ขอนำชุดตัวอย่างกระเช้าของขวัญปีใหม่ 2026 เข้าไปเสนอฝ่ายจัดซื้อ บริษัท {{company}}",
                 body: `เรียน ฝ่ายจัดซื้อ บริษัท {{company}}
 
-ผมชื่อ [ชื่อเซลล์/ผู้ติดต่อ] จากบริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด ครับ
+ผมชื่อ [ชื่อเซลล์/ผู้ติดต่อ] จากบริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด ครับ
 
 สืบเนื่องจากช่วงเทศกาลปีใหม่ 2026 ที่กำลังจะมาถึงนี้ ทางเรามีแคตตาล็อกชุดของขวัญและกระเช้าพรีเมียมแบรนด์ Giftory สำหรับมอบให้ผู้บริหารและคู่ค้าองค์กร
 
@@ -662,7 +689,7 @@
 
 ขอแสดงความนับถืออย่างสูง,
 ฝ่ายขายและบริการลูกค้าองค์กร
-บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด
+บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด
 อีเมล: sales@giftoryth.com
 โทรศัพท์ 095-939-3979 
 เว็บไซต์: https://www.giftoryth.com/`
@@ -676,7 +703,7 @@
 
 ทางเราได้จัดทำ "ใบเสนอราคา (Quotation) เลขที่ {{doc_number}}" รายละเอียดรายการสินค้า เงื่อนไขราคา และกำหนดเวลาการส่งมอบ เรียบร้อยแล้วตามเอกสารแนบในอีเมลนี้ครับ
 
-📋 สรุปรายการสำคัญ:
+[สรุปรายการสำคัญ]
 • เลขที่ใบเสนอราคา: {{doc_number}}
 • บริษัทผู้รับบริการ: {{company}}
 • บริการพิเศษ: รวมบริการจัดชุด ผูกโบว์ และจัดส่งตามสถานที่ที่กำหนด
@@ -685,7 +712,7 @@
 
 ขอแสดงความนับถืออย่างสูง,
 ฝ่ายขายและบริการลูกค้าองค์กร
-บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด
+บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด
 อีเมล: sales@giftoryth.com
 โทรศัพท์ 095-939-3979 
 เว็บไซต์: https://www.giftoryth.com/`
@@ -695,11 +722,11 @@
                 subject: "ใบเสร็จรับเงิน / ใบเสร็จรับเงินชั่วคราว เลขที่ {{doc_number}} จาก MAM DESIGN",
                 body: `เรียน ฝ่ายบัญชีและการเงิน บริษัท {{company}}
 
-บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด ขอขอบพระคุณท่านเป็นอย่างยิ่งที่ได้ไว้วางใจใช้บริการและชำระเงินค่าสินค้า/บริการเรียบร้อยแล้ว
+บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด ขอขอบพระคุณท่านเป็นอย่างยิ่งที่ได้ไว้วางใจใช้บริการและชำระเงินค่าสินค้า/บริการเรียบร้อยแล้ว
 
 ทางบริษัทฯ ได้ออก "ใบเสร็จรับเงิน (Receipt) เลขที่ {{doc_number}}" ให้แก่ท่านเรียบร้อยแล้ว รายละเอียดถูกต้องตามที่ระบุในเอกสารแนบนี้ครับ
 
-📋 รายละเอียดการชำระ:
+[รายละเอียดการชำระ]
 • เลขที่ใบเสร็จรับเงิน: {{doc_number}}
 • บริษัทผู้รับบริการ: {{company}}
 • สถานะ: ชำระเงินเรียบร้อยแล้ว (PAID)
@@ -708,7 +735,7 @@
 
 ขอแสดงความนับถืออย่างสูง,
 ฝ่ายขายและบริการลูกค้าองค์กร
-บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด
+บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด
 อีเมล: sales@giftoryth.com
 โทรศัพท์ 095-939-3979 
 เว็บไซต์: https://www.giftoryth.com/`
@@ -740,12 +767,12 @@
             if (editor.style.display !== 'none') {
                 editor.style.display = 'none';
                 preview.style.display = 'block';
-                btn.innerHTML = '<span>✍️ กลับไปแก้ไขข้อความ</span>';
+                btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg> <span>กลับไปแก้ไขข้อความ</span></span>';
                 renderEmailPreview();
             } else {
                 editor.style.display = 'block';
                 preview.style.display = 'none';
-                btn.innerHTML = '<span>👁️ พรีวิวอีเมลจริง (แทนชื่อบริษัท)</span>';
+                btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> <span>พรีวิวอีเมลจริง (แทนชื่อบริษัท)</span></span>';
             }
         }
 
@@ -789,10 +816,10 @@
             if (driveUrl) {
                 previewHtml += `
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; text-align: center; margin: 24px 0;">
-                        <div style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">📖 แคตตาล็อกชุดของขวัญ Giftory 2026 (PDF ฉบับเต็ม)</div>
+                        <div style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">แคตตาล็อกชุดของขวัญ Giftory 2026 (PDF ฉบับเต็ม)</div>
                         <div style="font-size: 12.5px; color: #64748b; margin-bottom: 12px;">รวมภาพกระเช้าพรีเมียม สเปกสินค้า และใบเสนอราคา 61 รายการ</div>
                         <a href="${driveUrl}" target="_blank" style="background: #7D0A0A; color: #ffffff; padding: 10px 22px; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 13px; display: inline-block;">
-                            📥 คลิกเพื่อเปิดดูแคตตาล็อก Giftory 2026 (Google Drive)
+                            คลิกเพื่อเปิดดูแคตตาล็อก Giftory 2026 (Google Drive)
                         </a>
                     </div>
                 `;
@@ -1038,7 +1065,7 @@
 
             // ตรวจสอบขนาดไฟล์ ถ้าเกิน 25 MB
             if (file.size > 25 * 1024 * 1024) {
-                alert(`⚠️ ไฟล์ "${file.name}" มีขนาด ${(file.size / (1024*1024)).toFixed(1)} MB ซึ่งเกินขีดจำกัดไฟล์แนบของ Gmail (สูงสุด 25 MB)\n\nกรุณานำไฟล์นี้อัปโหลดขึ้น Google Drive แล้วนำลิงก์มาวางในช่อง "ลิงก์ดาวน์โหลด Google Drive" แทนครับ`);
+                alert(`ไฟล์ "${file.name}" มีขนาด ${(file.size / (1024*1024)).toFixed(1)} MB ซึ่งเกินขีดจำกัดไฟล์แนบของ Gmail (สูงสุด 25 MB)\n\nกรุณานำไฟล์นี้อัปโหลดขึ้น Google Drive แล้วนำลิงก์มาวางในช่อง "ลิงก์ดาวน์โหลด Google Drive" แทนครับ`);
                 event.target.value = '';
                 return;
             }
@@ -1051,7 +1078,7 @@
                     content: base64Data,
                     contentType: file.type || 'application/pdf'
                 };
-                document.getElementById('fileUploadLabel').innerHTML = `✅ แนบไฟล์: <strong>${file.name}</strong> (${(file.size / (1024*1024)).toFixed(2)} MB)`;
+                document.getElementById('fileUploadLabel').innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> แนบไฟล์: <strong>${file.name}</strong> (${(file.size / (1024*1024)).toFixed(2)} MB)</span>`;
                 logToConsole(`[ไฟล์แนบ] แนบไฟล์ ${file.name} เรียบร้อยแล้ว`, 'log-info');
             };
             reader.readAsDataURL(file);
@@ -1073,10 +1100,10 @@
             if (driveUrl) {
                 finalBodyHtml += `
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; text-align: center; margin: 24px 0;">
-                        <div style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">📖 แคตตาล็อกชุดของขวัญ Giftory 2026 (PDF ฉบับเต็ม)</div>
+                        <div style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">แคตตาล็อกชุดของขวัญ Giftory 2026 (PDF ฉบับเต็ม)</div>
                         <div style="font-size: 12.5px; color: #64748b; margin-bottom: 12px;">รวมภาพกระเช้าพรีเมียม สเปกสินค้า และใบเสนอราคา 61 รายการ</div>
                         <a href="${driveUrl}" target="_blank" style="background: #7D0A0A; color: #ffffff; padding: 10px 22px; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 13px; display: inline-block;">
-                            📥 คลิกเพื่อเปิดดูแคตตาล็อก Giftory 2026 (Google Drive)
+                            คลิกเพื่อเปิดดูแคตตาล็อก Giftory 2026 (Google Drive)
                         </a>
                     </div>
                 `;
@@ -1111,6 +1138,9 @@
                 document.getElementById('progressPercentText').innerText = percent + '%';
 
                 try {
+                    const docNumVal = item.doc_number || item.docNumber || '';
+                    const itemSubject = subject.replace(/\{\{doc_number\}\}/gi, docNumVal);
+                    const itemBodyHtml = finalBodyHtml.replace(/\{\{doc_number\}\}/gi, escapeHtml(docNumVal));
                     const res = await fetch('/api/email/send-single', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1118,8 +1148,8 @@
                             to: item.email,
                             company: item.company,
                             contact_person: item.contact_person,
-                            subject: subject,
-                            htmlBody: finalBodyHtml,
+                            subject: itemSubject,
+                            htmlBody: itemBodyHtml,
                             attachment: attachedFile
                         })
                     });
@@ -1131,11 +1161,11 @@
 
                     sentCount++;
                     item.status = 'ส่ง mail แล้ว';
-                    logToConsole(`[${i+1}/${total}] ส่งสำเร็จ: ${item.company} (${item.email}) ✅`, 'log-success');
+                    logToConsole(`[${i+1}/${total}] ส่งสำเร็จ: ${item.company} (${item.email})`, 'log-success');
                 } catch (err) {
                     failedCount++;
                     item.status = 'ส่งไม่ผ่าน';
-                    logToConsole(`[${i+1}/${total}] ล้มเหลว: ${item.company} (${item.email}) - ${err.message} ❌`, 'log-error');
+                    logToConsole(`[${i+1}/${total}] ล้มเหลว: ${item.company} (${item.email}) - ${err.message}`, 'log-error');
                 }
 
                 updateFilterCounts();
@@ -1150,13 +1180,13 @@
             document.getElementById('btnStartSend').disabled = false;
             document.getElementById('btnPauseSend').disabled = true;
             document.getElementById('progressStatusText').innerText = `ส่งเสร็จสิ้น! สำเร็จ ${sentCount} ราย, ล้มเหลว ${failedCount} ราย`;
-            logToConsole(`🎉 [เสร็จสิ้น] ส่งเสร็จสมบูรณ์: สำเร็จ ${sentCount} ราย, ล้มเหลว ${failedCount} ราย`, 'log-success');
+            logToConsole(`[เสร็จสิ้น] ส่งเสร็จสมบูรณ์: สำเร็จ ${sentCount} ราย, ล้มเหลว ${failedCount} ราย`, 'log-success');
             alert(`การส่งอีเมลเสร็จสิ้นแล้ว!\nสำเร็จ: ${sentCount} บริษัท\nล้มเหลว: ${failedCount} บริษัท`);
         }
 
         function pauseBatchSending() {
             isPaused = !isPaused;
-            document.getElementById('btnPauseSend').innerText = isPaused ? '▶️ ส่งต่อ' : '⏸️ พักชั่วคราว';
+            document.getElementById('btnPauseSend').innerHTML = isPaused ? '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> <span>ส่งต่อ</span>' : '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> <span>พักชั่วคราว</span>';
             logToConsole(isPaused ? '[สถานะ] พักการส่งชั่วคราว' : '[สถานะ] กำลังส่งต่อ...', 'log-info');
         }
 
@@ -1185,6 +1215,7 @@
         });
     </script>
     <script src="/assets/js/auth-guard.js"></script>
+    <script src="/assets/js/theme-manager.js"></script>
     <script src="/assets/js/global-navbar.js"></script>
     <script src="/assets/js/modules/doc-toast.js"></script>
 </body>

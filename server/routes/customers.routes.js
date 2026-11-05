@@ -16,10 +16,10 @@ router.get('/', async (req, res) => {
         let conditions = [];
 
         if (type) {
-            conditions.push('(contact_type = ? OR contact_type = "BOTH")');
+            conditions.push("(contact_type = ? OR contact_type = 'BOTH')");
             params.push(type);
         } else {
-            conditions.push('(contact_type IN ("CUSTOMER", "BOTH") OR contact_type IS NULL OR contact_type = "")');
+            conditions.push("(contact_type IN ('CUSTOMER', 'BOTH') OR contact_type IS NULL OR contact_type = '')");
         }
 
         if (search && search.trim()) {

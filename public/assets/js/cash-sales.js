@@ -428,7 +428,7 @@ window.shareDocument = function(docNum, id) {
 };
 
 window.deleteDocument = async function(id, docNum, status, customerName = 'ลูกค้าทั่วไป', grandTotal = 0) {
-    if (status && status !== 'DRAFT') {
+    if (status && status !== 'DRAFT' && status !== 'CANCELLED') {
         const dialogRes = await openActionDialog({
             action: 'cancel',
             docNum: docNum,

@@ -5,6 +5,16 @@
  */
 
 require('./config/env');
+
+// Process-level crash prevention (Protect against ECONNRESET, network drops, unhandled stream events)
+process.on('uncaughtException', (err) => {
+    console.error('[CRITICAL PROTECT] Uncaught Exception caught by server shield:', err?.message || err);
+});
+
+process.on('unhandledRejection', (reason) => {
+    console.error('[CRITICAL PROTECT] Unhandled Promise Rejection caught by server shield:', reason?.message || reason);
+});
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -26,6 +36,7 @@ const inventoryRoutes = require('./routes/inventory.routes');
 const giftSetRoutes = require('./routes/gift-sets.routes');
 const emailRoutes = require('./routes/email.routes');
 const uploadRoutes = require('./routes/upload.routes');
+const bankingRoutes = require('./routes/banking.routes');
 const { checkStorageHealth } = require('./services/storage.service');
 
 const app = express();
@@ -42,19 +53,24 @@ app.use('/dashboard/assets', express.static(path.join(__dirname, '..', 'public',
 app.use('/inventory/assets', express.static(path.join(__dirname, '..', 'public', 'assets')));
 app.use('/documents/assets', express.static(path.join(__dirname, '..', 'public', 'assets')));
 app.use('/email/assets', express.static(path.join(__dirname, '..', 'public', 'assets')));
+app.use('/banking/assets', express.static(path.join(__dirname, '..', 'public', 'assets')));
 
 // ==========================================================================
 // Health Check Endpoint (PostgreSQL + MinIO Status)
 // ==========================================================================
 app.get('/api/health', async (req, res) => {
     try {
-        const dbCheck = await require('./config/db').getAsync('SELECT NOW() as now, current_database() as db');
+        const db = require('./config/db');
+        const healthSql = db.isPostgres()
+            ? 'SELECT NOW() as now, current_database() as db'
+            : "SELECT datetime('now') as now, 'sqlite' as db";
+        const dbCheck = await db.getAsync(healthSql);
         const storageCheck = await checkStorageHealth();
         res.json({
             status: 'HEALTHY',
             timestamp: new Date().toISOString(),
             database: {
-                engine: 'PostgreSQL 16',
+                engine: db.isPostgres() ? 'PostgreSQL 16' : 'SQLite 3',
                 connected: Boolean(dbCheck),
                 current_database: dbCheck?.db,
                 server_time: dbCheck?.now
@@ -87,10 +103,14 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/gift-sets', giftSetRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/banking', bankingRoutes);
 
-// Auto-redirect incorrect nested inventory paths (e.g. /dashboard/inventory/xxx -> /inventory/xxx)
+// Auto-redirect incorrect nested paths
 app.use('/dashboard/inventory', (req, res) => {
     res.redirect(`/inventory${req.url}`);
+});
+app.use('/dashboard/banking', (req, res) => {
+    res.redirect(`/banking${req.url}`);
 });
 
 // 404 handler for API endpoints

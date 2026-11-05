@@ -9,7 +9,7 @@ const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 
 const defaultDbPath = path.join(__dirname, '..', 'flowaccount.db');
-const DB_PATH = process.env.DB_PATH ? path.resolve(process.cwd(), process.env.DB_PATH) : defaultDbPath;
+const DB_PATH = process.env.DB_PATH ? path.resolve(__dirname, '../..', process.env.DB_PATH) : defaultDbPath;
 
 const dbDir = path.dirname(DB_PATH);
 if (!fs.existsSync(dbDir)) {
@@ -40,22 +40,38 @@ if (usePostgres) {
     });
 }
 
-function convertSql(sql) {
+function convertSql(sql, isPg = usePostgres) {
+    if (!isPg) {
+        return sql.replace(/\bILIKE\b/gi, 'LIKE');
+    }
     let i = 0;
     let converted = sql.replace(/\?/g, () => `$${++i}`);
+    converted = converted.replace(/\bLIKE\b/gi, 'ILIKE');
     converted = converted.replace(/DATETIME\('now'\)/gi, 'CURRENT_TIMESTAMP');
-    converted = converted.replace(/MAX\(\s*last_no\s*,\s*excluded\.last_no\s*\)/gi, 'GREATEST(document_sequences.last_no, excluded.last_no)');
+    converted = converted.replace(/MAX\(\s*last_no\s*(\+\s*1\s*)?,\s*excluded\.last_no\s*\)/gi, (_, plusOne) =>
+        `GREATEST(document_sequences.last_no${plusOne ? ' + 1' : ''}, excluded.last_no)`
+    );
     converted = converted.replace(/INTEGER PRIMARY KEY AUTOINCREMENT/gi, 'SERIAL PRIMARY KEY');
+    converted = converted.replace(/\bDATETIME\b/gi, 'TIMESTAMPTZ');
     converted = converted.replace(/strftime\('%Y-%m',\s*([a-zA-Z0-9_]+)\)/gi, 'SUBSTRING($1, 1, 7)');
     converted = converted.replace(/strftime\('%Y',\s*([a-zA-Z0-9_]+)\)/gi, 'SUBSTRING($1, 1, 4)');
     converted = converted.replace(/strftime\('%m',\s*([a-zA-Z0-9_]+)\)/gi, 'SUBSTRING($1, 6, 2)');
     converted = converted.replace(/strftime\('%d',\s*([a-zA-Z0-9_]+)\)/gi, 'SUBSTRING($1, 9, 2)');
+    converted = converted.replace(/date\('now'\)/gi, "TO_CHAR(CURRENT_DATE, 'YYYY-MM-DD')");
+    converted = converted.replace(/date\(([a-zA-Z0-9_.]+)\)/gi, 'SUBSTRING($1, 1, 10)');
     converted = converted.replace(/instr\(/gi, 'STRPOS(');
+    if (/INSERT\s+OR\s+IGNORE\s+INTO/i.test(converted)) {
+        converted = converted.replace(/INSERT\s+OR\s+IGNORE\s+INTO/gi, 'INSERT INTO');
+        if (!/ON\s+CONFLICT/i.test(converted)) {
+            converted = converted.replace(/;?\s*$/, ' ON CONFLICT DO NOTHING');
+        }
+    }
     return converted;
 }
 
 const db = {
     pool,
+    convertSql,
     isPostgres: () => usePostgres,
     switchToSqlite: () => {
         usePostgres = false;
@@ -66,11 +82,12 @@ const db = {
     runAsync: async function (sql, params = []) {
         if (usePostgres && pool) {
             try {
-                const isInsert = /^\s*insert\s+into/i.test(sql);
-                const hasReturning = /returning\s+/i.test(sql);
-                const finalSql = convertSql(sql);
+                const isInsert = /^\s*insert\s+(?:or\s+ignore\s+)?into/i.test(sql);
+                const hasReturning = /\breturning\s+/i.test(sql);
+                const noIdTable = /^\s*insert\s+(?:or\s+ignore\s+)?into\s+"?(document_sequences|email_inbox_cache)"?\b/i.test(sql);
+                const finalSql = convertSql(sql, true);
 
-                if (isInsert && !hasReturning) {
+                if (isInsert && !hasReturning && !noIdTable) {
                     try {
                         const res = await pool.query(`${finalSql} RETURNING id`, params);
                         return {
@@ -101,8 +118,9 @@ const db = {
         }
 
         // SQLite Execution
+        const sqliteSql = convertSql(sql, false);
         return new Promise((resolve, reject) => {
-            sqliteDb.run(sql, params, function (err) {
+            sqliteDb.run(sqliteSql, params, function (err) {
                 if (err) reject(err);
                 else resolve(this);
             });
@@ -112,7 +130,7 @@ const db = {
     allAsync: async function (sql, params = []) {
         if (usePostgres && pool) {
             try {
-                const res = await pool.query(convertSql(sql), params);
+                const res = await pool.query(convertSql(sql, true), params);
                 return res.rows || [];
             } catch (err) {
                 if (err.code === 'ECONNREFUSED' || err.message.includes('connection timeout')) {
@@ -124,8 +142,9 @@ const db = {
         }
 
         // SQLite Execution
+        const sqliteSql = convertSql(sql, false);
         return new Promise((resolve, reject) => {
-            sqliteDb.all(sql, params, (err, rows) => {
+            sqliteDb.all(sqliteSql, params, (err, rows) => {
                 if (err) reject(err);
                 else resolve(rows || []);
             });
@@ -135,7 +154,7 @@ const db = {
     getAsync: async function (sql, params = []) {
         if (usePostgres && pool) {
             try {
-                const res = await pool.query(convertSql(sql), params);
+                const res = await pool.query(convertSql(sql, true), params);
                 return res.rows[0];
             } catch (err) {
                 if (err.code === 'ECONNREFUSED' || err.message.includes('connection timeout')) {
@@ -147,8 +166,9 @@ const db = {
         }
 
         // SQLite Execution
+        const sqliteSql = convertSql(sql, false);
         return new Promise((resolve, reject) => {
-            sqliteDb.get(sql, params, (err, row) => {
+            sqliteDb.get(sqliteSql, params, (err, row) => {
                 if (err) reject(err);
                 else resolve(row);
             });

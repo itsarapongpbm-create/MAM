@@ -421,30 +421,36 @@
                     statusBadge = `<span class="badge-status draft">ระงับ</span>`;
                 }
 
+                const safeNameHtml = String(u.name || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                const safeEmailHtml = String(u.email || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                const safeUserHtml = String(u.username || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                const safePhoneHtml = String(u.phone || '-').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                const safeNameJsAttr = JSON.stringify(String(u.name || '')).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
                 return `
                     <tr>
                         <td>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <img src="${u.avatar || 'https://ui-avatars.com/api/?name=U'}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #e2e8f0;">
-                                <strong>${u.name}</strong>
+                                <strong>${safeNameHtml}</strong>
                             </div>
                         </td>
                         <td>
-                            <div>${u.email}</div>
-                            <small style="color: #64748b;">@${u.username}</small>
+                            <div>${safeEmailHtml}</div>
+                            <small style="color: #64748b;">@${safeUserHtml}</small>
                         </td>
                         <td style="text-align: center;">${roleBadge}</td>
-                        <td>${u.phone || '-'}</td>
+                        <td>${safePhoneHtml}</td>
                         <td>${u.last_login ? new Date(u.last_login).toLocaleString('th-TH') : 'ยังไม่เคยเข้าใช้งาน'}</td>
                         <td style="text-align: center;">${statusBadge}</td>
                         <td style="text-align: center; white-space: nowrap;">
                             <div style="display: inline-flex; gap: 6px; justify-content: center;">
                                 ${u.status === 'PENDING' ? `
-                                    <button class="btn-action-small text-success" onclick="approveUserDirect(${u.id}, '${u.name}')">
+                                    <button class="btn-action-small text-success" onclick="approveUserDirect(${u.id}, ${safeNameJsAttr})">
                                         <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                         <span>อนุมัติ</span>
                                     </button>
-                                    <button class="btn-action-small text-danger" onclick="rejectUserDirect(${u.id}, '${u.name}')">
+                                    <button class="btn-action-small text-danger" onclick="rejectUserDirect(${u.id}, ${safeNameJsAttr})">
                                         <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                                         <span>ปฏิเสธ</span>
                                     </button>
@@ -454,7 +460,7 @@
                                         <span>แก้ไข</span>
                                     </button>
                                     ${u.id !== 1 ? `
-                                        <button class="btn-action-small text-danger" onclick="deleteUser(${u.id}, '${u.name}')">
+                                        <button class="btn-action-small text-danger" onclick="deleteUser(${u.id}, ${safeNameJsAttr})">
                                             <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                                             <span>ลบ</span>
                                         </button>

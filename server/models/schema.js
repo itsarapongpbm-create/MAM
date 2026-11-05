@@ -70,6 +70,7 @@ async function createTables(db) {
             address TEXT NOT NULL,
             phone TEXT,
             email TEXT,
+            website TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     `);
@@ -265,7 +266,7 @@ async function createTables(db) {
             doc_date TEXT NOT NULL,
             form_type TEXT CHECK(form_type IN ('ภ.ง.ด.1', 'ภ.ง.ด.2', 'ภ.ง.ด.3', 'ภ.ง.ด.53')) DEFAULT 'ภ.ง.ด.53',
             sequence_no TEXT DEFAULT '1',
-            payer_tax_id TEXT NOT NULL DEFAULT '0105562089456',
+            payer_tax_id TEXT NOT NULL DEFAULT '0105565160161',
             payer_name TEXT NOT NULL DEFAULT 'บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด',
             payer_address TEXT NOT NULL,
             payee_type TEXT DEFAULT 'juristic',
@@ -279,7 +280,11 @@ async function createTables(db) {
             tax_amount REAL NOT NULL DEFAULT 0,
             tax_condition TEXT DEFAULT 'withheld',
             ref_expense_number TEXT,
+            items_json TEXT,
             status TEXT DEFAULT 'COMPLETED',
+            cancelled_at DATETIME,
+            cancel_reason TEXT,
+            updated_at DATETIME,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(company_id) REFERENCES companies(id)
         );
@@ -395,6 +400,80 @@ async function createTables(db) {
             file_name TEXT,
             sent_by TEXT,
             sent_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+    `);
+
+    // 18. ตารางบัญชีธนาคารและเงินสด (Bank Accounts & Petty Cash)
+    await db.runAsync(`
+        CREATE TABLE IF NOT EXISTS bank_accounts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_id INTEGER NOT NULL DEFAULT 1,
+            account_code TEXT UNIQUE,
+            account_name TEXT NOT NULL,
+            bank_code TEXT NOT NULL,
+            account_number TEXT,
+            branch_name TEXT,
+            account_type TEXT CHECK(account_type IN ('SAVINGS', 'CURRENT', 'PETTY_CASH', 'PROMPTPAY', 'OTHER')) DEFAULT 'SAVINGS',
+            opening_balance REAL DEFAULT 0,
+            current_balance REAL DEFAULT 0,
+            promptpay_id TEXT,
+            is_default INTEGER DEFAULT 0,
+            color TEXT,
+            status TEXT CHECK(status IN ('ACTIVE', 'INACTIVE')) DEFAULT 'ACTIVE',
+            notes TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(company_id) REFERENCES companies(id)
+        );
+    `);
+
+    // 19. ตารางรายการเคลื่อนไหวเงินเข้า-ออก (Bank & Cash Transactions Ledger)
+    await db.runAsync(`
+        CREATE TABLE IF NOT EXISTS bank_transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_id INTEGER NOT NULL DEFAULT 1,
+            account_id INTEGER NOT NULL,
+            transaction_date TEXT NOT NULL,
+            transaction_time TEXT,
+            type TEXT CHECK(type IN ('INCOME', 'EXPENSE', 'TRANSFER_IN', 'TRANSFER_OUT', 'ADJUST')) NOT NULL,
+            amount REAL NOT NULL DEFAULT 0,
+            fee REAL DEFAULT 0,
+            balance_after REAL DEFAULT 0,
+            channel TEXT DEFAULT 'TRANSFER',
+            ref_doc_type TEXT,
+            ref_doc_id INTEGER,
+            ref_number TEXT,
+            payer_payee_name TEXT,
+            description TEXT,
+            slip_url TEXT,
+            is_reconciled INTEGER DEFAULT 0,
+            reconciled_at DATETIME,
+            created_by TEXT DEFAULT 'Admin',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(company_id) REFERENCES companies(id),
+            FOREIGN KEY(account_id) REFERENCES bank_accounts(id) ON DELETE CASCADE
+        );
+    `);
+
+    // 20. ตารางบันทึกการโอนเงินระหว่างบัญชีภายใน (Internal Fund Transfers)
+    await db.runAsync(`
+        CREATE TABLE IF NOT EXISTS internal_transfers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_id INTEGER NOT NULL DEFAULT 1,
+            transfer_number TEXT UNIQUE NOT NULL,
+            from_account_id INTEGER NOT NULL,
+            to_account_id INTEGER NOT NULL,
+            amount REAL NOT NULL,
+            fee REAL DEFAULT 0,
+            transfer_date TEXT NOT NULL,
+            transfer_time TEXT,
+            slip_url TEXT,
+            note TEXT,
+            created_by TEXT DEFAULT 'Admin',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(company_id) REFERENCES companies(id),
+            FOREIGN KEY(from_account_id) REFERENCES bank_accounts(id),
+            FOREIGN KEY(to_account_id) REFERENCES bank_accounts(id)
         );
     `);
 }

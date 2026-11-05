@@ -87,21 +87,32 @@ function validatePayload(body, isDraft = false) {
 
     const docDate = body.doc_date || new Date().toISOString().split('T')[0];
 
-    // รองรับหลายรายการเงินได้ในใบเดียว (Multi-row)
-    if (Array.isArray(body.items) && body.items.length > 0) {
+    // รองรับหลายรายการเงินได้ในใบเดียว (Multi-row: array หรือ JSON string)
+    let rawItems = [];
+    if (Array.isArray(body.items)) {
+        rawItems = body.items;
+    } else if (typeof body.items === 'string' && body.items.trim().startsWith('[')) {
+        try { rawItems = JSON.parse(body.items); } catch (_) { rawItems = []; }
+    } else if (typeof body.items_json === 'string' && body.items_json.trim().startsWith('[')) {
+        try { rawItems = JSON.parse(body.items_json); } catch (_) { rawItems = []; }
+    }
+
+    if (Array.isArray(rawItems) && rawItems.length > 0) {
         let totalIncome = 0;
         let totalTax = 0;
         const validItems = [];
         const typeSet = new Set();
 
-        for (const it of body.items) {
-            const amt = round2(it.income_amount);
-            const rate = Number(it.tax_rate) || 0;
+        for (const it of rawItems) {
+            const amt = round2(it.income_amount !== undefined ? it.income_amount : it.amount);
+            const rate = Number(it.tax_rate !== undefined ? it.tax_rate : (it.wht_rate !== undefined ? it.wht_rate : it.rate)) || 0;
             if (amt > 0 || isDraft) {
-                const itemTax = round2(amt * rate / 100);
+                const itemTax = (it.tax_amount !== undefined && Number(it.tax_amount) > 0 && rate === 0)
+                    ? round2(it.tax_amount)
+                    : round2(amt * rate / 100);
                 totalIncome += amt;
                 totalTax += itemTax;
-                const desc = String(it.income_type || 'ค่าบริการ').trim();
+                const desc = String(it.income_type || it.description || 'ค่าบริการ').trim();
                 typeSet.add(desc);
                 validItems.push({
                     row_no: it.row_no || 5,
@@ -122,7 +133,9 @@ function validatePayload(body, isDraft = false) {
             itemsJson = JSON.stringify(validItems);
         }
     } else {
-        taxAmount = round2(incomeAmount * taxRate / 100);
+        taxAmount = (body.tax_amount !== undefined && Number(body.tax_amount) > 0 && !(taxRate > 0))
+            ? round2(body.tax_amount)
+            : round2(incomeAmount * taxRate / 100);
     }
 
     if (!isDraft) {

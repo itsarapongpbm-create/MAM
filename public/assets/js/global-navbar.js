@@ -43,7 +43,7 @@
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                     <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                 </svg>
-                <span class="notification-badge" id="topbarNotificationBadge">3</span>
+                <span class="notification-badge" id="topbarNotificationBadge" style="display: none;">0</span>
             </button>
 
             <!-- Help & Support -->
@@ -75,7 +75,7 @@
                         <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                         <span>จัดการผู้ใช้งานและสิทธิ์</span>
                     </a>
-                    <a href="#" class="dropdown-item" id="openCompanyInfoLink">
+                    <a href="/admin-web/settings.html" class="dropdown-item" id="openCompanyInfoLink">
                         <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="6" x2="9" y2="6.01"></line><line x1="15" y1="6" x2="15" y2="6.01"></line><line x1="9" y1="10" x2="9" y2="10.01"></line><line x1="15" y1="10" x2="15" y2="10.01"></line><line x1="9" y1="14" x2="9" y2="14.01"></line><line x1="15" y1="14" x2="15" y2="14.01"></line><line x1="9" y1="18" x2="9" y2="18.01"></line><line x1="15" y1="18" x2="15" y2="18.01"></line></svg>
                         <span>ข้อมูลองค์กร (MAM DESIGN AND SERVICE)</span>
                     </a>
@@ -109,14 +109,56 @@
                     navRight.insertBefore(smtpPillClone, navRight.firstChild);
                 }
             }
+        } else {
+            const notifBadge = topNavbar.querySelector('.notification-badge');
+            if (notifBadge && notifBadge.textContent.trim() === '3') {
+                notifBadge.textContent = '0';
+                notifBadge.style.display = 'none';
+            }
         }
 
         // Attach event listeners safely
         setupSidebarToggle();
         setupUserDropdown();
+        setupTopbarActionButtons();
         setupLogout();
         syncUserData();
         syncCompanyData();
+
+        if (typeof window.applyRolePermissions === 'function') {
+            window.applyRolePermissions();
+        }
+        if (typeof window.updateSidebarPendingBadges === 'function') {
+            window.updateSidebarPendingBadges();
+        }
+    }
+
+    function setupTopbarActionButtons() {
+        const companyInfoLink = document.getElementById('openCompanyInfoLink');
+        if (companyInfoLink) {
+            const companyModal = document.getElementById('companyInfoModal') || document.getElementById('companyModal');
+            if (!companyModal) {
+                companyInfoLink.setAttribute('href', '/admin-web/settings.html');
+            }
+        }
+
+        const notifBtn = document.getElementById('topbarNotificationBtn');
+        if (notifBtn && !notifBtn.dataset.wired) {
+            notifBtn.dataset.wired = '1';
+            notifBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = '/documents/quotations.html';
+            });
+        }
+
+        const helpBtn = document.getElementById('topbarHelpBtn');
+        if (helpBtn && !helpBtn.dataset.wired) {
+            helpBtn.dataset.wired = '1';
+            helpBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                alert('คู่มือการใช้งานระบบ MAM DESIGN AND SERVICE CRM\n\n• เอกสารการขาย: สร้างใบเสนอราคา ใบวางบิล ใบกำกับภาษี ใบเสร็จรับเงิน\n• จัดซื้อ & ค่าใช้จ่าย: สร้างใบสั่งซื้อ (PO) และบันทึกค่าใช้จ่าย\n• การเงิน / ธนาคาร: บริหารบัญชีธนาคาร โอนเงิน และกระทบยอด\n• ติดต่อฝ่ายไอที/ผู้ดูแลระบบ: 02-415-1946');
+            });
+        }
     }
 
     function setupSidebarToggle() {
@@ -230,17 +272,15 @@
             const displayName = user.name || user.fullName || user.username || 'คุณอิศรพงศ์ โพธิ์งาม';
             const email = user.email || 'itsarapong@mamdesign.co.th';
 
+            const ROLE_BADGES = {
+                ADMIN: { title: 'เจ้าของกิจการ (Admin)', badgeClass: 'badge-role-admin' },
+                ACCOUNTANT: { title: 'นักบัญชี (Accountant)', badgeClass: 'badge-role-accountant' },
+                SALES: { title: 'พนักงานขาย (Sales)', badgeClass: 'badge-role-sales' }
+            };
+            const roleInfo = ROLE_BADGES[user.role] || ROLE_BADGES.ADMIN;
+
             if (nameEl) {
-                const badge = nameEl.querySelector('.role-badge-pill');
-                if (badge) {
-                    if (nameEl.childNodes.length > 0 && nameEl.childNodes[0].nodeType === Node.TEXT_NODE) {
-                        nameEl.childNodes[0].nodeValue = displayName + ' ';
-                    } else {
-                        nameEl.innerHTML = `${displayName} ${badge.outerHTML}`;
-                    }
-                } else {
-                    nameEl.textContent = displayName;
-                }
+                nameEl.innerHTML = `${displayName} <span class="role-badge-pill ${roleInfo.badgeClass}">${roleInfo.title}</span>`;
             }
             if (fullEl) fullEl.textContent = displayName;
             if (emailEl) emailEl.textContent = email;
@@ -267,9 +307,10 @@
             const res = await fetch('/api/company');
             if (res.ok) {
                 const data = await res.json();
-                if (data && data.name_th && nameEl) {
-                    nameEl.textContent = data.name_th;
-                    sessionStorage.setItem('MAM_COMPANY_NAME', data.name_th);
+                const compName = data && (data.name || data.name_th);
+                if (compName && nameEl) {
+                    nameEl.textContent = compName;
+                    sessionStorage.setItem('MAM_COMPANY_NAME', compName);
                 }
             }
         } catch (e) {

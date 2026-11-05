@@ -139,6 +139,9 @@ async function runColumnMigrations(db) {
     if (!cColNames.includes('logo_url')) {
         await db.runAsync("ALTER TABLE companies ADD COLUMN logo_url TEXT");
     }
+    if (!cColNames.includes('website')) {
+        await db.runAsync("ALTER TABLE companies ADD COLUMN website TEXT");
+    }
 
     // 6. Auto-migrate withholding_taxes columns (รองรับการแก้ไข / ยกเลิกหนังสือรับรอง 50 ทวิ)
     const whtCols = await db.allAsync("PRAGMA table_info(withholding_taxes)");

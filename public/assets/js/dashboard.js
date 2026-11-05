@@ -151,30 +151,38 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (quickBankForm) {
-            quickBankForm.addEventListener('submit', (e) => {
+            quickBankForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const code = document.getElementById('bankCode')?.value;
+                const code = document.getElementById('bankCode')?.value || 'KBANK';
                 const title = document.getElementById('bankTitle')?.value.trim();
                 const accNo = document.getElementById('bankAccNo')?.value.trim();
                 const balance = parseFloat(document.getElementById('bankBalance')?.value || 0);
 
-                if (currentMetrics && currentMetrics.cashAndBank) {
-                    currentMetrics.cashAndBank.accounts.push({
-                        id: `bank-${Date.now()}`,
-                        code: code,
-                        name: title,
-                        acc_no: accNo || 'xxx-x-xxxxx-x',
-                        balance: balance,
-                        status: 'บันทึกใหม่',
-                        status_class: 'text-success'
-                    });
-                    currentMetrics.cashAndBank.totalCash += balance;
-                    renderBankAccounts(currentMetrics.cashAndBank);
-                }
+                if (!title) return;
 
-                showToast(`เพิ่มบัญชีการเงิน "${title}" เรียบร้อยแล้ว`, 'success');
-                quickBankForm.reset();
-                closeBank();
+                try {
+                    const res = await fetch('/api/banking/accounts', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            bank_name: code,
+                            account_name: title,
+                            account_number: accNo || '-',
+                            account_type: code === 'CASH' ? 'CASH' : 'SAVINGS',
+                            current_balance: isNaN(balance) ? 0 : balance
+                        })
+                    });
+                    if (!res.ok) {
+                        const errData = await res.json().catch(() => ({}));
+                        throw new Error(errData.error || 'ไม่สามารถบันทึกบัญชีธนาคารได้');
+                    }
+                    showToast(`เพิ่มบัญชีการเงิน "${title}" เรียบร้อยแล้ว`, 'success');
+                    quickBankForm.reset();
+                    closeBank();
+                    await fetchDashboardMetrics(currentPeriod);
+                } catch (err) {
+                    showToast(err.message || 'เกิดข้อผิดพลาดในการบันทึกบัญชีธนาคาร', 'warning');
+                }
             });
         }
     }
@@ -381,11 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
             expenseCategories: [],
             uncollectedInvoices: [],
             cashAndBank: {
-                accounts: [
-                    { id: 'scb', code: 'SCB', name: 'ไทยพาณิชย์ (กระแสรายวัน)', acc_no: 'xxx-x-xx892-1', balance: 0, status: '✓ พร้อมใช้งาน', status_class: 'text-success' },
-                    { id: 'kbank', code: 'KBANK', name: 'กสิกรไทย (ออมทรัพย์)', acc_no: 'xxx-x-xx415-8', balance: 0, status: '✓ พร้อมใช้งาน', status_class: 'text-success' },
-                    { id: 'cash', code: 'CASH', name: 'เงินสดย่อยสำนักงาน', acc_no: 'สำนักงานใหญ่', balance: 0, status: '✓ พร้อมใช้งาน', status_class: 'text-success' }
-                ],
+                accounts: [],
                 totalCash: 0
             }
         };
@@ -560,7 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
             bankAccountsList.innerHTML = bankData.accounts.map(acc => {
                 const codeClass = (acc.code || '').toLowerCase();
                 return `
-                    <div class="bank-card">
+                    <div class="bank-card" onclick="window.location.href='../banking/index.html'" style="cursor: pointer;" title="คลิกเพื่อดูรายการเดินบัญชี">
                         <div class="bank-icon ${codeClass}">${acc.code || 'BANK'}</div>
                         <div class="bank-details">
                             <div class="bank-title">${acc.name}</div>
@@ -791,9 +795,32 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/'/g, '&#039;');
     }
 
+    function updatePeriodFilterLabels() {
+        if (!periodFilter) return;
+        const now = new Date();
+        const curYear = now.getFullYear();
+        const curMonth = now.getMonth();
+        const prevDate = new Date(curYear, curMonth - 1, 1);
+        const qIndex = Math.floor(curMonth / 3) + 1;
+        const monthsTh = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+
+        const optThisMonth = periodFilter.querySelector('option[value="this_month"]');
+        if (optThisMonth) optThisMonth.textContent = `เดือนนี้ (${monthsTh[curMonth]} ${curYear})`;
+
+        const optLastMonth = periodFilter.querySelector('option[value="last_month"]');
+        if (optLastMonth) optLastMonth.textContent = `เดือนที่แล้ว (${monthsTh[prevDate.getMonth()]} ${prevDate.getFullYear()})`;
+
+        const optQuarter = periodFilter.querySelector('option[value="this_quarter"]');
+        if (optQuarter) optQuarter.textContent = `ไตรมาสที่ ${qIndex} (Q${qIndex}/${curYear})`;
+
+        const optYear = periodFilter.querySelector('option[value="this_year"]');
+        if (optYear) optYear.textContent = `ทั้งปี ${curYear}`;
+    }
+
     // =========================================================================
     // Startup
     // =========================================================================
+    updatePeriodFilterLabels();
     initCharts();
     fetchDashboardMetrics(currentPeriod);
 });

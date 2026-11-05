@@ -29,7 +29,10 @@ const tablesToMigrate = [
     { name: 'withholding_taxes', hasId: true },
     { name: 'stock_movements', hasId: true },
     { name: 'email_inbox_cache', hasId: false },
-    { name: 'email_campaign_logs', hasId: true }
+    { name: 'email_campaign_logs', hasId: true },
+    { name: 'bank_accounts', hasId: true },
+    { name: 'bank_transactions', hasId: true },
+    { name: 'internal_transfers', hasId: true }
 ];
 
 function querySqlite(db, sql, params = []) {

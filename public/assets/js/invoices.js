@@ -525,6 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateKpiAndTabs() {
         let totalCount = 0;
         let totalAmount = 0;
+        let draftCount = 0;
         let waitingCount = 0;
         let waitingAmount = 0;
         let paidCount = 0;
@@ -548,7 +549,9 @@ document.addEventListener('DOMContentLoaded', () => {
             totalCount++;
             totalAmount += grandTotal;
 
-            if (inv.status === 'PAID') {
+            if (inv.status === 'DRAFT') {
+                draftCount++;
+            } else if (inv.status === 'PAID') {
                 paidCount++;
                 paidAmount += grandTotal;
             } else if (inv.status === 'OVERDUE' || (inv.due_date && inv.due_date !== '-' && new Date(inv.due_date) < today)) {
@@ -583,11 +586,15 @@ document.addEventListener('DOMContentLoaded', () => {
         tabButtons.forEach(btn => {
             const filter = btn.getAttribute('data-filter') || '';
             if (filter === 'ALL' || btn.textContent.includes('ทั้งหมด')) {
-                btn.textContent = `ทั้งหมด (${totalCount + cancelledCount})`;
+                btn.textContent = `ทั้งหมด (${allInvoices.length})`;
+            } else if (filter === 'DRAFT' || btn.textContent.includes('ฉบับร่าง')) {
+                btn.textContent = `ฉบับร่าง (${draftCount})`;
             } else if (filter === 'WAITING' || btn.textContent.includes('รอรับชำระ') || btn.textContent.includes('ยังไม่ชำระ') || btn.textContent.includes('รอชำระ')) {
                 btn.textContent = `รอรับชำระ (${waitingCount})`;
             } else if (filter === 'PAID' || btn.textContent.includes('ชำระแล้ว')) {
                 btn.textContent = `ชำระแล้ว (${paidCount})`;
+            } else if (filter === 'OVERDUE' || btn.textContent.includes('เกินกำหนด')) {
+                btn.textContent = `เกินกำหนด (${overdueCount})`;
             } else if (filter === 'CANCELLED' || btn.textContent.includes('ยกเลิก')) {
                 btn.textContent = `ยกเลิก (${cancelledCount})`;
             }
@@ -711,7 +718,7 @@ window.shareDocument = function(docNum, id) {
 };
 
 window.deleteDocument = async function(id, docNum, status, customerName = '-', grandTotal = 0) {
-    if (status && status !== 'DRAFT') {
+    if (status && status !== 'DRAFT' && status !== 'CANCELLED') {
         const dialogRes = await openActionDialog({
             action: 'cancel',
             docNum: docNum,

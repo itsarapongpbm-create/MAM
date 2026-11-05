@@ -404,10 +404,12 @@
 
                 <div class="header-controls" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                     <a href="inventory.html" class="btn-secondary" style="height: 38px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; color: #334155; background: #fff; text-decoration: none;">
-                        <span>📦 คลังวัตถุดิบ (317 รายการ)</span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        <span>คลังวัตถุดิบ (317 รายการ)</span>
                     </a>
                     <a href="gift-sets.html" class="btn-secondary" style="height: 38px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1px solid #7D0A0A; color: #7D0A0A; background: #fff; text-decoration: none;">
-                        <span>🎁 แคตตาล็อก Gift Set (61 ชุด)</span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+                        <span>แคตตาล็อก Gift Set (61 ชุด)</span>
                     </a>
                 </div>
             </div>
@@ -588,10 +590,12 @@
                         <!-- Action Buttons -->
                         <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
                             <button type="button" class="btn-primary" id="btnSaveGiftSet" style="height: 42px; width: 100%; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 8px;">
-                                <span>💾 บันทึกเป็นชุดกระเช้าในระบบ</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                                <span>บันทึกเป็นชุดกระเช้าในระบบ</span>
                             </button>
                             <button type="button" class="btn-secondary" id="btnExportToQuotationDirect" style="height: 40px; width: 100%; font-size: 13.5px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 8px; border: 1px solid #7D0A0A; color: #7D0A0A; background: #fff;">
-                                <span>📝 ส่งไปเปิดใบเสนอราคาทันที</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                <span>ส่งไปเปิดใบเสนอราคาทันที</span>
                             </button>
                         </div>
                     </div>
@@ -611,6 +615,7 @@
         let selectedSnacks = []; // { product_id, code, name, qty, cost, price }
         let editingGiftSetId = null;
         let editingGiftSetImage = null;
+        let isCustomPrice = false;
 
         document.addEventListener('DOMContentLoaded', async () => {
             await loadProducts();
@@ -728,13 +733,15 @@
             // Margin Slider
             const marginSlider = document.getElementById('marginSlider');
             marginSlider.addEventListener('input', (e) => {
+                isCustomPrice = false;
                 document.getElementById('marginPercentDisplay').textContent = `${e.target.value}%`;
                 updateSuggestedPriceFromMargin();
             });
 
             // Target price manual change
             document.getElementById('builderTargetPrice').addEventListener('input', () => {
-                calculateProfit();
+                isCustomPrice = true;
+                updateProfitFromCustomPrice();
             });
 
             // Save Gift Set button
@@ -852,7 +859,11 @@
             document.getElementById('sumSnackCount').textContent = selectedSnacks.length;
             document.getElementById('sumTotalCost').textContent = `฿ ${totalCost.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
 
-            updateSuggestedPriceFromMargin();
+            if (isCustomPrice) {
+                updateProfitFromCustomPrice();
+            } else {
+                updateSuggestedPriceFromMargin();
+            }
         }
 
         function updateSuggestedPriceFromMargin() {
@@ -1061,7 +1072,7 @@
                     }
                     const saveBtn = document.getElementById('btnSaveGiftSet');
                     if (saveBtn) {
-                        saveBtn.innerHTML = '<span>💾 บันทึกการแก้ไขชุดกระเช้า</span>';
+                        saveBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> <span>บันทึกการแก้ไขชุดกระเช้า</span></span>';
                     }
                 }
 
@@ -1078,39 +1089,63 @@
                     }
                 }
 
-                // Match packaging
-                if (draft.packaging_desc) {
-                    const pkgSel = document.getElementById('builderPackagingSelect');
+                const pkgSel = document.getElementById('builderPackagingSelect');
+                const ribSel = document.getElementById('builderRibbonSelect');
+
+                // Match packaging by description fallback
+                if (draft.packaging_desc && pkgSel) {
                     for (let opt of pkgSel.options) {
                         if (opt.textContent.includes(draft.packaging_desc) || (draft.packaging_desc.length > 5 && opt.textContent.includes(draft.packaging_desc.slice(0, 10)))) {
                             pkgSel.value = opt.value;
-                            pkgSel.dispatchEvent(new Event('change'));
+                            const cost = Number(opt.getAttribute('data-cost')) || 0;
+                            document.getElementById('builderPackagingCostDisplay').textContent = `฿ ${cost.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
                             break;
                         }
                     }
                 }
 
-                // Match ribbon
-                if (draft.ribbon_desc) {
-                    const ribSel = document.getElementById('builderRibbonSelect');
+                // Match ribbon by description fallback
+                if (draft.ribbon_desc && ribSel) {
                     for (let opt of ribSel.options) {
                         if (opt.textContent.includes(draft.ribbon_desc) || (draft.ribbon_desc.length > 5 && opt.textContent.includes(draft.ribbon_desc.slice(0, 8)))) {
                             ribSel.value = opt.value;
-                            ribSel.dispatchEvent(new Event('change'));
+                            const cost = Number(opt.getAttribute('data-cost')) || 0;
+                            document.getElementById('builderRibbonCostDisplay').textContent = `฿ ${cost.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
                             break;
                         }
                     }
                 }
 
-                // Match and populate snacks
+                // Match and populate BOM items (packaging, ribbon, and snacks)
                 if (Array.isArray(draft.items)) {
                     selectedSnacks = [];
                     draft.items.forEach(it => {
                         const note = (it.notes || '').toLowerCase();
-                        if (note.includes('บรรจุภัณฑ์') || note.includes('โบว์')) return; // skip pkg/ribbon as they're selected above
+                        const isPkgNote = note.includes('บรรจุภัณฑ์');
+                        const isRibNote = note.includes('โบว์');
 
+                        // 1. Try matching against #builderPackagingSelect / #builderRibbonSelect by product_id first
+                        if (it.product_id != null) {
+                            const pkgMatch = pkgSel ? Array.from(pkgSel.options).find(opt => opt.value && String(opt.value) === String(it.product_id)) : null;
+                            const ribMatch = ribSel ? Array.from(ribSel.options).find(opt => opt.value && String(opt.value) === String(it.product_id)) : null;
+
+                            if (pkgMatch && (isPkgNote || !ribMatch)) {
+                                pkgSel.value = pkgMatch.value;
+                                const cost = Number(pkgMatch.getAttribute('data-cost')) || 0;
+                                document.getElementById('builderPackagingCostDisplay').textContent = `฿ ${cost.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+                                return;
+                            }
+                            if (ribMatch && (isRibNote || !pkgMatch)) {
+                                ribSel.value = ribMatch.value;
+                                const cost = Number(ribMatch.getAttribute('data-cost')) || 0;
+                                document.getElementById('builderRibbonCostDisplay').textContent = `฿ ${cost.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+                                return;
+                            }
+                        }
+
+                        // 2. If neither dropdown has an option with value == item.product_id, keep the item in selectedSnacks so it is never lost
                         let prod = null;
-                        if (it.product_id) prod = allProducts.find(p => p.id === it.product_id);
+                        if (it.product_id) prod = allProducts.find(p => String(p.id) === String(it.product_id));
                         if (!prod && it.product_code) prod = allProducts.find(p => p.code === it.product_code);
                         if (!prod && it.item_name) prod = allProducts.find(p => p.name === it.item_name);
 
@@ -1120,19 +1155,28 @@
                                 code: prod.code,
                                 name: prod.name,
                                 qty: Number(it.quantity) || 1,
-                                cost: Number(prod.cost_price || it.unit_cost) || 0,
-                                price: Number(prod.unit_price || it.unit_price) || 0
+                                cost: Number(prod.cost_price ?? it.unit_cost) || 0,
+                                price: Number(prod.unit_price ?? it.unit_price) || 0
+                            });
+                        } else if (it.item_name) {
+                            selectedSnacks.push({
+                                product_id: it.product_id || null,
+                                code: it.product_code || 'ITEM',
+                                name: it.item_name,
+                                qty: Number(it.quantity) || 1,
+                                cost: Number(it.unit_cost) || 0,
+                                price: Number(it.unit_price) || 0
                             });
                         }
                     });
                     renderSelectedSnacksTable();
                 }
 
-                calculateLiveTotals();
                 if (draft.selling_price) {
+                    isCustomPrice = true;
                     document.getElementById('builderTargetPrice').value = draft.selling_price;
-                    updateProfitFromCustomPrice();
                 }
+                calculateLiveTotals();
 
                 if (typeof window.showToast === 'function') {
                     window.showToast({

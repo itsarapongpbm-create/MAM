@@ -223,7 +223,7 @@ router.post('/', async (req, res) => {
             await db.runAsync(`
                 INSERT INTO products (
                     code, name, type, description, unit, unit_price, cost_price, category, image_url, quantity_on_hand, stock_quantity, min_stock_level, min_stock
-                ) VALUES (?, ?, 'PRODUCT', ?, 'ชุด', ?, ?, 'ชุดกระเช้าของขวัญ', ?, 1, 1, 0, 0)
+                ) VALUES (?, ?, 'PRODUCT', ?, 'ชุด', ?, ?, 'ชุดกระเช้าของขวัญ', ?, 0, 0, 0, 0)
             `, [
                 setCode,
                 name.trim(),
@@ -332,7 +332,7 @@ router.put('/:id', async (req, res) => {
             await db.runAsync(`
                 INSERT INTO products (
                     code, name, type, description, unit, unit_price, cost_price, category, image_url, quantity_on_hand, stock_quantity, min_stock_level, min_stock
-                ) VALUES (?, ?, 'PRODUCT', ?, 'ชุด', ?, ?, 'ชุดกระเช้าของขวัญ', ?, 1, 1, 0, 0)
+                ) VALUES (?, ?, 'PRODUCT', ?, 'ชุด', ?, ?, 'ชุดกระเช้าของขวัญ', ?, 0, 0, 0, 0)
             `, [targetCode, targetName, fullDesc, targetPrice, totalCost, targetImage]);
         }
 
@@ -347,7 +347,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // 7. สั่งประกอบชุดกระเช้า (Assemble Gift Set: ตัดสต็อกวัตถุดิบตามสูตร BOM และเพิ่มสต็อกกระเช้าสำเร็จรูป)
-router.post('/:id/assemble', async (req, res) => {
+router.post(['/:id/assemble', '/:id/produce'], async (req, res) => {
     try {
         const buildQty = Math.max(1, parseInt(req.body.quantity, 10) || 1);
         const userName = req.body.user_name || 'ฝ่ายผลิต/จัดกระเช้า';

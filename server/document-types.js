@@ -102,7 +102,7 @@ const DOC_TYPES = Object.freeze({
         primaryActions: { default: ['issue'] },
         actions: {
             issue: { label: 'บันทึกขายสด', from: ['DRAFT'], to: 'PAID', roles: BACK_OFFICE, assignNumber: true, validate: true, stock: 'OUT' },
-            reopen: { label: 'นำกลับมาแก้ไข', from: ['ISSUED', 'APPROVED', 'PAID', 'CANCELLED', 'REJECTED'], to: 'DRAFT', roles: BACK_OFFICE },
+            reopen: { label: 'นำกลับมาแก้ไข', from: ['ISSUED', 'APPROVED', 'PAID', 'CANCELLED', 'REJECTED'], to: 'DRAFT', roles: BACK_OFFICE, stock: 'RETURN' },
             cancel: { label: 'ยกเลิก', from: ['DRAFT', 'PAID'], to: 'CANCELLED', roles: BACK_OFFICE, requireReason: true, stock: 'RETURN' }
         }
     },

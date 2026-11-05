@@ -137,12 +137,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const emailVal = emailInput ? emailInput.value.trim() : '';
             const passwordVal = passwordInput ? passwordInput.value : '';
 
-            // Email verification
+            // Email or Username verification
             if (!emailVal) {
                 if (emailGroup) emailGroup.classList.add('has-error');
                 if (emailError) emailError.textContent = translations[currentLang].emailErrorRequired;
                 isValid = false;
-            } else if (!isValidEmail(emailVal)) {
+            } else if (emailVal.includes('@') && !isValidEmail(emailVal)) {
                 if (emailGroup) emailGroup.classList.add('has-error');
                 if (emailError) emailError.textContent = translations[currentLang].emailErrorInvalid;
                 isValid = false;

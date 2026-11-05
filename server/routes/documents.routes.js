@@ -45,6 +45,62 @@ async function findProductForLineItem(it, companyId = 1) {
     return product || null;
 }
 
+async function deductStockForItems(items, docNumber, docType = 'TAX_INVOICE', remarks = null, createdBy = 'System', companyId = 1) {
+    if (!Array.isArray(items)) return;
+    for (const it of items) {
+        const product = await findProductForLineItem(it, companyId);
+        if (product) {
+            const deductQty = parseFloat(it.quantity) || 1;
+            const newQty = (Number(product.quantity_on_hand) || 0) - deductQty;
+            await db.runAsync(`UPDATE products SET quantity_on_hand = ?, stock_quantity = ? WHERE id = ?`, [newQty, newQty, product.id]);
+            await db.runAsync(`
+                INSERT INTO stock_movements (
+                    product_id, company_id, movement_type, change_qty, balance_after,
+                    unit_cost, ref_doc_type, ref_doc_number, remarks, created_by
+                ) VALUES (?, ?, 'OUT_SALE', ?, ?, ?, ?, ?, ?, ?)
+            `, [
+                product.id,
+                companyId,
+                -deductQty,
+                newQty,
+                product.cost_price || 0,
+                docType,
+                docNumber,
+                remarks || `ตัดสต็อกสินค้าจากเอกสาร ${docNumber || ''}`,
+                createdBy || 'System'
+            ]);
+        }
+    }
+}
+
+async function returnStockForItems(items, docNumber, docType = 'TAX_INVOICE', remarks = null, createdBy = 'System', companyId = 1) {
+    if (!Array.isArray(items)) return;
+    for (const it of items) {
+        const product = await findProductForLineItem(it, companyId);
+        if (product) {
+            const returnQty = parseFloat(it.quantity) || 1;
+            const newQty = (Number(product.quantity_on_hand) || 0) + returnQty;
+            await db.runAsync(`UPDATE products SET quantity_on_hand = ?, stock_quantity = ? WHERE id = ?`, [newQty, newQty, product.id]);
+            await db.runAsync(`
+                INSERT INTO stock_movements (
+                    product_id, company_id, movement_type, change_qty, balance_after,
+                    unit_cost, ref_doc_type, ref_doc_number, remarks, created_by
+                ) VALUES (?, ?, 'RETURN', ?, ?, ?, ?, ?, ?, ?)
+            `, [
+                product.id,
+                companyId,
+                returnQty,
+                newQty,
+                product.cost_price || 0,
+                docType,
+                docNumber,
+                remarks || `คืนสต็อกสินค้าจากเอกสาร ${docNumber || ''}`,
+                createdBy || 'System'
+            ]);
+        }
+    }
+}
+
 // ดูเลขที่เอกสารถัดไปล่วงหน้า (Safe Preview - ไม่นับลำดับจริง)
 router.get('/next-number/:type', async (req, res) => {
     try {
@@ -101,8 +157,9 @@ router.get('/pending-counts', async (req, res) => {
 router.get('/export/csv', async (req, res) => {
     try {
         const { type, status, search } = req.query;
-        let query = 'SELECT * FROM documents WHERE 1=1';
+        let query = 'SELECT * FROM documents d WHERE 1=1';
         const params = [];
+        let resolvedType = null;
 
         if (type) {
             const typeMap = {
@@ -113,31 +170,43 @@ router.get('/export/csv', async (req, res) => {
                 'CS': 'CASH_SALE',
                 'PO': 'PURCHASE_ORDER'
             };
-            const resolvedType = typeMap[type.toUpperCase()] || type.toUpperCase();
-            query += ' AND doc_type = ?';
+            resolvedType = typeMap[type.toUpperCase()] || type.toUpperCase();
+            query += ' AND d.doc_type = ?';
             params.push(resolvedType);
         }
         if (status && status !== 'ALL') {
             const st = status.toUpperCase();
             if (st === 'WAITING') {
-                query += " AND status IN ('WAITING', 'WAITING_APPROVAL', 'ISSUED')";
+                if (resolvedType === 'QUOTATION') {
+                    query += " AND d.status IN ('WAITING', 'WAITING_APPROVAL')";
+                } else if (['TAX_INVOICE', 'BILLING_NOTE'].includes(resolvedType)) {
+                    query += " AND d.status IN ('WAITING', 'ISSUED', 'PARTIAL_PAID')";
+                } else {
+                    query += " AND d.status IN ('WAITING', 'WAITING_APPROVAL', 'ISSUED', 'PARTIAL_PAID')";
+                }
+            } else if (st === 'OVERDUE') {
+                query += " AND (d.status = 'OVERDUE' OR (d.status IN ('ISSUED', 'PARTIAL_PAID', 'WAITING') AND d.due_date IS NOT NULL AND d.due_date != '' AND date(d.due_date) < date('now')))";
+            } else if (resolvedType === 'RECEIPT' && st === 'TRANSFER') {
+                query += " AND (d.credit_terms LIKE '%โอน%' OR d.credit_terms = '' OR d.credit_terms IS NULL)";
+            } else if (resolvedType === 'RECEIPT' && st === 'CHEQUE') {
+                query += " AND (d.credit_terms LIKE '%เงินสด%' OR d.credit_terms LIKE '%เช็ค%')";
             } else if (st === 'APPROVED') {
-                query += " AND status IN ('APPROVED')";
+                query += " AND d.status IN ('APPROVED')";
             } else if (st === 'PAID') {
-                query += " AND status IN ('PAID', 'COMPLETED')";
+                query += " AND d.status IN ('PAID', 'COMPLETED')";
             } else if (st === 'CANCELLED') {
-                query += " AND status IN ('CANCELLED', 'REJECTED')";
+                query += " AND d.status IN ('CANCELLED', 'REJECTED')";
             } else {
-                query += ' AND status = ?';
+                query += ' AND d.status = ?';
                 params.push(st);
             }
         }
         if (search) {
-            query += ' AND (doc_number LIKE ? OR customer_name LIKE ? OR ref_doc_number LIKE ?)';
+            query += ' AND (d.doc_number LIKE ? OR d.customer_name LIKE ? OR d.ref_doc_number LIKE ?)';
             params.push(`%${search}%`, `%${search}%`, `%${search}%`);
         }
 
-        query += ' ORDER BY id DESC';
+        query += ' ORDER BY d.id DESC';
         const docs = await db.allAsync(query, params);
 
         const statusMap = {
@@ -226,8 +295,9 @@ router.get('/export/csv', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const { type, status, search, doc_number } = req.query;
-        let query = 'SELECT * FROM documents WHERE 1=1';
+        let query = 'SELECT * FROM documents d WHERE 1=1';
         const params = [];
+        let resolvedType = null;
 
         if (type) {
             const typeMap = {
@@ -238,38 +308,50 @@ router.get('/', async (req, res) => {
                 'CS': 'CASH_SALE',
                 'PO': 'PURCHASE_ORDER'
             };
-            const resolvedType = typeMap[type.toUpperCase()] || type.toUpperCase();
-            query += ' AND doc_type = ?';
+            resolvedType = typeMap[type.toUpperCase()] || type.toUpperCase();
+            query += ' AND d.doc_type = ?';
             params.push(resolvedType);
         }
 
         if (doc_number) {
-            query += ' AND doc_number = ?';
+            query += ' AND d.doc_number = ?';
             params.push(String(doc_number).trim());
         }
 
         if (status && status !== 'ALL') {
             const st = status.toUpperCase();
             if (st === 'WAITING') {
-                query += " AND status IN ('WAITING', 'WAITING_APPROVAL', 'ISSUED')";
+                if (resolvedType === 'QUOTATION') {
+                    query += " AND d.status IN ('WAITING', 'WAITING_APPROVAL')";
+                } else if (['TAX_INVOICE', 'BILLING_NOTE'].includes(resolvedType)) {
+                    query += " AND d.status IN ('WAITING', 'ISSUED', 'PARTIAL_PAID')";
+                } else {
+                    query += " AND d.status IN ('WAITING', 'WAITING_APPROVAL', 'ISSUED', 'PARTIAL_PAID')";
+                }
+            } else if (st === 'OVERDUE') {
+                query += " AND (d.status = 'OVERDUE' OR (d.status IN ('ISSUED', 'PARTIAL_PAID', 'WAITING') AND d.due_date IS NOT NULL AND d.due_date != '' AND date(d.due_date) < date('now')))";
+            } else if (resolvedType === 'RECEIPT' && st === 'TRANSFER') {
+                query += " AND (d.credit_terms LIKE '%โอน%' OR d.credit_terms = '' OR d.credit_terms IS NULL)";
+            } else if (resolvedType === 'RECEIPT' && st === 'CHEQUE') {
+                query += " AND (d.credit_terms LIKE '%เงินสด%' OR d.credit_terms LIKE '%เช็ค%')";
             } else if (st === 'APPROVED') {
-                query += " AND status IN ('APPROVED')";
+                query += " AND d.status IN ('APPROVED')";
             } else if (st === 'PAID') {
-                query += " AND status IN ('PAID', 'COMPLETED')";
+                query += " AND d.status IN ('PAID', 'COMPLETED')";
             } else if (st === 'CANCELLED') {
-                query += " AND status IN ('CANCELLED', 'REJECTED')";
+                query += " AND d.status IN ('CANCELLED', 'REJECTED')";
             } else {
-                query += ' AND status = ?';
+                query += ' AND d.status = ?';
                 params.push(st);
             }
         }
 
         if (search) {
-            query += ' AND (doc_number LIKE ? OR customer_name LIKE ? OR ref_doc_number LIKE ?)';
+            query += ' AND (d.doc_number LIKE ? OR d.customer_name LIKE ? OR d.ref_doc_number LIKE ?)';
             params.push(`%${search}%`, `%${search}%`, `%${search}%`);
         }
 
-        query += ' ORDER BY id DESC';
+        query += ' ORDER BY d.id DESC';
         const docs = await db.allAsync(query, params);
 
         // ดึงเอกสารที่เชื่อมโยงกันทั้งหมด
@@ -459,30 +541,15 @@ router.post('/', async (req, res) => {
         }
 
         // ตัดสต็อกสินค้าอัตโนมัติเฉพาะประเภท TAX_INVOICE หรือ CASH_SALE
-        if (typeDef.deductsStock && ['ISSUED', 'PAID'].includes(targetStatus) && Array.isArray(items)) {
-            for (const it of items) {
-                const product = await findProductForLineItem(it, 1);
-                if (product) {
-                    const deductQty = parseFloat(it.quantity) || 1;
-                    const newQty = (product.quantity_on_hand || 0) - deductQty;
-                    await db.runAsync(`UPDATE products SET quantity_on_hand = ?, stock_quantity = ? WHERE id = ?`, [newQty, newQty, product.id]);
-                    await db.runAsync(`
-                        INSERT INTO stock_movements (
-                            product_id, company_id, movement_type, change_qty, balance_after,
-                            unit_cost, ref_doc_type, ref_doc_number, remarks, created_by
-                        ) VALUES (?, 1, 'OUT_SALE', ?, ?, ?, ?, ?, ?, ?)
-                    `, [
-                        product.id,
-                        -deductQty,
-                        newQty,
-                        product.cost_price || 0,
-                        upperType,
-                        finalDocNumber || `DOC-${documentId}`,
-                        `ตัดสต็อกอัตโนมัติจากการออก ${typeDef.titleTh} ${finalDocNumber ? 'เลขที่ ' + finalDocNumber : ''}`,
-                        salesperson || 'พนักงานขาย'
-                    ]);
-                }
-            }
+        if (typeDef.deductsStock && ['ISSUED', 'PAID', 'PARTIAL_PAID', 'OVERDUE'].includes(targetStatus) && Array.isArray(items)) {
+            await deductStockForItems(
+                items,
+                finalDocNumber || `DOC-${documentId}`,
+                upperType,
+                `ตัดสต็อกอัตโนมัติจากการออก ${typeDef.titleTh} ${finalDocNumber ? 'เลขที่ ' + finalDocNumber : ''}`,
+                salesperson || 'พนักงานขาย',
+                1
+            );
         }
 
         // เชื่อมโยง Link ถ้าแปลงหรืออ้างอิงมาจากเอกสารต้นทาง (Auto-resolve source_doc_id if ref_doc_number is present)
@@ -496,8 +563,9 @@ router.post('/', async (req, res) => {
 
         if (resolvedSourceId) {
             await db.runAsync(`
-                INSERT OR IGNORE INTO document_links (source_doc_id, target_doc_id, link_type, amount)
+                INSERT INTO document_links (source_doc_id, target_doc_id, link_type, amount)
                 VALUES (?, ?, 'CONVERT', ?)
+                ON CONFLICT(source_doc_id, target_doc_id) DO NOTHING
             `, [resolvedSourceId, documentId, grand_total || 0]);
 
             // บันทึก Status Log ย้อนกลับไปยังเอกสารต้นทางว่ามีการสร้างเอกสารต่อเนื่อง
@@ -645,6 +713,25 @@ router.put('/:id', async (req, res) => {
             doc.id
         ]);
 
+        const typeDef = getType(doc.doc_type);
+        const isStockDoc = Boolean((typeDef && typeDef.deductsStock) || ['TAX_INVOICE', 'CASH_SALE'].includes(doc.doc_type));
+        const activeStockStatuses = ['ISSUED', 'PAID', 'PARTIAL_PAID', 'OVERDUE'];
+        const wasStockDeducted = isStockDoc && activeStockStatuses.includes(doc.status);
+        const willStockBeDeducted = isStockDoc && activeStockStatuses.includes(targetStatus);
+        const oldItems = await db.allAsync('SELECT * FROM document_items WHERE document_id = ?', [doc.id]);
+
+        // หากเอกสารเดิมตัดสต็อกไปแล้ว และมีการแก้ไขรายการสินค้า หรือเปลี่ยนกลับเป็น DRAFT/CANCELLED ให้คืนสต็อกเดิมก่อน
+        if (wasStockDeducted && (Array.isArray(items) || !willStockBeDeducted)) {
+            await returnStockForItems(
+                oldItems,
+                finalDocNumber || doc.doc_number || `DOC-${doc.id}`,
+                doc.doc_type,
+                `คืนสต็อกรายการเดิมจากการแก้ไขเอกสาร (${doc.status} -> ${targetStatus})`,
+                salesperson || 'System',
+                doc.company_id || 1
+            );
+        }
+
         // อัปเดตรายการสินค้า
         if (Array.isArray(items)) {
             await db.runAsync('DELETE FROM document_items WHERE document_id = ?', [doc.id]);
@@ -666,27 +753,17 @@ router.put('/:id', async (req, res) => {
             }
         }
 
-        // ตัดสต็อกสินค้าเมื่อเปลี่ยนสถานะจาก DRAFT เป็น ISSUED หรือ PAID
-        const typeDef = getType(doc.doc_type);
-        if (doc.status === 'DRAFT' && ['ISSUED', 'PAID'].includes(targetStatus) && typeDef && typeDef.deductsStock) {
-            const currentItems = Array.isArray(items) ? items : await db.allAsync('SELECT * FROM document_items WHERE document_id = ?', [doc.id]);
-            for (const it of currentItems) {
-                const product = await findProductForLineItem(it, doc.company_id || 1);
-                if (product) {
-                    const deductQty = parseFloat(it.quantity) || 1;
-                    const newQty = (product.quantity_on_hand || 0) - deductQty;
-                    await db.runAsync(`UPDATE products SET quantity_on_hand = ?, stock_quantity = ? WHERE id = ?`, [newQty, newQty, product.id]);
-                    await db.runAsync(`
-                        INSERT INTO stock_movements (
-                            product_id, company_id, movement_type, change_qty, balance_after,
-                            unit_cost, ref_doc_type, ref_doc_number, remarks, created_by
-                        ) VALUES (?, 1, 'OUT_SALE', ?, ?, ?, ?, ?, ?, ?)
-                    `, [
-                        product.id, -deductQty, newQty, product.cost_price || 0,
-                        doc.doc_type, finalDocNumber, `ตัดสต็อกจากการบันทึกออกเอกสาร (${targetStatus})`, 'System'
-                    ]);
-                }
-            }
+        // ตัดสต็อกสินค้าสำหรับรายการใหม่หากสถานะปลายทางต้องตัดสต็อก
+        if (willStockBeDeducted && (!wasStockDeducted || Array.isArray(items))) {
+            const currentItems = Array.isArray(items) ? items : oldItems;
+            await deductStockForItems(
+                currentItems,
+                finalDocNumber || doc.doc_number || `DOC-${doc.id}`,
+                doc.doc_type,
+                `ตัดสต็อกจากการบันทึกเอกสาร (${targetStatus})`,
+                salesperson || 'System',
+                doc.company_id || 1
+            );
         }
 
         await recordStatusLog(doc.id, 'UPDATE', doc.status, targetStatus, null, 'แก้ไขข้อมูลเอกสาร');
@@ -735,42 +812,27 @@ router.post('/:id/actions/:action', async (req, res) => {
 
         // จัดการสต็อกสินค้าตาม Action Rule
         if (actDef.stock === 'OUT' && typeDef.deductsStock && ['DRAFT', 'CANCELLED', 'REJECTED'].includes(doc.status)) {
-            for (const it of items) {
-                const product = await findProductForLineItem(it, doc.company_id || 1);
-                if (product) {
-                    const deductQty = parseFloat(it.quantity) || 1;
-                    const newQty = (product.quantity_on_hand || 0) - deductQty;
-                    await db.runAsync(`UPDATE products SET quantity_on_hand = ?, stock_quantity = ? WHERE id = ?`, [newQty, newQty, product.id]);
-                    await db.runAsync(`
-                        INSERT INTO stock_movements (
-                            product_id, company_id, movement_type, change_qty, balance_after,
-                            unit_cost, ref_doc_type, ref_doc_number, remarks, created_by
-                        ) VALUES (?, 1, 'OUT_SALE', ?, ?, ?, ?, ?, ?, ?)
-                    `, [
-                        product.id, -deductQty, newQty, product.cost_price || 0,
-                        doc.doc_type, docNumber, `ตัดสต็อกจากการดำเนินการ ${actDef.label}`, 'System'
-                    ]);
-                }
-            }
-        } else if (actDef.stock === 'RETURN' && typeDef.deductsStock && ['ISSUED', 'PARTIAL_PAID', 'PAID', 'APPROVED', 'COMPLETED'].includes(doc.status)) {
-            // ยกเลิกเอกสาร คืนยอดสต็อกสินค้า
-            for (const it of items) {
-                const product = await findProductForLineItem(it, doc.company_id || 1);
-                if (product) {
-                    const returnQty = parseFloat(it.quantity) || 1;
-                    const newQty = (product.quantity_on_hand || 0) + returnQty;
-                    await db.runAsync(`UPDATE products SET quantity_on_hand = ?, stock_quantity = ? WHERE id = ?`, [newQty, newQty, product.id]);
-                    await db.runAsync(`
-                        INSERT INTO stock_movements (
-                            product_id, company_id, movement_type, change_qty, balance_after,
-                            unit_cost, ref_doc_type, ref_doc_number, remarks, created_by
-                        ) VALUES (?, 1, 'RETURN', ?, ?, ?, ?, ?, ?, ?)
-                    `, [
-                        product.id, returnQty, newQty, product.cost_price || 0,
-                        doc.doc_type, docNumber, `คืนสต็อกจากการยกเลิกเอกสาร (${reason || 'ไม่ระบุเหตุผล'})`, 'System'
-                    ]);
-                }
-            }
+            await deductStockForItems(
+                items,
+                docNumber,
+                doc.doc_type,
+                `ตัดสต็อกจากการดำเนินการ ${actDef.label}`,
+                'System',
+                doc.company_id || 1
+            );
+        } else if (actDef.stock === 'RETURN' && typeDef.deductsStock && ['ISSUED', 'PARTIAL_PAID', 'PAID', 'OVERDUE', 'APPROVED', 'COMPLETED'].includes(doc.status)) {
+            // ยกเลิกหรือนำกลับมาแก้ไขเอกสาร คืนยอดสต็อกสินค้า
+            const remarkMsg = actionKey === 'reopen'
+                ? `คืนสต็อกจากการนำเอกสารกลับมาแก้ไข (${doc.status} -> ${nextStatus})`
+                : `คืนสต็อกจากการยกเลิกเอกสาร (${reason || 'ไม่ระบุเหตุผล'})`;
+            await returnStockForItems(
+                items,
+                docNumber,
+                doc.doc_type,
+                remarkMsg,
+                'System',
+                doc.company_id || 1
+            );
         } else if (actDef.stock === 'IN') {
             // รับสินค้าเข้าสต็อกจากใบสั่งซื้อ (Purchase Order)
             for (const it of items) {
@@ -853,7 +915,7 @@ router.post('/:id/actions/:action', async (req, res) => {
 
         if (nextStatus === 'PAID') {
             updateSql += ', paid_amount = grand_total, balance_due = 0';
-        } else if (nextStatus === 'ISSUED') {
+        } else if (nextStatus === 'ISSUED' || nextStatus === 'DRAFT') {
             updateSql += ', paid_amount = 0, balance_due = grand_total';
         }
 
@@ -967,6 +1029,7 @@ router.post('/:id/payments', async (req, res) => {
             await db.runAsync(`
                 INSERT INTO document_links (source_doc_id, target_doc_id, link_type, amount)
                 VALUES (?, ?, 'PAYMENT', ?)
+                ON CONFLICT(source_doc_id, target_doc_id) DO NOTHING
             `, [doc.id, newReceiptId, payAmount]);
 
             createdReceipt = await db.getAsync('SELECT * FROM documents WHERE id = ?', [newReceiptId]);
@@ -1055,6 +1118,7 @@ router.post('/convert', async (req, res) => {
         await db.runAsync(`
             INSERT INTO document_links (source_doc_id, target_doc_id, link_type, amount)
             VALUES (?, ?, 'CONVERT', ?)
+            ON CONFLICT(source_doc_id, target_doc_id) DO NOTHING
         `, [source.id, newDocId, source.grand_total]);
 
         await recordStatusLog(newDocId, 'CONVERT_FROM', null, 'DRAFT', null, `แปลงมาจาก ${source.doc_number || ('ID ' + source.id)}`);
@@ -1080,7 +1144,13 @@ router.patch('/:id/status', async (req, res) => {
         const doc = await db.getAsync('SELECT * FROM documents WHERE id = ?', [req.params.id]);
         if (!doc) return res.status(404).json({ error: 'Document not found' });
 
-        const targetStatus = status.toUpperCase();
+        let targetStatus = status.toUpperCase();
+        const docType = (doc.doc_type || '').toUpperCase();
+        if (targetStatus === 'WAITING') {
+            if (docType === 'QUOTATION') targetStatus = 'WAITING_APPROVAL';
+            else if (['RECEIPT', 'CASH_SALE'].includes(docType)) targetStatus = 'PAID';
+            else targetStatus = 'ISSUED';
+        }
 
         let docNumber = doc.doc_number;
         if (!docNumber && targetStatus !== 'DRAFT') {
@@ -1088,7 +1158,47 @@ router.patch('/:id/status', async (req, res) => {
             await db.runAsync('UPDATE documents SET doc_number = ? WHERE id = ?', [docNumber, doc.id]);
         }
 
-        await db.runAsync('UPDATE documents SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [targetStatus, req.params.id]);
+        // จัดการตัด/คืนสต็อกเมื่อเปลี่ยนสถานะของ TAX_INVOICE หรือ CASH_SALE
+        const typeDef = getType(doc.doc_type);
+        const isStockDoc = Boolean((typeDef && typeDef.deductsStock) || ['TAX_INVOICE', 'CASH_SALE'].includes(docType));
+        if (isStockDoc && doc.status !== targetStatus) {
+            const inactiveStatuses = ['DRAFT', 'CANCELLED', 'REJECTED'];
+            const activeStatuses = ['ISSUED', 'PARTIAL_PAID', 'PAID', 'OVERDUE', 'APPROVED', 'COMPLETED'];
+            const items = await db.allAsync('SELECT * FROM document_items WHERE document_id = ?', [doc.id]);
+
+            if (inactiveStatuses.includes(doc.status) && activeStatuses.includes(targetStatus)) {
+                await deductStockForItems(
+                    items,
+                    docNumber || `DOC-${doc.id}`,
+                    doc.doc_type,
+                    `ตัดสต็อกจากปรับสถานะเป็น ${targetStatus}`,
+                    'System',
+                    doc.company_id || 1
+                );
+            } else if (activeStatuses.includes(doc.status) && inactiveStatuses.includes(targetStatus)) {
+                await returnStockForItems(
+                    items,
+                    docNumber || `DOC-${doc.id}`,
+                    doc.doc_type,
+                    `คืนสต็อกจากปรับสถานะเป็น ${targetStatus}`,
+                    'System',
+                    doc.company_id || 1
+                );
+            }
+        }
+
+        let updateSql = 'UPDATE documents SET status = ?, updated_at = CURRENT_TIMESTAMP';
+        const updateParams = [targetStatus];
+
+        if (targetStatus === 'PAID') {
+            updateSql += ', paid_amount = grand_total, balance_due = 0';
+        } else if (targetStatus === 'ISSUED' || targetStatus === 'DRAFT') {
+            updateSql += ', paid_amount = 0, balance_due = grand_total';
+        }
+        updateSql += ' WHERE id = ?';
+        updateParams.push(req.params.id);
+
+        await db.runAsync(updateSql, updateParams);
         await recordStatusLog(doc.id, 'STATUS_UPDATE', doc.status, targetStatus, null, 'ปรับปรุงสถานะ');
 
         const updated = await db.getAsync('SELECT * FROM documents WHERE id = ?', [req.params.id]);

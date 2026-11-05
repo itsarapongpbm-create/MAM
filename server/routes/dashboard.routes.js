@@ -133,23 +133,24 @@ router.get('/metrics', async (req, res) => {
         const netProfit = curRevenue - curExpenses;
         const profitMargin = curRevenue > 0 ? (netProfit / curRevenue * 100) : 0;
 
-        // 6. ข้อมูลแนวโน้มรายเดือนสำหรับชาร์ต (Monthly Trend Jan - Dec 2026)
+        // 6. ข้อมูลแนวโน้มรายเดือนสำหรับชาร์ต (Monthly Trend Jan - Dec Current Year)
         const thaiMonthLabels = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
         const monthKeys = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+        const currentYearStr = String(new Date().getFullYear());
 
         const revMonthlyRows = await db.allAsync(`
             SELECT strftime('%m', issue_date) as m, COALESCE(SUM(grand_total), 0) as total
             FROM documents 
-            WHERE strftime('%Y', issue_date) = '2026' AND ${revenueDocFilter}
+            WHERE strftime('%Y', issue_date) = ? AND ${revenueDocFilter}
             GROUP BY m
-        `);
+        `, [currentYearStr]);
 
         const expMonthlyRows = await db.allAsync(`
             SELECT strftime('%m', transaction_date) as m, COALESCE(SUM(net_total), 0) as total
             FROM expenses 
-            WHERE strftime('%Y', transaction_date) = '2026' AND payment_status != 'DRAFT'
+            WHERE strftime('%Y', transaction_date) = ? AND payment_status != 'DRAFT'
             GROUP BY m
-        `);
+        `, [currentYearStr]);
 
         const revMonthMap = {};
         const expMonthMap = {};
@@ -241,14 +242,45 @@ router.get('/metrics', async (req, res) => {
             };
         });
 
-        // 9. ข้อมูลบัญชีธนาคารและเงินสด (เริ่มต้นที่ 0.00 สำหรับใช้งานจริง)
+        // 9. ข้อมูลบัญชีธนาคารและเงินสด (ดึงจากฐานข้อมูลจริงแบบ Real-time)
+        let cashAndBankAccounts = [];
+        let totalCash = 0;
+        try {
+            const dbAccounts = await db.allAsync(`
+                SELECT 
+                    id, 
+                    bank_code as code, 
+                    account_name as name, 
+                    account_number as acc_no, 
+                    current_balance as balance,
+                    (SELECT COUNT(*) FROM bank_transactions WHERE account_id = bank_accounts.id AND is_reconciled = 0) as unreconciled_count
+                FROM bank_accounts
+                WHERE status = 'ACTIVE'
+                ORDER BY is_default DESC, id ASC
+            `);
+
+            if (dbAccounts && dbAccounts.length > 0) {
+                cashAndBankAccounts = dbAccounts.map(a => {
+                    const unreconciled = a.unreconciled_count || 0;
+                    return {
+                        id: a.id,
+                        code: a.code,
+                        name: a.name,
+                        acc_no: a.acc_no || '-',
+                        balance: parseFloat(a.balance) || 0,
+                        status: unreconciled > 0 ? `รอตรวจสอบ ${unreconciled} รายการ` : '✓ กระทบยอดแล้ว',
+                        status_class: unreconciled > 0 ? 'text-warning' : 'text-success'
+                    };
+                });
+                totalCash = cashAndBankAccounts.reduce((sum, a) => sum + a.balance, 0);
+            }
+        } catch (bErr) {
+            console.warn('Could not query real bank accounts in dashboard:', bErr.message);
+        }
+
         const cashAndBank = {
-            accounts: [
-                { id: 'scb', code: 'SCB', name: 'ไทยพาณิชย์ (กระแสรายวัน)', acc_no: 'xxx-x-xx892-1', balance: 0.00, status: '✓ พร้อมใช้งาน', status_class: 'text-success' },
-                { id: 'kbank', code: 'KBANK', name: 'กสิกรไทย (ออมทรัพย์)', acc_no: 'xxx-x-xx415-8', balance: 0.00, status: '✓ พร้อมใช้งาน', status_class: 'text-success' },
-                { id: 'cash', code: 'CASH', name: 'เงินสดย่อยสำนักงาน', acc_no: 'สำนักงานใหญ่', balance: 0.00, status: '✓ พร้อมใช้งาน', status_class: 'text-success' }
-            ],
-            totalCash: 0.00
+            accounts: cashAndBankAccounts,
+            totalCash: parseFloat(totalCash.toFixed(2))
         };
 
         res.json({

@@ -17,10 +17,10 @@
         showSellerSign: true,
         showCustomerSign: true,
         showBankAccount: true,
-        bankName: 'ธนาคารไทยพาณิชย์ (SCB)',
-        bankBranch: 'สาขาสาทรซิตี้ ทาวเวอร์',
-        bankAccountName: 'บจก. เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส',
-        bankAccountNumber: '012-3-45892-1',
+        bankName: 'ธนาคารกสิกรไทย (KBANK)',
+        bankBranch: 'สาขาจอมทอง',
+        bankAccountName: 'บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด',
+        bankAccountNumber: '',
         bankAccountType: 'กระแสรายวัน',
         showRemarks: true,
         defaultRemarks: ''
@@ -143,10 +143,10 @@
                 box.style.display = 'none';
             } else {
                 box.style.display = 'block';
-                const bName = b.bankName || 'ธนาคารไทยพาณิชย์ (SCB)';
-                const bBranch = b.bankBranch || 'สาขาสาทรซิตี้ ทาวเวอร์';
-                const bAccName = b.bankAccountName || 'บจก. เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส';
-                const bAccNo = b.bankAccountNumber || '012-3-45892-1';
+                const bName = b.bankName || 'ธนาคารกสิกรไทย (KBANK)';
+                const bBranch = b.bankBranch || 'สาขาจอมทอง';
+                const bAccName = b.bankAccountName || 'บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด';
+                const bAccNo = b.bankAccountNumber || '-';
                 const bAccType = b.bankAccountType || 'กระแสรายวัน';
                 box.innerHTML = `
                     <strong>ข้อมูลการชำระเงินผ่านธนาคาร:</strong><br>
@@ -508,8 +508,8 @@
                                     </div>
                                     <div id="brandingBankPreviewBox" class="branding-bank-preview-box">
                                         <strong>ข้อมูลการชำระเงินผ่านธนาคาร:</strong><br>
-                                        <span id="previewBankLine1">ธนาคารไทยพาณิชย์ (SCB) สาขาสาทรซิตี้ ทาวเวอร์</span><br>
-                                        ชื่อบัญชี: <span id="previewBankName">บจก. เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส</span> | เลขที่: <strong id="previewBankNo">012-3-45892-1</strong> (<span id="previewBankType">กระแสรายวัน</span>)
+                                        <span id="previewBankLine1">ธนาคารกสิกรไทย (KBANK) สาขาจอมทอง</span><br>
+                                        ชื่อบัญชี: <span id="previewBankName">บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด</span> | เลขที่: <strong id="previewBankNo">-</strong> (<span id="previewBankType">กระแสรายวัน</span>)
                                     </div>
                                 </div>
                             </div>
@@ -657,10 +657,10 @@
         const btnClearDefaultRemarks = document.getElementById('btnClearDefaultRemarks');
 
         function updateBankPreview() {
-            const bName = (brandingBankName ? brandingBankName.value : (tempBranding.bankName || 'ธนาคารไทยพาณิชย์ (SCB)')).trim();
-            const bBranch = (brandingBankBranch ? brandingBankBranch.value : (tempBranding.bankBranch || 'สาขาสาทรซิตี้ ทาวเวอร์')).trim();
-            const bAccName = (brandingBankAccountName ? brandingBankAccountName.value : (tempBranding.bankAccountName || 'บจก. เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส')).trim();
-            const bAccNo = (brandingBankAccountNumber ? brandingBankAccountNumber.value : (tempBranding.bankAccountNumber || '012-3-45892-1')).trim();
+            const bName = (brandingBankName ? brandingBankName.value : (tempBranding.bankName || 'ธนาคารกสิกรไทย (KBANK)')).trim();
+            const bBranch = (brandingBankBranch ? brandingBankBranch.value : (tempBranding.bankBranch || 'สาขาจอมทอง')).trim();
+            const bAccName = (brandingBankAccountName ? brandingBankAccountName.value : (tempBranding.bankAccountName || 'บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด')).trim();
+            const bAccNo = (brandingBankAccountNumber ? brandingBankAccountNumber.value : (tempBranding.bankAccountNumber || '-')).trim();
             const bAccType = (brandingBankAccountType ? brandingBankAccountType.value : (tempBranding.bankAccountType || 'กระแสรายวัน')).trim();
 
             if (previewBankLine1) previewBankLine1.textContent = `${bName} ${bBranch}`;
@@ -740,10 +740,10 @@
 
             // Bank Account
             if (toggleBankAccount) toggleBankAccount.checked = state.showBankAccount !== false;
-            if (brandingBankName) brandingBankName.value = state.bankName || 'ธนาคารไทยพาณิชย์ (SCB)';
-            if (brandingBankBranch) brandingBankBranch.value = state.bankBranch || 'สาขาสาทรซิตี้ ทาวเวอร์';
-            if (brandingBankAccountName) brandingBankAccountName.value = state.bankAccountName || 'บจก. เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส';
-            if (brandingBankAccountNumber) brandingBankAccountNumber.value = state.bankAccountNumber || '012-3-45892-1';
+            if (brandingBankName) brandingBankName.value = state.bankName || 'ธนาคารกสิกรไทย (KBANK)';
+            if (brandingBankBranch) brandingBankBranch.value = state.bankBranch || 'สาขาจอมทอง';
+            if (brandingBankAccountName) brandingBankAccountName.value = state.bankAccountName || 'บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด';
+            if (brandingBankAccountNumber) brandingBankAccountNumber.value = state.bankAccountNumber || '';
             if (brandingBankAccountType) brandingBankAccountType.value = state.bankAccountType || 'กระแสรายวัน';
             updateBankPreview();
 
@@ -1025,7 +1025,7 @@
 
         if (btnResetDefaultRemarks) {
             btnResetDefaultRemarks.addEventListener('click', () => {
-                const recommendedRemarks = '1. กรุณาชำระเงินภายในกำหนดเวลาที่ระบุในเอกสาร\n2. หากชำระด้วยเช็ค กรุณาสั่งจ่ายในนาม บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด ขีดคร่อม A/C PAYEE ONLY';
+                const recommendedRemarks = '1. กรุณาชำระเงินภายในกำหนดเวลาที่ระบุในเอกสาร\n2. หากชำระด้วยเช็ค กรุณาสั่งจ่ายในนาม บริษัท แมม ดีไซน์ แอนด์ เซอร์วิส จำกัด ขีดคร่อม A/C PAYEE ONLY';
                 tempBranding.defaultRemarks = recommendedRemarks;
                 if (brandingDefaultRemarks) brandingDefaultRemarks.value = recommendedRemarks;
             });

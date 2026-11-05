@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การเงินและบัญชีธนาคาร (Finance & Banking) | MAM DESIGN AND SERVICE</title>
+    <link rel="icon" href="../assets/images/mam-logo.png" type="image/png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/auth.css?v=30">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=30">
+    <link rel="stylesheet" href="../assets/css/document-editor.css?v=25">
+    <link rel="stylesheet" href="../assets/css/theme.css?v=31">
+    <link rel="stylesheet" href="../assets/css/banking.css?v=1">
+</head>
+<body class="dashboard-body">
+
+    <!-- Top Navigation Bar (Global Standard Component) -->
+    <header class="top-navbar" id="globalTopNavbar">
+        <div class="nav-left">
+            <button class="btn-toggle-sidebar" id="toggleSidebarBtn" aria-label="Toggle menu" title="เปิด/ปิด เมนูด้านข้าง">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <a href="/dashboard/index.html" class="topbar-logo" title="หน้าหลักภาพรวมธุรกิจ">
+                <img src="/assets/images/mam-logo.png" alt="MAM DESIGN AND SERVICE" style="height: 38px; width: auto; object-fit: contain;">
+            </a>
+            <div class="topbar-divider"></div>
+            <div class="topbar-company-info">
+                <span class="topbar-company-name" id="topbarCompanyName">บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</span>
+                <span class="badge-advance">INTERNAL CRM</span>
+            </div>
+        </div>
+
+        <!-- Actions & User Profile -->
+        <div class="nav-right">
+            <!-- Notification Bell -->
+            <button class="icon-button" id="topbarNotificationBtn" title="การแจ้งเตือน">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notification-badge" id="topbarNotificationBadge">3</span>
+            </button>
+
+            <!-- Help & Support -->
+            <button class="icon-button" id="topbarHelpBtn" title="ช่วยเหลือ / คู่มือ">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </button>
+
+            <div class="topbar-divider"></div>
+
+            <!-- User Menu -->
+            <div class="user-profile-menu">
+                <button class="user-avatar-btn" id="userMenuBtn" type="button" aria-expanded="false" title="โปรไฟล์ผู้ใช้งาน">
+                    <img src="https://ui-avatars.com/api/?name=Itsarapong+Po&background=7D0A0A&color=fff&size=64" alt="User Avatar" class="user-avatar-img" id="topbarUserAvatar">
+                    <span class="user-display-name" id="topbarUserDisplayName">คุณอิศรพงศ์ โพธิ์งาม</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div class="user-dropdown-menu" id="userDropdownContent">
+                    <div class="user-dropdown-header">
+                        <strong id="dropdownUserFullName">Itsarapong P.</strong>
+                        <small id="dropdownUserEmail">itsarapong@mamdesign.co.th</small>
+                    </div>
+                    <a href="/settings/users.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>จัดการผู้ใช้งานและสิทธิ์</span>
+                    </a>
+                    <a href="#" class="dropdown-item" id="openCompanyInfoLink">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="6" x2="9" y2="6.01"></line><line x1="15" y1="6" x2="15" y2="6.01"></line><line x1="9" y1="10" x2="9" y2="10.01"></line><line x1="15" y1="10" x2="15" y2="10.01"></line><line x1="9" y1="14" x2="9" y2="14.01"></line><line x1="15" y1="14" x2="15" y2="14.01"></line><line x1="9" y1="18" x2="9" y2="18.01"></line><line x1="15" y1="18" x2="15" y2="18.01"></line></svg>
+                        <span>ข้อมูลองค์กร (MAM DESIGN AND SERVICE)</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/auth/login.html" class="dropdown-item text-danger" id="topbarLogoutBtn">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>ออกจากระบบ (Logout)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar-nav" id="sidebarNav">
+            <nav class="sidebar-menu">
+                <div class="menu-section-title">เมนูหลัก</div>
+                <a href="../dashboard/index.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <rect x="3" y="3" width="7" height="9"></rect>
+                        <rect x="14" y="3" width="7" height="5"></rect>
+                        <rect x="14" y="12" width="7" height="9"></rect>
+                        <rect x="3" y="16" width="7" height="5"></rect>
+                    </svg>
+                    <span>ภาพรวมธุรกิจ</span>
+                </a>
+
+                <!-- Dropdown: เอกสารการขาย -->
+                <div class="menu-dropdown-group" id="salesDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="salesDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <span>เอกสารการขาย</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../documents/quotations.html" class="submenu-item">
+                            <span>• ใบเสนอราคา</span>
+                            <span class="submenu-badge" style="display: none;">0</span>
+                        </a>
+                        <a href="../documents/billing-notes.html" class="submenu-item">
+                            <span>• ใบวางบิล</span>
+                        </a>
+                        <a href="../documents/invoices.html" class="submenu-item">
+                            <span>• ใบกำกับภาษี</span>
+                        </a>
+                        <a href="../documents/receipts.html" class="submenu-item">
+                            <span>• ใบเสร็จรับเงิน</span>
+                        </a>
+                        <a href="../documents/cash-sales.html" class="submenu-item">
+                            <span>• ขายสด / บิลเงินสด</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dropdown: จัดซื้อ (Purchases) -->
+                <div class="menu-dropdown-group" id="purchaseDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="purchaseDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <span>จัดซื้อ (Purchases)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../documents/purchase-orders.html" class="submenu-item">
+                            <span>• ใบสั่งซื้อ (PO)</span>
+                        </a>
+                        <a href="../expenses/expenses.html" class="submenu-item">
+                            <span>• ค่าใช้จ่าย (Expenses)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="../withholding-tax/withholding-tax.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>ภาษีหัก ณ ที่จ่าย (50 ทวิ)</span>
+                </a>
+
+                <!-- Dropdown: สต็อกสินค้าและกระเช้า -->
+                <div class="menu-dropdown-group" id="inventoryDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="inventoryDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                            <span>สต็อกสินค้า (Inventory)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../inventory/inventory.html" class="submenu-item">
+                            <span>• ขนม / โบว์ / ตะกร้า</span>
+                        </a>
+                        <a href="../inventory/gift-sets.html" class="submenu-item">
+                            <span>• Gift Set ตามกระเช้า</span>
+                        </a>
+                        <a href="../inventory/gift-set-builder.html" class="submenu-item">
+                            <span>• จัด Gift Set ใหม่</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- การเงิน / ธนาคาร (Active) -->
+                <a href="index.html" class="menu-item active">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                        <line x1="2" y1="10" x2="22" y2="10"></line>
+                    </svg>
+                    <span>การเงิน / ธนาคาร</span>
+                </a>
+
+                <!-- Dropdown: สมุดรายชื่อ (Contacts) -->
+                <div class="menu-dropdown-group" id="contactsDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="contactsDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span>ข้อมูลคู่ค้า (Contacts)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../contacts/customers.html" class="submenu-item">
+                            <span>• ลูกค้า (Customers)</span>
+                        </a>
+                        <a href="../contacts/vendors.html" class="submenu-item">
+                            <span>• ผู้ขาย / คู่ค้า (Vendors)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="menu-section-title">การตั้งค่าระบบ</div>
+                <a href="../settings/users.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>จัดการสิทธิ์ผู้ใช้งาน</span>
+                </a>
+            </nav>
+
+            <!-- Internal Organization Portal Footer -->
+            <div style="margin-top: auto; padding: 14px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin: 16px 12px; font-size: 12px; color: #64748b;">
+                <div style="font-weight: 600; color: #1e293b; margin-bottom: 2px; display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #059669;"></span>
+                    MAM DESIGN &amp; SERVICE CRM
+                </div>
+                <div style="font-size: 11px;">ระบบจัดการภายในองค์กร</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">การเงินและบัญชีธนาคาร (Finance &amp; Banking)</h1>
+                    <p class="page-subtitle">บริหารจัดการบัญชีเงินฝาก เงินสดย่อย โอนย้ายเงิน และกระทบยอดกระแสเงินสดจริง</p>
+                </div>
+                <div class="header-controls" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button type="button" class="btn-secondary" onclick="window.BankingApp.openTransferModal()" style="height: 38px; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; font-weight: 600; font-size: 13.5px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+                            <polyline points="17 1 21 5 17 9"></polyline>
+                            <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                            <polyline points="7 23 3 19 7 15"></polyline>
+                            <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                        </svg>
+                        <span>โอนเงินระหว่างบัญชี</span>
+                    </button>
+
+                    <button type="button" class="btn-secondary" onclick="window.BankingApp.openManualTxModal()" style="height: 38px; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; font-weight: 600; font-size: 13.5px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #1e293b; cursor: pointer;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="#059669" stroke-width="2" fill="none">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>บันทึกรับ/จ่ายเงินสด</span>
+                    </button>
+
+                    <button type="button" class="btn-primary" onclick="window.BankingApp.openAccountModal()" style="height: 38px; padding: 0 16px; display: inline-flex; align-items: center; gap: 8px; border-radius: 8px; font-weight: 600; font-size: 13.5px; cursor: pointer;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>+ เพิ่มบัญชีใหม่</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 1. KPI Cards Grid -->
+            <div class="banking-kpi-grid">
+                <!-- Total Balance -->
+                <div class="kpi-card-bank primary">
+                    <div class="kpi-card-header">
+                        <span class="kpi-card-title">ยอดเงินสดและเงินฝากรวม</span>
+                        <div class="kpi-icon-wrap primary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                                <line x1="2" y1="10" x2="22" y2="10"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="kpi-amount-lg" id="kpiTotalBalance">฿ 0.00</div>
+                    <div class="kpi-card-footer">
+                        <span>เปิดใช้งานทั้งหมด</span>
+                        <strong id="activeAccountsCountBadge" style="color: #7D0A0A;">0 บัญชี</strong>
+                    </div>
+                </div>
+
+                <!-- Month Inflow -->
+                <div class="kpi-card-bank success">
+                    <div class="kpi-card-header">
+                        <span class="kpi-card-title">เงินเข้าเดือนนี้ (Inflow)</span>
+                        <div class="kpi-icon-wrap success">
+                            <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                                <line x1="12" y1="19" x2="12" y2="5"></line>
+                                <polyline points="5 12 12 5 19 12"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="kpi-amount-lg text-success" id="kpiMonthInflow">฿ 0.00</div>
+                    <div class="kpi-card-footer">
+                        <span>รับชำระบิล &amp; รับโอน</span>
+                    </div>
+                </div>
+
+                <!-- Month Outflow -->
+                <div class="kpi-card-bank danger">
+                    <div class="kpi-card-header">
+                        <span class="kpi-card-title">เงินออกเดือนนี้ (Outflow)</span>
+                        <div class="kpi-icon-wrap danger">
+                            <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <polyline points="19 12 12 19 5 12"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="kpi-amount-lg text-danger" id="kpiMonthOutflow">฿ 0.00</div>
+                    <div class="kpi-card-footer">
+                        <span>จ่ายค่าใช้จ่าย &amp; โอนออก</span>
+                    </div>
+                </div>
+
+                <!-- Unreconciled Status -->
+                <div class="kpi-card-bank warning">
+                    <div class="kpi-card-header">
+                        <span class="kpi-card-title">รอตรวจสอบยอด (Statement)</span>
+                        <div class="kpi-icon-wrap warning">
+                            <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="kpi-amount-lg text-warning" id="kpiUnreconciledCount">0</div>
+                    <div class="kpi-card-footer">
+                        <span>รายการที่ยังไม่ได้กระทบยอด</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Bank Accounts Section (ATM Card Visual) -->
+            <section class="bank-cards-section">
+                <div class="section-header-row">
+                    <div class="section-heading">
+                        <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" style="color: #7D0A0A;">
+                            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                        </svg>
+                        <span>บัญชีธนาคารและเงินสดย่อยในระบบ</span>
+                    </div>
+                    <span style="font-size: 12.5px; color: #64748b;">คลิกการ์ดเพื่อดูตัวเลือกหรือกดโอนเงิน</span>
+                </div>
+
+                <!-- Grid of Bank Cards -->
+                <div class="bank-cards-grid" id="bankCardsGrid">
+                    <!-- Loaded dynamically via banking.js -->
+                </div>
+            </section>
+
+            <!-- 3. Transactions Ledger Panel -->
+            <section class="ledger-panel">
+                <div class="ledger-panel-header">
+                    <div class="ledger-title-group">
+                        <h2>สมุดรายวันเงินเข้า-ออก (Cash &amp; Bank Ledger)</h2>
+                        <p>ประวัติการเคลื่อนไหวทางการเงินทั้งหมด รองรับการตรวจทานและติ๊กกระทบยอด (Reconciliation)</p>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <span class="badge" id="txCountBadge" style="background: #f1f5f9; color: #475569; font-size: 12px; padding: 5px 10px; border-radius: 6px;">0 รายการ</span>
+                        <button type="button" class="icon-button" id="btnRefreshLedger" title="รีเฟรชข้อมูล" style="width: 34px; height: 34px; border: 1px solid #cbd5e1; border-radius: 8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter Toolbar -->
+                <div class="filter-toolbar">
+                    <div class="filter-left">
+                        <!-- Account Filter -->
+                        <select class="select-filter" id="filterAccountSelect" title="เลือกลำดับบัญชี">
+                            <option value="all">ทุกลำดับบัญชี (ทั้งหมด)</option>
+                        </select>
+
+                        <!-- Period Filter -->
+                        <select class="select-filter" id="filterPeriodSelect" title="เลือกช่วงเวลา">
+                            <option value="this_month">เดือนนี้</option>
+                            <option value="last_month">เดือนที่แล้ว</option>
+                            <option value="this_year">ปีนี้</option>
+                            <option value="all">ประวัติทั้งหมด</option>
+                        </select>
+
+                        <!-- Type Filter -->
+                        <select class="select-filter" id="filterTypeSelect" title="เลือกประเภทธุรกรรม">
+                            <option value="all">ทุกประเภทรายการ</option>
+                            <option value="INCOME">เงินเข้า (Income)</option>
+                            <option value="EXPENSE">เงินออก (Expense)</option>
+                            <option value="TRANSFER_IN">รับโอน (Transfer In)</option>
+                            <option value="TRANSFER_OUT">โอนออก (Transfer Out)</option>
+                            <option value="ADJUST">ปรับปรุงยอด (Adjust)</option>
+                        </select>
+
+                        <!-- Reconcile Status Filter -->
+                        <select class="select-filter" id="filterReconcileSelect" title="สถานะกระทบยอด">
+                            <option value="all">ทุกสถานะกระทบยอด</option>
+                            <option value="0">รอตรวจสอบ (Unreconciled)</option>
+                            <option value="1">กระทบยอดแล้ว (Reconciled)</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-right">
+                        <div class="search-input-wrap">
+                            <svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" class="search-input-bank" id="searchTxInput" placeholder="ค้นหารายละเอียด, เลขที่บิล, คู่ค้า...">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="bank-table-responsive">
+                    <table class="bank-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 120px;">วันที่/เวลา</th>
+                                <th style="width: 220px;">บัญชีธนาคาร</th>
+                                <th style="width: 110px;">ประเภท</th>
+                                <th>คำอธิบาย / เลขอ้างอิง</th>
+                                <th class="text-right" style="width: 140px;">จำนวนเงิน</th>
+                                <th class="text-right" style="width: 140px;">ยอดคงเหลือ</th>
+                                <th class="text-center" style="width: 90px;">หลักฐาน</th>
+                                <th class="text-center" style="width: 130px;">สถานะกระทบยอด</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTableBody">
+                            <!-- Populated via banking.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div id="txEmptyState" style="display: none; padding: 40px; text-align: center; color: #64748b;">
+                    <svg width="40" height="40" viewBox="0 0 24 24" stroke="#cbd5e1" stroke-width="1.5" fill="none" style="margin-bottom: 10px;">
+                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                        <line x1="2" y1="10" x2="22" y2="10"></line>
+                    </svg>
+                    <p style="margin: 0; font-weight: 500;">ไม่พบรายการเคลื่อนไหวตามเงื่อนไขที่เลือก</p>
+                    <small>ลองเปลี่ยนตัวกรอง หรือกดปุ่ม "บันทึกรับ/จ่ายเงินสด" ด้านบนเพื่อเพิ่มรายการ</small>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ==========================================================================
+         MODALS
+         ========================================================================== -->
+
+    <!-- 1. Modal: เพิ่ม / แก้ไขบัญชีธนาคาร -->
+    <div class="banking-modal-backdrop" id="accountModal">
+        <div class="banking-modal">
+            <div class="banking-modal-header">
+                <div class="banking-modal-title" id="accountModalTitle">+ เพิ่มบัญชีธนาคาร / เงินสดย่อยใหม่</div>
+                <button type="button" class="icon-button btn-close-modal" data-close="accountModal">
+                    <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="accountForm">
+                <input type="hidden" id="accountIdInput" value="">
+                <div class="banking-modal-body">
+                    <div class="form-row-2">
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">ธนาคาร / สถาบันการเงิน <span class="text-danger">*</span></label>
+                            <select class="form-control-bank" id="accBankCodeSelect" required>
+                                <option value="KBANK">กสิกรไทย (KBANK)</option>
+                                <option value="SCB">ไทยพาณิชย์ (SCB)</option>
+                                <option value="BBL">กรุงเทพ (BBL)</option>
+                                <option value="KTB">กรุงไทย (KTB)</option>
+                                <option value="TTB">ทหารไทยธนชาต (TTB)</option>
+                                <option value="BAY">กรุงศรีอยุธยา (BAY)</option>
+                                <option value="GSB">ออมสิน (GSB)</option>
+                                <option value="UOB">ยูโอบี (UOB)</option>
+                                <option value="CASH">เงินสด / เงินสดย่อย (Petty Cash)</option>
+                                <option value="OTHER">อื่นๆ / ช่องทางออนไลน์</option>
+                            </select>
+                        </div>
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">ประเภทบัญชี</label>
+                            <select class="form-control-bank" id="accTypeSelect">
+                                <option value="SAVINGS">ออมทรัพย์ (Savings)</option>
+                                <option value="CURRENT">กระแสรายวัน (Current)</option>
+                                <option value="PETTY_CASH">เงินสดย่อย (Petty Cash)</option>
+                                <option value="PROMPTPAY">พร้อมเพย์ / e-Wallet</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group-bank">
+                        <label class="form-label-bank">ชื่อเรียกบัญชี <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control-bank" id="accNameInput" placeholder="เช่น กสิกรไทย - บัญชีรับชำระค่าสินค้า" required>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">เลขที่บัญชี</label>
+                            <input type="text" class="form-control-bank" id="accNumberInput" placeholder="xxx-x-xxxxx-x">
+                        </div>
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">สาขา</label>
+                            <input type="text" class="form-control-bank" id="accBranchInput" placeholder="เช่น สาขาบางค้อ">
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">ยอดยกมาเริ่มต้น (฿)</label>
+                            <input type="number" step="0.01" class="form-control-bank" id="accOpeningBalInput" value="0.00" placeholder="0.00">
+                            <small style="color: #64748b; font-size: 11px;">ยอดเงินตั้งต้นเมื่อเริ่มใช้งานระบบ</small>
+                        </div>
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">เบอร์/เลข PromptPay ID</label>
+                            <input type="text" class="form-control-bank" id="accPromptPayInput" placeholder="เบอร์โทร หรือ เลข Tax ID">
+                        </div>
+                    </div>
+
+                    <div class="form-group-bank">
+                        <label class="form-label-bank">บันทึกช่วยจำ (Notes)</label>
+                        <input type="text" class="form-control-bank" id="accNotesInput" placeholder="รายละเอียดหรือเงื่อนไขการใช้งาน">
+                    </div>
+
+                    <div class="form-group-bank" style="margin-bottom: 0;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: #1e293b;">
+                            <input type="checkbox" id="accDefaultCheckbox" style="width: 16px; height: 16px; accent-color: #7D0A0A;">
+                            <span>กำหนดเป็น "บัญชีหลัก" (สำหรับพิมพ์แสดงท้ายใบแจ้งหนี้ / ใบเสร็จรับเงิน)</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="banking-modal-footer">
+                    <button type="button" class="btn-secondary btn-close-modal" data-close="accountModal" style="height: 38px; padding: 0 16px;">ยกเลิก</button>
+                    <button type="submit" class="btn-primary" style="height: 38px; padding: 0 18px;">บันทึกบัญชี</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Modal: โอนเงินระหว่างบัญชี (Internal Transfer) -->
+    <div class="banking-modal-backdrop" id="transferModal">
+        <div class="banking-modal">
+            <div class="banking-modal-header">
+                <div class="banking-modal-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" style="color: #7D0A0A;">
+                        <polyline points="17 1 21 5 17 9"></polyline>
+                        <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                        <polyline points="7 23 3 19 7 15"></polyline>
+                        <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                    </svg>
+                    <span>โอนเงินระหว่างบัญชีภายใน</span>
+                </div>
+                <button type="button" class="icon-button btn-close-modal" data-close="transferModal">
+                    <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="transferForm">
+                <div class="banking-modal-body">
+                    <div class="form-group-bank">
+                        <label class="form-label-bank">โอนออกจากบัญชี (ต้นทาง) <span class="text-danger">*</span></label>
+                        <select class="form-control-bank" id="transferFromAccount" required></select>
+                    </div>
+
+                    <div class="form-group-bank">
+                        <label class="form-label-bank">โอนเข้าสู่บัญชี (ปลายทาง) <span class="text-danger">*</span></label>
+                        <select class="form-control-bank" id="transferToAccount" required></select>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">จำนวนเงินที่โอน (฿) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" min="0.01" class="form-control-bank" id="transferAmount" placeholder="0.00" required>
+                        </div>
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">ค่าธรรมเนียมธนาคาร (฿)</label>
+                            <input type="number" step="0.01" min="0" class="form-control-bank" id="transferFee" value="0.00" placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">วันที่โอน <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control-bank" id="transferDate" required>
+                        </div>
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">เวลาที่โอน</label>
+                            <input type="time" class="form-control-bank" id="transferTime">
+                        </div>
+                    </div>
+
+                    <div class="form-group-bank" style="margin-bottom: 0;">
+                        <label class="form-label-bank">บันทึกช่วยจำ (เช่น เบิกเงินสดเติมเงินสดย่อย)</label>
+                        <input type="text" class="form-control-bank" id="transferNote" placeholder="ระบุเหตุผลการโอน">
+                    </div>
+                </div>
+                <div class="banking-modal-footer">
+                    <button type="button" class="btn-secondary btn-close-modal" data-close="transferModal" style="height: 38px; padding: 0 16px;">ยกเลิก</button>
+                    <button type="submit" class="btn-primary" style="height: 38px; padding: 0 18px;">ยืนยันการโอนเงิน</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. Modal: บันทึกรับ/จ่ายเงินโดยตรง (Manual Transaction) -->
+    <div class="banking-modal-backdrop" id="manualTxModal">
+        <div class="banking-modal">
+            <div class="banking-modal-header">
+                <div class="banking-modal-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" style="color: #059669;">
+                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                        <line x1="2" y1="10" x2="22" y2="10"></line>
+                    </svg>
+                    <span>บันทึกความเคลื่อนไหวเงินเข้า/ออก</span>
+                </div>
+                <button type="button" class="icon-button btn-close-modal" data-close="manualTxModal">
+                    <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="manualTxForm">
+                <div class="banking-modal-body">
+                    <div class="form-row-2">
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">ประเภทรายการ <span class="text-danger">*</span></label>
+                            <select class="form-control-bank" id="manualTxType" required>
+                                <option value="INCOME">เงินเข้า (Income / รับชำระ)</option>
+                                <option value="EXPENSE">เงินออก (Expense / จ่ายออก)</option>
+                                <option value="ADJUST">ปรับปรุงยอดคงเหลือ (Adjustment)</option>
+                            </select>
+                        </div>
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">บัญชีธนาคาร <span class="text-danger">*</span></label>
+                            <select class="form-control-bank" id="manualTxAccount" required></select>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">จำนวนเงิน (฿) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" min="0" class="form-control-bank" id="manualTxAmount" placeholder="0.00" required>
+                        </div>
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">ช่องทางทำรายการ</label>
+                            <select class="form-control-bank" id="manualTxChannel">
+                                <option value="TRANSFER">โอนเงิน (Mobile / Internet Banking)</option>
+                                <option value="QR_PROMPTPAY">สแกน QR PromptPay</option>
+                                <option value="CASH">เงินสด (Cash)</option>
+                                <option value="CHEQUE">เช็คธนาคาร (Cheque)</option>
+                                <option value="CARD">บัตรเครดิต/เดบิต</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">วันที่ <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control-bank" id="manualTxDate" required>
+                        </div>
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">เวลา</label>
+                            <input type="time" class="form-control-bank" id="manualTxTime">
+                        </div>
+                    </div>
+
+                    <div class="form-group-bank">
+                        <label class="form-label-bank">คำอธิบายรายการ <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control-bank" id="manualTxDesc" placeholder="เช่น รับเงินค่าบริการออกแบบ, จ่ายค่าจัดส่งพัสดุ" required>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">ชื่อผู้ชำระ / ผู้รับเงิน</label>
+                            <input type="text" class="form-control-bank" id="manualTxPartner" placeholder="ชื่อบุคคล หรือ บริษัทคู่ค้า">
+                        </div>
+                        <div class="form-group-bank">
+                            <label class="form-label-bank">เลขอ้างอิง / สเตตเมนต์</label>
+                            <input type="text" class="form-control-bank" id="manualTxRef" placeholder="เช่น BATCH-01, Slip No.">
+                        </div>
+                    </div>
+                </div>
+                <div class="banking-modal-footer">
+                    <button type="button" class="btn-secondary btn-close-modal" data-close="manualTxModal" style="height: 38px; padding: 0 16px;">ยกเลิก</button>
+                    <button type="submit" class="btn-primary" style="height: 38px; padding: 0 18px;">บันทึกรายการ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. Modal: ดูสลิปหลักฐาน (Slip Lightbox) -->
+    <div class="banking-modal-backdrop" id="slipModal">
+        <div class="banking-modal" style="max-width: 440px;">
+            <div class="banking-modal-header">
+                <div class="banking-modal-title" id="slipModalDesc">หลักฐานการโอนเงิน</div>
+                <button type="button" class="icon-button btn-close-modal" data-close="slipModal">
+                    <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="banking-modal-body" style="text-align: center; background: #0f172a; padding: 16px;">
+                <img id="slipModalImg" src="" alt="Slip Proof" style="max-width: 100%; max-height: 480px; object-fit: contain; border-radius: 8px;">
+            </div>
+            <div class="banking-modal-footer">
+                <button type="button" class="btn-secondary btn-close-modal" data-close="slipModal" style="height: 36px; padding: 0 16px;">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/auth-guard.js?v=5"></script>
+    <script src="../assets/js/theme-manager.js?v=5"></script>
+    <script src="../assets/js/global-navbar.js?v=5"></script>
+    <script src="../assets/js/banking.js?v=2"></script>
+</body>
+</html>

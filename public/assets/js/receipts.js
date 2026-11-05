@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             issue_date: d.issue_date || '-',
             ref_doc_number: d.ref_doc_number || '',
             customer_name: d.customer_name || '-',
-            payment_method: d.remarks && d.remarks.includes('โอน') ? d.remarks : (d.remarks && d.remarks.includes('เช็ค') ? d.remarks : (d.payment_method || 'โอนเงินผ่านธนาคาร')),
+            payment_method: d.payment_method || d.credit_terms || (d.remarks && (d.remarks.includes('โอน') || d.remarks.includes('เช็ค') || d.remarks.includes('เงินสด')) ? d.remarks : 'โอนเงินผ่านธนาคาร'),
             grand_total: d.grand_total || 0,
             status: statusKey,
             status_text: statusText,
@@ -562,7 +562,7 @@ window.shareDocument = function(docNum, id) {
 };
 
 window.deleteDocument = async function(id, docNum, status, customerName = '-', grandTotal = 0) {
-    if (status && status !== 'DRAFT') {
+    if (status && status !== 'DRAFT' && status !== 'CANCELLED') {
         const dialogRes = await openActionDialog({
             action: 'cancel',
             docNum: docNum,

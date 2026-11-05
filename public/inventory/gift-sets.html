@@ -118,6 +118,14 @@
             line-height: 1.4;
         }
 
+        .hamper-meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
         .hamper-items-count {
             display: inline-flex;
             align-items: center;
@@ -125,11 +133,59 @@
             font-size: 11.5px;
             color: #0284c7;
             background: #f0f9ff;
-            padding: 3px 8px;
+            border: 1px solid #bae6fd;
+            padding: 0 9px;
+            height: 26px;
             border-radius: 6px;
             font-weight: 600;
-            margin-bottom: 14px;
-            align-self: flex-start;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
+
+        .hamper-stock-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11.5px;
+            padding: 0 9px;
+            height: 26px;
+            border-radius: 6px;
+            font-weight: 500;
+            box-sizing: border-box;
+            white-space: nowrap;
+            letter-spacing: -0.2px;
+        }
+
+        .hamper-stock-badge strong {
+            font-weight: 700;
+        }
+
+        .hamper-stock-badge .stock-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .hamper-stock-badge.in-stock {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .hamper-stock-badge.in-stock .stock-dot {
+            background: #10b981;
+        }
+
+        .hamper-stock-badge.out-of-stock {
+            background: #f8fafc;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .hamper-stock-badge.out-of-stock .stock-dot {
+            background: #94a3b8;
         }
 
         .hamper-footer {
@@ -214,6 +270,60 @@
             background: #fee2e2;
             color: #991b1b;
             text-decoration: underline;
+        }
+
+        /* Corporate Status Badges (Enterprise Grade - No Emojis) */
+        .corp-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+            line-height: 1.2;
+            letter-spacing: -0.1px;
+        }
+
+        .corp-badge-ok {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .corp-badge-low {
+            background: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .corp-badge-out {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .corp-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .corp-dot-ok { background: #10b981; }
+        .corp-dot-low { background: #f59e0b; }
+        .corp-dot-out { background: #ef4444; }
+
+        .corp-shortage-alert {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #dc2626;
+            font-weight: 600;
+            margin-top: 3px;
         }
 
         /* Stock Status Badges */
@@ -565,10 +675,12 @@
                 <!-- Header Actions -->
                 <div class="header-controls" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <a href="inventory.html" class="btn-secondary" style="height: 38px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; color: #334155; background: #fff; text-decoration: none;">
-                        <span>📦 คลังวัตถุดิบ (ขนม/โบว์/ตะกร้า 317 รายการ)</span>
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        <span>คลังวัตถุดิบ (ขนม/โบว์/ตะกร้า 317 รายการ)</span>
                     </a>
                     <a href="gift-set-builder.html" class="btn-primary" style="height: 38px; padding: 0 16px; margin: 0; display: inline-flex; align-items: center; gap: 6px; justify-content: center; border-radius: 8px; font-weight: 600; font-size: 13.5px; cursor: pointer; text-decoration: none; color: #fff;">
-                        <span>✨ จัด Gift Set ใหม่</span>
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span>จัด Gift Set ใหม่</span>
                     </a>
                 </div>
             </div>
@@ -650,7 +762,7 @@
 
     <!-- ================= Modal: รายละเอียดของในกระเช้า (BOM Recipe) ================= -->
     <div class="modal-overlay" id="bomModal" style="display: none;">
-        <div class="modal-card" style="max-width: 780px; width: 94%; max-height: 90vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 14px;">
+        <div class="modal-card" style="max-width: 880px; width: 94%; max-height: 90vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 14px;">
             <!-- Modal Header -->
             <div style="padding: 16px 22px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; background: #ffffff;">
                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -668,22 +780,34 @@
                 <!-- Hamper Overview Info -->
                 <div style="display: flex; gap: 16px; margin-bottom: 16px; align-items: center; background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid #e2e8f0;">
                     <img id="bomModalImg" src="" alt="Hamper" style="width: 75px; height: 75px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1; background: #fff;" onerror="this.onerror=null; this.src='/assets/images/default-hamper.png';">
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; flex-grow: 1;">
-                        <div style="font-size: 12.5px; color: #64748b;">
-                            <span style="display: block; font-size: 11px; color: #94a3b8; font-weight: 600;">ภาชนะ/กระเช้า</span>
-                            <strong id="bomModalPkg" style="color: #1e293b;">-</strong>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; flex-grow: 1;">
+                        <div style="font-size: 12px; color: #64748b;">
+                            <span style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: #94a3b8; font-weight: 600; margin-bottom: 2px;">
+                                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                                ภาชนะ/กระเช้า
+                            </span>
+                            <strong id="bomModalPkg" style="color: #1e293b; font-size: 12.5px; display: block; line-height: 1.3;">-</strong>
                         </div>
-                        <div style="font-size: 12.5px; color: #64748b;">
-                            <span style="display: block; font-size: 11px; color: #94a3b8; font-weight: 600;">โบว์/ของตกแต่ง</span>
-                            <strong id="bomModalRibbon" style="color: #1e293b;">-</strong>
+                        <div style="font-size: 12px; color: #64748b;">
+                            <span style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: #94a3b8; font-weight: 600; margin-bottom: 2px;">
+                                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                                โบว์/ของตกแต่ง
+                            </span>
+                            <strong id="bomModalRibbon" style="color: #1e293b; font-size: 12.5px; display: block; line-height: 1.3;">-</strong>
                         </div>
-                        <div style="font-size: 12.5px; color: #64748b;">
-                            <span style="display: block; font-size: 11px; color: #94a3b8; font-weight: 600;">ธีมชุดกระเช้า</span>
-                            <strong id="bomModalTheme" style="color: #7D0A0A;">-</strong>
+                        <div style="font-size: 12px; color: #64748b;">
+                            <span style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: #94a3b8; font-weight: 600; margin-bottom: 2px;">
+                                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                                ธีมชุดกระเช้า
+                            </span>
+                            <strong id="bomModalTheme" style="color: #7D0A0A; font-size: 12.5px; display: block; line-height: 1.3;">-</strong>
                         </div>
-                        <div style="font-size: 12.5px; color: #64748b;">
-                            <span style="display: block; font-size: 11px; color: #94a3b8; font-weight: 600;">สต็อกกระเช้าพร้อมขาย</span>
-                            <strong id="bomModalAssembledStock" style="color: #059669;">0 ชุด</strong>
+                        <div style="font-size: 12px; color: #64748b;">
+                            <span style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: #94a3b8; font-weight: 600; margin-bottom: 2px;">
+                                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                สต็อกพร้อมขาย
+                            </span>
+                            <strong id="bomModalAssembledStock" style="color: #059669; font-size: 13px; display: block; line-height: 1.3;">0 ชุด</strong>
                         </div>
                     </div>
                 </div>
@@ -691,7 +815,9 @@
                 <!-- Stock Feasibility & Simulation Banner -->
                 <div id="bomFeasibilityCard" class="bom-feasibility-card">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <div id="bomFeasibilityIcon" style="width: 36px; height: 36px; border-radius: 50%; background: #22c55e; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; flex-shrink: 0;">✓</div>
+                        <div id="bomFeasibilityIcon" style="width: 34px; height: 34px; border-radius: 50%; background: #22c55e; color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
                         <div>
                             <div style="font-size: 11px; color: #166534; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">ความพร้อมสต็อกวัตถุดิบ (Stock Availability)</div>
                             <div id="bomFeasibilityText" style="font-size: 14.5px; font-weight: 700; color: #14532d; margin-top: 1px;">
@@ -700,13 +826,14 @@
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                        <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);">
+                        <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.95); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);">
                             <label for="bomSimulateQtyInput" style="font-size: 12px; font-weight: 600; color: #334155; white-space: nowrap;">จำนวนสั่งทำ:</label>
                             <input type="number" id="bomSimulateQtyInput" value="1" min="1" max="999" oninput="updateBuildSimulation(this.value)" style="width: 52px; height: 28px; text-align: center; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; font-weight: 700; color: #0f172a; outline: none;">
                             <span style="font-size: 12px; color: #64748b;">ชุด</span>
                         </div>
-                        <button type="button" id="btnAssembleGiftSet" onclick="assembleGiftSetNow()" style="height: 36px; padding: 0 12px; background: #15803d; color: #ffffff; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); white-space: nowrap;" title="ตัดสต็อกวัตถุดิบรายชิ้นตามสูตร BOM และรับเข้าสต็อกกระเช้าสำเร็จรูปอัตโนมัติ">
-                            <span>⚡ สั่งประกอบจริง (ตัดสต็อก)</span>
+                        <button type="button" id="btnAssembleGiftSet" onclick="assembleGiftSetNow()" style="height: 36px; padding: 0 12px; background: #15803d; color: #ffffff; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); white-space: nowrap;" title="ตัดสต็อกวัตถุดิบรายชิ้นตามสูตร BOM และรับเข้าสต็อกกระเช้าสำเร็จรูปอัตโนมัติ">
+                            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            <span>สั่งประกอบ (ตัดสต็อก)</span>
                         </button>
                     </div>
                 </div>
@@ -717,38 +844,44 @@
                         <span>รายการสินค้าในกระเช้า (BOM Recipe)</span>
                         <span id="bomModalItemCount" style="font-size: 12px; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 1px 7px; border-radius: 10px;">- รายการ</span>
                     </div>
-                    <small style="font-size: 11.5px; color: #64748b; font-weight: 500;">คลิกที่ <span style="color:#7D0A0A; font-weight:700;">รหัส SKU</span> หรือ <span style="color:#0284c7; font-weight:700;">รูปสินค้า</span> เพื่อเปิดการ์ดดูรายละเอียดเต็ม</small>
+                    <small style="font-size: 11.5px; color: #64748b; font-weight: 500;">คลิกที่ <span style="color:#7D0A0A; font-weight:700;">รหัส SKU</span> หรือ <span style="color:#0284c7; font-weight:700;">ชื่อ/รูปสินค้า</span> เพื่อเปิดการ์ดดูรายละเอียดเต็ม</small>
                 </div>
 
                 <!-- Table -->
                 <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
                     <table class="table-standard" style="font-size: 12.5px; margin: 0; width: 100%; border-collapse: collapse;">
                         <thead>
-                            <tr style="background: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
-                                <th style="width: 35px; text-align: center; padding: 10px 6px;">#</th>
-                                <th style="width: 58px; text-align: center; padding: 10px 6px;">รูป</th>
-                                <th style="width: 140px; text-align: left; padding: 10px 12px; white-space: nowrap;">รหัสสินค้า (SKU)</th>
-                                <th style="width: 65px; text-align: center; padding: 10px 6px;">จำนวน</th>
-                                <th style="width: 100px; text-align: center; padding: 10px 8px;">สต็อกคลัง</th>
-                                <th style="width: 100px; text-align: right; padding: 10px 8px;">ราคาทุนเฉลี่ย</th>
-                                <th style="width: 100px; text-align: right; padding: 10px 12px;">ราคาปลีก</th>
+                            <tr style="background: #f8fafc; border-bottom: 1px solid #cbd5e1; color: #475569; font-size: 12px; font-weight: 700;">
+                                <th style="width: 36px; text-align: center; padding: 10px 4px;">#</th>
+                                <th style="width: 54px; text-align: center; padding: 10px 6px;">รูป</th>
+                                <th style="text-align: left; padding: 10px 12px;">รหัสสินค้า &amp; รายการวัตถุดิบ (SKU / Product Name)</th>
+                                <th style="width: 88px; text-align: center; padding: 10px 8px;">จำนวนในชุด</th>
+                                <th style="width: 125px; text-align: center; padding: 10px 8px;">สต็อกคลัง</th>
+                                <th style="width: 105px; text-align: right; padding: 10px 10px;">ราคาทุนเฉลี่ย</th>
+                                <th style="width: 105px; text-align: right; padding: 10px 14px;">ราคาปลีก</th>
                             </tr>
                         </thead>
                         <tbody id="bomTableBody"></tbody>
                     </table>
                 </div>
 
-                <!-- Pricing & Profit Summary -->
-                <div style="margin-top: 16px; padding: 14px 18px; background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <!-- Financial & Accounting KPI Strip -->
+                <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px;">
                     <div>
-                        <div style="font-size: 12px; color: #9d174d; font-weight: 600;">ต้นทุนรวม (Cost) / กำไรขั้นต้น (Gross Profit)</div>
-                        <div style="font-size: 13.5px; font-weight: 700; color: #831843; margin-top: 2px;">
-                            ต้นทุน: <span id="bomCostSummary">฿ 0.00</span> | <span id="bomMarginSummary">กำไร: 0%</span>
-                        </div>
+                        <div style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase;">ต้นทุนวัตถุดิบรวม (Cost)</div>
+                        <div id="bomCostSummary" style="font-size: 16px; font-weight: 700; color: #334155; margin-top: 3px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">฿ 0.00</div>
                     </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 12px; color: #64748b;">ราคาขายแนะนำ / ตั้งต้น</div>
-                        <div id="bomPriceSummary" style="font-size: 21px; font-weight: 800; color: #7D0A0A; line-height: 1.1;">฿ 0.00</div>
+                    <div>
+                        <div style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase;">มูลค่าขายปลีกรวม (Retail)</div>
+                        <div id="bomRetailSummary" style="font-size: 16px; font-weight: 700; color: #475569; margin-top: 3px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">฿ 0.00</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase;">ราคาขายชุดกระเช้า (Catalog Price)</div>
+                        <div id="bomPriceSummary" style="font-size: 18px; font-weight: 800; color: #7D0A0A; margin-top: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">฿ 0.00</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase;">กำไรขั้นต้น (Gross Margin)</div>
+                        <div id="bomMarginSummary" style="font-size: 16px; font-weight: 700; color: #059669; margin-top: 3px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">0% (฿0.00)</div>
                     </div>
                 </div>
             </div>
@@ -761,14 +894,16 @@
                         <span>พิมพ์ใบหยิบของ</span>
                     </button>
                     <button type="button" class="btn-secondary" onclick="editInBuilder()" style="height: 36px; padding: 0 11px; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; border-radius: 7px; background: #fff; color: #0284c7; border-color: #bae6fd;" title="แก้ไขสูตรและข้อมูลของชุดกระเช้านี้โดยตรง">
-                        <span>✏️ แก้ไขสูตรเดิม</span>
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        <span>แก้ไขสูตร</span>
                     </button>
                     <button type="button" class="btn-secondary" onclick="duplicateToBuilder()" style="height: 36px; padding: 0 11px; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; border-radius: 7px; background: #fff;" title="คัดลอกสูตรไปสร้างเป็นชุดกระเช้ารหัสใหม่">
                         <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         <span>คัดลอกจัดเซ็ตใหม่</span>
                     </button>
-                    <button type="button" class="btn-secondary" onclick="deleteCurrentGiftSet()" style="height: 36px; padding: 0 10px; display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; border-radius: 7px; background: #fff; color: #dc2626; border-color: #fecaca;" title="ลบชุดกระเช้านี้ออกจากแคตตาล็อก">
-                        <span>🗑️ ลบ</span>
+                    <button type="button" class="btn-secondary" onclick="deleteCurrentGiftSet()" style="height: 36px; padding: 0 10px; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; border-radius: 7px; background: #fff; color: #dc2626; border-color: #fecaca;" title="ลบชุดกระเช้านี้ออกจากแคตตาล็อก">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        <span>ลบ</span>
                     </button>
                 </div>
                 <div style="display: flex; gap: 8px;">
@@ -818,7 +953,7 @@
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-size: 12px; color: #64748b; font-weight: 500;">สต็อกคงเหลือในคลัง:</span>
-                            <span id="quickCardStockBadge" class="stock-pill-badge stock-pill-ok">🟢 25 ชิ้น</span>
+                            <span id="quickCardStockBadge" class="corp-badge corp-badge-ok"><span class="corp-dot corp-dot-ok"></span>25 ชิ้น</span>
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px; font-size: 11.5px; color: #64748b;">
                             <span>จุดเตือนสั่งซื้อขั้นต่ำ (Min Stock):</span>
@@ -827,20 +962,20 @@
                     </div>
 
                     <!-- Price & Cost Structure -->
-                    <div style="background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 8px; padding: 10px 12px;">
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px;">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
                             <div>
-                                <span style="color: #9d174d; font-weight: 500;">ราคาทุนเฉลี่ย:</span>
-                                <div id="quickCardCost" style="font-size: 14.5px; font-weight: 700; color: #831843; margin-top: 2px;">฿ 0.00</div>
+                                <span style="color: #64748b; font-weight: 500;">ราคาทุนเฉลี่ย:</span>
+                                <div id="quickCardCost" style="font-size: 14.5px; font-weight: 700; color: #334155; margin-top: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">฿ 0.00</div>
                             </div>
                             <div>
-                                <span style="color: #065f46; font-weight: 500;">ราคาขายปลีก:</span>
-                                <div id="quickCardPrice" style="font-size: 14.5px; font-weight: 700; color: #047857; margin-top: 2px;">฿ 0.00</div>
+                                <span style="color: #059669; font-weight: 500;">ราคาขายปลีก:</span>
+                                <div id="quickCardPrice" style="font-size: 14.5px; font-weight: 700; color: #059669; margin-top: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">฿ 0.00</div>
                             </div>
                         </div>
-                        <div style="border-top: 1px dashed #f9a8d4; margin-top: 6px; padding-top: 6px; display: flex; justify-content: space-between; font-size: 11.5px; color: #831843;">
+                        <div style="border-top: 1px dashed #cbd5e1; margin-top: 6px; padding-top: 6px; display: flex; justify-content: space-between; font-size: 11.5px; color: #475569;">
                             <span>กำไรส่วนต่างต่อหน่วย:</span>
-                            <strong id="quickCardMargin">฿ 0.00 (0%)</strong>
+                            <strong id="quickCardMargin" style="color: #059669;">฿ 0.00 (0%)</strong>
                         </div>
                     </div>
                 </div>
@@ -965,7 +1100,11 @@
                 return;
             }
 
-            container.innerHTML = filtered.map(s => `
+            container.innerHTML = filtered.map(s => {
+                const assembledStock = Number(s.assembled_stock || 0);
+                const isAssembledInStock = assembledStock > 0;
+
+                return `
                 <div class="hamper-card">
                     <div class="hamper-img-wrap">
                         <img src="${s.image_url || '/assets/images/default-hamper.png'}" alt="${escapeHtml(s.name)}" class="hamper-img" onerror="this.onerror=null; this.src='/assets/images/default-hamper.png';">
@@ -982,7 +1121,7 @@
                             <span>${escapeHtml(s.packaging_desc || 'กระเช้าของขวัญมาตรฐาน')}</span>
                         </div>
 
-                        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                        <div class="hamper-meta-row">
                             <div class="hamper-items-count">
                                 <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none">
                                     <circle cx="12" cy="12" r="10"></circle>
@@ -990,9 +1129,10 @@
                                 </svg>
                                 <span>${s.item_count || 0} รายการในชุด</span>
                             </div>
-                            <span style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; ${Number(s.assembled_stock || 0) > 0 ? 'background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0;' : 'background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0;'}" title="จำนวนกระเช้าสำเร็จรูปในคลังพร้อมขาย">
-                                พร้อมขาย: ${Number(s.assembled_stock || 0)} ชุด
-                            </span>
+                            <div class="hamper-stock-badge ${isAssembledInStock ? 'in-stock' : 'out-of-stock'}" title="${isAssembledInStock ? 'มีกระเช้าสำเร็จรูปพร้อมส่งทันที' : 'ยังไม่มีกระเช้าสำเร็จรูปค้างสต็อก (สั่งประกอบตามสูตร BOM)'}">
+                                <span class="stock-dot"></span>
+                                <span>พร้อมขาย: <strong>${assembledStock}</strong> ชุด</span>
+                            </div>
                         </div>
 
                         <div class="hamper-footer">
@@ -1012,7 +1152,8 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         async function openBomModal(setId) {
@@ -1088,8 +1229,8 @@
             if (maxBuildable <= 0) {
                 fCard.className = 'bom-feasibility-card status-danger';
                 fIcon.style.background = '#ef4444';
-                fIcon.textContent = '✕';
-                fText.innerHTML = `ยังไม่สามารถประกอบได้ทันที <span style="font-size: 12px; font-weight: 500; color: #991b1b;">(มีวัตถุดิบค้างสต็อก 0 ชิ้น)</span>`;
+                fIcon.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+                fText.innerHTML = `ยังไม่สามารถประกอบได้ทันที <span style="font-size: 12px; font-weight: 500; color: #991b1b;">(มีวัตถุดิบไม่พอในสต็อก ${shortageItems.length} รายการ)</span>`;
                 if (asmBtn) {
                     asmBtn.style.background = '#94a3b8';
                     asmBtn.style.cursor = 'not-allowed';
@@ -1097,7 +1238,7 @@
             } else if (simulateQty > maxBuildable) {
                 fCard.className = 'bom-feasibility-card status-warning';
                 fIcon.style.background = '#f59e0b';
-                fIcon.textContent = '⚠️';
+                fIcon.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
                 fText.innerHTML = `พร้อมประกอบได้ทันที <strong style="text-decoration: underline;">${maxBuildable}</strong> ชุด <span style="font-size: 12px; color: #b45309;">(ต้องการจัด ${simulateQty} ชุด จะขาดวัตถุดิบ ${shortageItems.length} รายการ)</span>`;
                 if (asmBtn) {
                     asmBtn.style.background = '#d97706';
@@ -1106,7 +1247,7 @@
             } else {
                 fCard.className = 'bom-feasibility-card';
                 fIcon.style.background = '#22c55e';
-                fIcon.textContent = '✓';
+                fIcon.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
                 fText.innerHTML = `พร้อมประกอบได้ทันทีสูงสุด <strong style="font-size: 18px; text-decoration: underline;">${maxBuildable}</strong> ชุด <span style="font-size: 11.5px; color: #15803d; font-weight: 500;">(สต็อกวัตถุดิบครบถ้วนพร้อมจัดส่ง)</span>`;
                 if (asmBtn) {
                     asmBtn.style.background = '#15803d';
@@ -1116,57 +1257,88 @@
 
             // 3. Render Table Rows
             let totalCost = 0;
+            let totalRetail = 0;
             const tbody = document.getElementById('bomTableBody');
             tbody.innerHTML = items.map((it, idx) => {
                 const cost = Number(it.unit_cost) || 0;
+                const retail = Number(it.unit_price) || 0;
                 const reqQty = Number(it.quantity) || 1;
                 totalCost += cost * reqQty;
+                totalRetail += retail * reqQty;
 
                 const stock = it.current_stock !== null && it.current_stock !== undefined ? Number(it.current_stock) : null;
                 const unit = it.product_unit || 'ชิ้น';
                 const sku = it.product_code || 'SKU';
+                const name = it.product_real_name || it.item_name || '-';
                 const img = it.product_image || '/assets/images/default-hamper.png';
                 const isShort = stock !== null && stock < (reqQty * simulateQty);
+                const shortQty = (reqQty * simulateQty) - (stock || 0);
 
                 let stockBadge = '';
                 if (stock === null) {
-                    stockBadge = `<span class="stock-pill-badge" style="background:#f1f5f9; color:#64748b;">รอเช็ค</span>`;
+                    stockBadge = `<span class="corp-badge" style="background:#f1f5f9; color:#64748b; border: 1px solid #e2e8f0;">รอเช็ค</span>`;
                 } else if (stock <= 0) {
-                    stockBadge = `<span class="stock-pill-badge stock-pill-out">🔴 หมด</span>`;
+                    stockBadge = `<span class="corp-badge corp-badge-out"><span class="corp-dot corp-dot-out"></span>หมดสต็อก</span>`;
                 } else if (stock <= (it.min_stock || 5)) {
-                    stockBadge = `<span class="stock-pill-badge stock-pill-low" title="ใกล้หมดสต็อก">🟡 ${stock} ${escapeHtml(unit)}</span>`;
+                    stockBadge = `<span class="corp-badge corp-badge-low" title="ใกล้หมดสต็อก"><span class="corp-dot corp-dot-low"></span>${stock} ${escapeHtml(unit)}</span>`;
                 } else {
-                    stockBadge = `<span class="stock-pill-badge stock-pill-ok">🟢 ${stock} ${escapeHtml(unit)}</span>`;
+                    stockBadge = `<span class="corp-badge corp-badge-ok"><span class="corp-dot corp-dot-ok"></span>${stock} ${escapeHtml(unit)}</span>`;
                 }
 
+                const shortageBadge = isShort ? `
+                    <div class="corp-shortage-alert" title="วัตถุดิบไม่พอสำหรับการประกอบจำนวน ${simulateQty} ชุด">
+                        <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.2" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        <span>ขาด ${shortQty} ${escapeHtml(unit)}</span>
+                    </div>
+                ` : '';
+
                 return `
-                    <tr style="${isShort ? 'background: #fff1f2;' : ''}">
-                        <td style="text-align: center; color: #94a3b8; font-weight: 600; padding: 8px 6px;">${idx + 1}</td>
-                        <td style="text-align: center; padding: 6px 8px;">
-                            <img src="${img}" class="bom-table-thumb" alt="${escapeHtml(it.item_name)}" onclick="openProductQuickCard(${idx})" onerror="this.src='/assets/images/default-hamper.png';" title="คลิกดูการ์ดสินค้า: ${escapeHtml(it.item_name)}">
+                    <tr style="${isShort ? 'background: #fff8f8;' : ''} border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;">
+                        <td style="text-align: center; color: #94a3b8; font-weight: 600; padding: 10px 4px; font-size: 12px;">${idx + 1}</td>
+                        <td style="text-align: center; padding: 8px 6px;">
+                            <img src="${img}" class="bom-table-thumb" alt="${escapeHtml(name)}" onclick="openProductQuickCard(${idx})" onerror="this.src='/assets/images/default-hamper.png';" title="คลิกดูการ์ดสินค้า: ${escapeHtml(name)}">
                         </td>
-                        <td style="padding: 8px 12px; white-space: nowrap;">
-                            <span class="bom-sku-link" onclick="openProductQuickCard(${idx})" title="คลิกเปิดการ์ดข้อมูลสินค้า: ${escapeHtml(it.item_name)}">
-                                ${escapeHtml(sku)}
+                        <td style="padding: 10px 12px; vertical-align: middle;">
+                            <div>
+                                <span class="bom-sku-link" onclick="openProductQuickCard(${idx})" title="คลิกเปิดการ์ดข้อมูลสินค้า: ${escapeHtml(name)}">
+                                    ${escapeHtml(sku)}
+                                </span>
+                            </div>
+                            <div style="font-size: 13px; font-weight: 600; color: #1e293b; margin-top: 3px; line-height: 1.35; cursor: pointer;" onclick="openProductQuickCard(${idx})" title="${escapeHtml(name)}">
+                                ${escapeHtml(name)}
+                            </div>
+                        </td>
+                        <td style="text-align: center; padding: 10px 8px; vertical-align: middle;">
+                            <span style="display: inline-block; background: #f1f5f9; color: #0f172a; font-weight: 700; font-size: 12.5px; padding: 3px 8px; border-radius: 6px; border: 1px solid #e2e8f0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">
+                                ${reqQty} <span style="font-size: 11px; font-weight: 500; color: #64748b; font-family: inherit;">${escapeHtml(unit)}</span>
                             </span>
-                            ${isShort ? `<div style="font-size: 10.5px; color: #dc2626; font-weight: 600; margin-top: 2px;">⚠️ ขาด ${(reqQty * simulateQty) - stock} ${escapeHtml(unit)}</div>` : ''}
                         </td>
-                        <td style="text-align: center; font-weight: 700; color: #1e293b; padding: 8px 6px; font-size: 13.5px;">${reqQty}</td>
-                        <td style="text-align: center; padding: 8px;">${stockBadge}</td>
-                        <td style="text-align: right; color: #475569; padding: 8px; font-weight: 600;">฿ ${cost.toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
-                        <td style="text-align: right; color: #059669; font-weight: 700; padding: 8px 12px;">฿ ${(Number(it.unit_price) || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 })}</td>
+                        <td style="text-align: center; padding: 10px 8px; vertical-align: middle;">
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                ${stockBadge}
+                                ${shortageBadge}
+                            </div>
+                        </td>
+                        <td style="text-align: right; color: #475569; padding: 10px 10px; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px; vertical-align: middle;">
+                            ฿ ${cost.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </td>
+                        <td style="text-align: right; color: #0f172a; font-weight: 700; padding: 10px 14px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px; vertical-align: middle;">
+                            ฿ ${retail.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </td>
                     </tr>
                 `;
             }).join('');
 
-            // 4. Update Summary
+            // 4. Update Financial KPI Summary Bar
             const price = Number(activeModalSet.selling_price) || 0;
             const profit = price - totalCost;
             const marginPct = price > 0 ? ((profit / price) * 100).toFixed(1) : 0;
 
-            document.getElementById('bomCostSummary').textContent = `฿ ${totalCost.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
-            document.getElementById('bomMarginSummary').textContent = `กำไร: ${marginPct}% (฿${profit.toLocaleString('th-TH', { minimumFractionDigits: 2 })})`;
-            document.getElementById('bomPriceSummary').textContent = `฿ ${price.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+            document.getElementById('bomCostSummary').textContent = `฿ ${totalCost.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            const retailEl = document.getElementById('bomRetailSummary');
+            if (retailEl) retailEl.textContent = `฿ ${totalRetail.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('bomPriceSummary').textContent = `฿ ${price.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('bomMarginSummary').textContent = `${marginPct}% (฿${profit.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`;
         }
 
         function updateBuildSimulation(val) {
@@ -1197,14 +1369,14 @@
 
             const badge = document.getElementById('quickCardStockBadge');
             if (stock <= 0) {
-                badge.className = 'stock-pill-badge stock-pill-out';
-                badge.textContent = `🔴 หมดสต็อก (0 ${unit})`;
+                badge.className = 'corp-badge corp-badge-out';
+                badge.innerHTML = `<span class="corp-dot corp-dot-out"></span>หมดสต็อก (0 ${escapeHtml(unit)})`;
             } else if (stock <= minStock) {
-                badge.className = 'stock-pill-badge stock-pill-low';
-                badge.textContent = `🟡 ใกล้หมด (${stock} ${unit})`;
+                badge.className = 'corp-badge corp-badge-low';
+                badge.innerHTML = `<span class="corp-dot corp-dot-low"></span>ใกล้หมด (${stock} ${escapeHtml(unit)})`;
             } else {
-                badge.className = 'stock-pill-badge stock-pill-ok';
-                badge.textContent = `🟢 พร้อมจัด (${stock} ${unit})`;
+                badge.className = 'corp-badge corp-badge-ok';
+                badge.innerHTML = `<span class="corp-dot corp-dot-ok"></span>พร้อมจัด (${stock} ${escapeHtml(unit)})`;
             }
 
             document.getElementById('quickCardMinStock').textContent = `${minStock} ${unit}`;
@@ -1229,88 +1401,319 @@
             if (!activeModalSet) return;
             const s = activeModalSet;
             const simQty = Math.max(1, parseInt(document.getElementById('bomSimulateQtyInput')?.value, 10) || 1);
-            const printWin = window.open('', '_blank', 'width=850,height=950');
+            const unitSellingPrice = Number(s.selling_price) || 0;
+            const totalSellingPrice = unitSellingPrice * simQty;
+            const printWin = window.open('', '_blank', 'width=920,height=1000');
+
+            let totalRefCost = 0;
+            let totalItemPieces = 0;
 
             const rowsHtml = (s.items || []).map((it, idx) => {
-                const totalReq = (Number(it.quantity) || 1) * simQty;
+                const reqQty = Number(it.quantity) || 1;
+                const totalReq = reqQty * simQty;
+                totalItemPieces += totalReq;
+                const unitCost = Number(it.unit_cost) || 0;
+                const lineRefCost = unitCost * totalReq;
+                totalRefCost += lineRefCost;
+
+                const sku = it.product_code || '-';
+                const name = it.product_real_name || it.item_name || '-';
+                const unit = it.product_unit || 'ชิ้น';
+                const img = it.product_image || '/assets/images/default-hamper.png';
+                const note = it.product_desc || it.notes || '';
+
                 return `
                     <tr>
-                        <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: center; font-size: 15px;">&#9633;</td>
-                        <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: center;">${idx + 1}</td>
-                        <td style="border: 1px solid #cbd5e1; padding: 8px; font-family: monospace; font-weight: bold; color: #7D0A0A;">${escapeHtml(it.product_code || '-')}</td>
-                        <td style="border: 1px solid #cbd5e1; padding: 8px;">
-                            <strong>${escapeHtml(it.item_name)}</strong>
-                            ${it.notes ? `<div style="font-size: 11px; color: #64748b;">${escapeHtml(it.notes)}</div>` : ''}
+                        <td style="text-align: center; padding: 4px 2px; vertical-align: middle;">
+                            <div style="width: 14px; height: 14px; border: 1.5px solid #475569; margin: 0 auto; background: #fff;"></div>
                         </td>
-                        <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: center; font-weight: bold; font-size: 14px;">${totalReq} ${escapeHtml(it.product_unit || 'ชิ้น')}</td>
-                        <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: center;">${it.current_stock !== null ? it.current_stock : '-'}</td>
+                        <td style="text-align: center; color: #475569; font-weight: 600; padding: 4px 2px; font-size: 11px; vertical-align: middle;">${idx + 1}</td>
+                        <td style="text-align: center; padding: 3px; vertical-align: middle;">
+                            <img src="${img}" alt="${escapeHtml(name)}" style="width: 38px; height: 38px; object-fit: cover; border: 1px solid #cbd5e1; background: #fff; display: block; margin: 0 auto;" onerror="this.onerror=null; this.src='/assets/images/default-hamper.png';">
+                        </td>
+                        <td style="text-align: center; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: 700; color: #7D0A0A; padding: 4px 6px; font-size: 11.5px; white-space: nowrap; vertical-align: middle;">
+                            ${escapeHtml(sku)}
+                        </td>
+                        <td style="padding: 4px 8px; vertical-align: middle;">
+                            <div style="font-size: 11.5px; font-weight: 700; color: #0f172a; line-height: 1.25;">${escapeHtml(name)}</div>
+                            ${note ? `<div style="font-size: 9.5px; color: #64748b; margin-top: 1px; line-height: 1.2;">${escapeHtml(note)}</div>` : ''}
+                        </td>
+                        <td style="text-align: center; padding: 4px 6px; white-space: nowrap; vertical-align: middle;">
+                            <div style="font-weight: 800; font-size: 12px; color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">
+                                ${totalReq} <span style="font-size: 10px; font-weight: 600; color: #475569;">${escapeHtml(unit)}</span>
+                            </div>
+                            <div style="font-size: 9px; color: #64748b; margin-top: 1px;">(${reqQty} ${escapeHtml(unit)}/ชุด)</div>
+                        </td>
+                        <td style="text-align: right; color: #0f172a; padding: 4px 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11.5px; white-space: nowrap; vertical-align: middle;">
+                            <div style="font-weight: 700;">฿ ${lineRefCost.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                            <div style="font-size: 9px; color: #64748b;">(@ ฿${unitCost.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</div>
+                        </td>
+                        <td style="text-align: center; padding: 4px 6px; vertical-align: middle;">
+                            <div style="font-size: 10.5px; color: #94a3b8; font-family: monospace; letter-spacing: 1px; text-align: left; padding-left: 6px;">
+                                ฿ ....................
+                            </div>
+                        </td>
                     </tr>
                 `;
             }).join('');
+
+            const nowStr = new Date().toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'medium' });
+            const workOrderNo = `WO-${escapeHtml(s.code)}-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}`;
+
+            const orderTotalDisplay = simQty > 1
+                ? `${simQty} ชุด (@ ฿${unitSellingPrice.toLocaleString('th-TH', { minimumFractionDigits: 0 })} = ฿${totalSellingPrice.toLocaleString('th-TH', { minimumFractionDigits: 0 })})`
+                : `1 ชุด (@ ฿${unitSellingPrice.toLocaleString('th-TH', { minimumFractionDigits: 0 })})`;
 
             const html = `
                 <!DOCTYPE html>
                 <html lang="th">
                 <head>
                     <meta charset="UTF-8">
-                    <title>ใบสั่งประกอบกระเช้า - ${escapeHtml(s.code)}</title>
+                    <title>ใบหยิบสินค้าและประกอบกระเช้า (PICKING LIST) - ${escapeHtml(s.code)}</title>
                     <style>
-                        body { font-family: 'Prompt', 'Inter', sans-serif; padding: 25px; color: #0f172a; margin: 0; }
-                        h1 { margin: 0; font-size: 20px; color: #7D0A0A; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-                        th { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 9px; text-align: left; }
-                        .meta-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin-top: 14px; display: flex; justify-content: space-between; }
-                        @media print { button { display: none; } }
+                        @page {
+                            size: A4 portrait;
+                            margin: 7mm 8mm 7mm 8mm;
+                        }
+                        * {
+                            box-sizing: border-box;
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+                        body {
+                            font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                            font-size: 11px;
+                            color: #0f172a;
+                            background: #ffffff;
+                            margin: 0;
+                            padding: 0;
+                            line-height: 1.3;
+                        }
+                        .page-container {
+                            width: 100%;
+                            max-width: 210mm;
+                            margin: 0 auto;
+                        }
+                        .btn-print {
+                            background: #15803d;
+                            color: #ffffff;
+                            border: 1px solid #166534;
+                            padding: 6px 14px;
+                            font-size: 12px;
+                            font-weight: 700;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 5px;
+                            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+                        }
+                        .btn-close {
+                            background: #ffffff;
+                            color: #475569;
+                            border: 1px solid #cbd5e1;
+                            padding: 6px 12px;
+                            font-size: 12px;
+                            font-weight: 600;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 4px;
+                        }
+                        @media print {
+                            .no-print { display: none !important; }
+                            body { padding: 0 !important; }
+                        }
+                        /* Header */
+                        .header-row {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            border-bottom: 1.5px solid #0f172a;
+                            padding-bottom: 6px;
+                            margin-bottom: 6px;
+                        }
+                        .brand-title {
+                            font-size: 14.5px;
+                            font-weight: 800;
+                            color: #0f172a;
+                            margin: 0;
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                        }
+                        .doc-title {
+                            font-size: 14.5px;
+                            font-weight: 800;
+                            color: #0f172a;
+                            text-align: right;
+                            margin: 0;
+                        }
+                        /* 2-Column Key-Value Spec Box */
+                        .spec-table-box {
+                            border: 1px solid #cbd5e1;
+                            margin-bottom: 8px;
+                            display: flex;
+                            align-items: stretch;
+                            background: #ffffff;
+                        }
+                        .spec-thumb-col {
+                            width: 82px;
+                            padding: 6px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            border-right: 1px solid #cbd5e1;
+                            background: #f8fafc;
+                            flex-shrink: 0;
+                        }
+                        .hamper-thumb {
+                            width: 70px;
+                            height: 70px;
+                            object-fit: cover;
+                            border: 1px solid #cbd5e1;
+                            background: #ffffff;
+                        }
+                        .spec-info-grid {
+                            flex-grow: 1;
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 3px 14px;
+                            padding: 6px 12px;
+                            font-size: 10.5px;
+                            align-content: center;
+                        }
+                        /* Table: Corporate Hairline Grid */
+                        table.slip-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-size: 10.5px;
+                            margin-bottom: 6px;
+                            border: 1px solid #94a3b8;
+                        }
+                        table.slip-table th {
+                            background: #f1f5f9;
+                            border: 1px solid #94a3b8;
+                            color: #0f172a;
+                            font-weight: 700;
+                            padding: 5px 4px;
+                            font-size: 10.5px;
+                        }
+                        table.slip-table td {
+                            border: 1px solid #cbd5e1;
+                        }
+                        table.slip-table tr:nth-child(even) td {
+                            background: #fafbfc;
+                        }
                     </style>
                 </head>
                 <body>
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #7D0A0A; padding-bottom: 12px;">
-                        <div>
-                            <h1>ใบสั่งประกอบและหยิบของกระเช้า (Hamper Packing Slip)</h1>
-                            <div style="font-size: 12.5px; color: #64748b; margin-top: 3px;">MAM DESIGN AND SERVICE - ERP Inventory & Production</div>
+                    <div class="page-container">
+                        <!-- Header -->
+                        <div class="header-row">
+                            <div>
+                                <h1 class="brand-title">
+                                    <img src="/assets/images/mam-logo.png" alt="MAM" style="height: 22px; width: auto; object-fit: contain;" onerror="this.style.display='none'">
+                                    <span>บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</span>
+                                </h1>
+                                <div style="font-size: 9.5px; color: #475569; margin-top: 1px; letter-spacing: 0.2px;">MAM DESIGN AND SERVICE CO., LTD. &bull; ERP INVENTORY &amp; PRODUCTION</div>
+                            </div>
+                            <div>
+                                <div class="doc-title">ใบหยิบสินค้าและประกอบกระเช้า (PICKING LIST)</div>
+                                <div style="font-size: 9.5px; color: #475569; text-align: right; margin-top: 1px;">
+                                    <strong>เลขที่สั่งงาน:</strong> <span style="font-family: monospace; font-weight: 700; color: #0f172a;">${workOrderNo}</span> | พิมพ์เมื่อ: ${nowStr}
+                                </div>
+                            </div>
                         </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 17px; font-weight: 800; color: #7D0A0A; font-family: monospace;">[ ${escapeHtml(s.code)} ]</div>
-                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}</div>
+
+                        <!-- 2-Column Key-Value Spec Box -->
+                        <div class="spec-table-box">
+                            <div class="spec-thumb-col">
+                                <img src="${s.image_url || '/assets/images/default-hamper.png'}" class="hamper-thumb" alt="${escapeHtml(s.name)}" onerror="this.onerror=null; this.src='/assets/images/default-hamper.png';">
+                            </div>
+                            <div class="spec-info-grid">
+                                <div><strong style="color:#475569;">รหัสชุดกระเช้า:</strong> <span style="font-family: monospace; font-weight: 800; color: #7D0A0A;">${escapeHtml(s.code)}</span></div>
+                                <div><strong style="color:#475569;">ยอดสั่งผลิต:</strong> <span style="font-weight: 800; color: #0f172a;">${orderTotalDisplay}</span></div>
+
+                                <div><strong style="color:#475569;">ชื่อชุดของขวัญ:</strong> <span style="font-weight: 700; color: #0f172a;">${escapeHtml(s.name)}</span> <span style="color:#64748b;">(${escapeHtml(s.theme || 'มาตรฐาน')})</span></div>
+                                <div><strong style="color:#475569;">รายการในชุด:</strong> <span style="font-weight: 700; color: #0f172a;">${(s.items || []).length} รายการ (รวม ${totalItemPieces} ชิ้น)</span></div>
+
+                                <div><strong style="color:#475569;">ภาชนะหลัก:</strong> <span style="color:#0f172a;">${escapeHtml(s.packaging_desc || '-')}</span></div>
+                                <div><strong style="color:#475569;">ใบสั่งขาย/ลูกค้า:</strong> <span style="color:#94a3b8;">___________________________________________</span></div>
+
+                                <div><strong style="color:#475569;">การตกแต่ง:</strong> <span style="color:#0f172a;">${escapeHtml(s.ribbon_desc || '-')}</span></div>
+                                <div><strong style="color:#475569;">วันที่กำหนดส่ง:</strong> <span style="color:#94a3b8;">_______ / _______ / 2026</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Table: Visual Picking & Sourcing List -->
+                        <table class="slip-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 26px; text-align: center;">เช็ค</th>
+                                    <th style="width: 22px; text-align: center;">#</th>
+                                    <th style="width: 44px; text-align: center;">รูปถ่าย</th>
+                                    <th style="width: 78px; text-align: center;">รหัส SKU</th>
+                                    <th style="text-align: left;">รายการวัตถุดิบ / ขนม / บรรจุภัณฑ์</th>
+                                    <th style="width: 86px; text-align: center;">ต้องหยิบ/ซื้อ</th>
+                                    <th style="width: 90px; text-align: right;">ทุนอ้างอิง</th>
+                                    <th style="width: 105px; text-align: center;">ราคาซื้อจริง (จดมือ)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rowsHtml}
+                            </tbody>
+                            <tfoot>
+                                <tr style="background: #f1f5f9; font-weight: 700; border-top: 1.5px solid #0f172a;">
+                                    <td colspan="5" style="padding: 5px 8px; text-align: right; color: #0f172a; font-size: 10.5px;">
+                                        รวมทั้งสิ้น ${(s.items || []).length} รายการ (คำนวณตามยอดสั่งทำ ${simQty} ชุด):
+                                    </td>
+                                    <td style="text-align: center; padding: 5px; font-size: 11px; font-weight: 800; color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">
+                                        รวม ${totalItemPieces} ชิ้น
+                                    </td>
+                                    <td style="text-align: right; padding: 5px 8px; font-size: 11.5px; font-weight: 800; color: #0f172a; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">
+                                        ฿ ${totalRefCost.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </td>
+                                    <td style="text-align: center; padding: 5px 6px; font-size: 9.5px; color: #475569;">
+                                        รวมจ่ายจริง: ฿ ..........
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <!-- Minimal Notes Strip -->
+                        <div style="margin-top: 6px; padding: 6px 10px; border: 1px solid #cbd5e1; font-size: 10px; color: #334155; background: #ffffff; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 4px; flex-grow: 1;">
+                                <strong>หมายเหตุเพิ่มเติม:</strong>
+                                <span style="color: #cbd5e1; letter-spacing: 1px;">____________________________________________________________________________________________________</span>
+                            </div>
+                        </div>
+
+                        <!-- Footer Meta -->
+                        <div style="margin-top: 5px; display: flex; justify-content: space-between; font-size: 9px; color: #64748b;">
+                            <div>MAM DESIGN AND SERVICE CO., LTD. &bull; ERP WAREHOUSE &amp; PRODUCTION SYSTEM</div>
+                            <div>พิมพ์เมื่อ: ${nowStr}</div>
+                        </div>
+
+                        <!-- Bottom-Right Floating Action Controls (Hidden when Print) -->
+                        <div class="no-print" style="position: fixed; bottom: 20px; right: 24px; z-index: 9999; display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(6px); padding: 6px 8px; border-radius: 8px; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.18); border: 1px solid #cbd5e1;">
+                            <button type="button" class="btn-close" onclick="window.close()" title="ปิดหน้าต่างนี้">
+                                <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                <span>ปิดหน้าต่าง</span>
+                            </button>
+                            <button type="button" class="btn-print" onclick="window.print()" title="สั่งพิมพ์เอกสาร A4">
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                <span>สั่งพิมพ์เอกสาร</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div class="meta-box">
-                        <div>
-                            <div style="font-size: 15px; font-weight: 700; color: #0f172a;">${escapeHtml(s.name)}</div>
-                            <div style="font-size: 12px; color: #475569; margin-top: 3px;"><strong>ภาชนะ/กระเช้า:</strong> ${escapeHtml(s.packaging_desc || '-')}</div>
-                            <div style="font-size: 12px; color: #475569; margin-top: 2px;"><strong>โบว์/ของตกแต่ง:</strong> ${escapeHtml(s.ribbon_desc || '-')}</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 13px; color: #0369a1; font-weight: 700;">จำนวนสั่งประกอบ: ${simQty} ชุด</div>
-                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">รายการส่วนประกอบ: ${(s.items || []).length} ชนิด</div>
-                            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">ราคาชุดละ: ฿ ${Number(s.selling_price || 0).toLocaleString()}</div>
-                        </div>
-                    </div>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 45px; text-align: center;">เช็ค</th>
-                                <th style="width: 35px; text-align: center;">#</th>
-                                <th style="width: 95px; text-align: center;">รหัส SKU</th>
-                                <th>รายการวัตถุดิบ / ขนม / บรรจุภัณฑ์</th>
-                                <th style="width: 85px; text-align: center;">จำนวนที่ใช้</th>
-                                <th style="width: 85px; text-align: center;">สต็อกคลัง</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rowsHtml}
-                        </tbody>
-                    </table>
-
-                    <div style="margin-top: 35px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; font-size: 12px; text-align: center;">
-                        <div style="border-top: 1px solid #cbd5e1; padding-top: 8px;">ผู้หยิบของจากคลัง<br/><br/>______________________</div>
-                        <div style="border-top: 1px solid #cbd5e1; padding-top: 8px;">ผู้จัดประกอบและผูกโบว์<br/><br/>______________________</div>
-                        <div style="border-top: 1px solid #cbd5e1; padding-top: 8px;">ผู้ตรวจสอบ QC และส่งมอบ<br/><br/>______________________</div>
-                    </div>
-
-                    <script>window.onload = function() { window.print(); };<\/script>
+                    <script>
+                        window.onload = function() {
+                            // Focus window and ready for print
+                        };
+                    <\/script>
                 </body>
                 </html>
             `;
@@ -1330,7 +1733,7 @@
             const origText = btn ? btn.innerHTML : '';
             if (btn) {
                 btn.disabled = true;
-                btn.innerHTML = '<span>⏳ กำลังตัดสต็อก...</span>';
+                btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> <span>กำลังตัดสต็อก...</span></span>';
             }
 
             try {

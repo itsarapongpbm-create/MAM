@@ -35,10 +35,30 @@ document.addEventListener('DOMContentLoaded', () => {
     loadVendors();
 });
 
+function updateSignatureDateText(dateStr) {
+    const sigDateEl = document.getElementById('signatureDateText');
+    if (!sigDateEl) return;
+    if (!dateStr) {
+        sigDateEl.textContent = 'วันที่ ........../........../..........';
+        return;
+    }
+    const parts = String(dateStr).slice(0, 10).split('-');
+    if (parts.length === 3) {
+        const y = parseInt(parts[0], 10);
+        const m = parts[1];
+        const d = parts[2];
+        const thaiYear = y > 2400 ? y : y + 543;
+        sigDateEl.textContent = `วันที่ ${d}/${m}/${thaiYear}`;
+    } else {
+        sigDateEl.textContent = `วันที่ ${dateStr}`;
+    }
+}
+
 function initWhtEditor() {
     const today = toLocalIsoDate(new Date());
     const docDate = document.getElementById('docDate');
     if (docDate && !docDate.value) docDate.value = today;
+    updateSignatureDateText(docDate?.value || today);
 
     // เริ่มต้นแถวเงินได้ 1 รายการ
     if (whtState.items.length === 0) {
@@ -75,6 +95,7 @@ function setupEventListeners() {
     // เปลี่ยนวันที่ออกเอกสาร → ซิงค์วันจ่ายของรายการ และตัวอย่างเลขที่เอกสาร
     document.getElementById('docDate')?.addEventListener('change', () => {
         const val = document.getElementById('docDate').value;
+        updateSignatureDateText(val);
         if (whtState.mode === 'new') {
             previewDocNumber();
             whtState.items.forEach(it => { if (!it.payment_date) it.payment_date = val; });
@@ -782,7 +803,7 @@ function updateTaxIdHint(digits) {
         hint.textContent = '✓ เลขประจำตัวถูกต้อง';
         hint.classList.add('is-valid');
     } else {
-        hint.textContent = '⚠ เลขหลักสุดท้ายไม่ตรง โปรดตรวจสอบอีกครั้ง';
+        hint.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>เลขหลักสุดท้ายไม่ตรง โปรดตรวจสอบอีกครั้ง';
         hint.classList.add('is-invalid');
     }
 }
@@ -860,6 +881,7 @@ async function handleWhtSubmit(targetStatus = 'COMPLETED') {
         payment_date: whtState.items[0]?.payment_date || document.getElementById('docDate')?.value,
         income_amount: totalIncome,
         tax_rate: whtState.items[0]?.tax_rate || 3,
+        tax_amount: totalTax,
         tax_condition: taxCondition,
         ref_expense_number: document.getElementById('refExpenseNumber')?.value.trim() || '',
         status: targetStatus,
@@ -924,6 +946,7 @@ function fillFormFromData(cert) {
     setVal('docNumber', cert.doc_number);
     setVal('bookNumber', cert.book_number || '01');
     setVal('docDate', cert.doc_date);
+    updateSignatureDateText(cert.doc_date);
     setVal('sequenceNo', cert.sequence_no || '1');
     setVal('payeeTaxId', cert.payee_tax_id);
     renderTaxBoxes(cert.payee_tax_id, 'payeeTaxBoxes');
@@ -1129,7 +1152,7 @@ function thaiBahtText(amount) {
 
     const [integerPart, fractionPart] = amount.toFixed(2).split('.');
     const bahtWords = convertInteger(integerPart);
-    const bahtText = bahtWords ? `${bahtWords}บาท` : '';
+    const bahtText = bahtWords ? `${bahtWords}บาท` : 'ศูนย์บาท';
     const satangText = fractionPart === '00' ? 'ถ้วน' : `${convertGroup(fractionPart)}สตางค์`;
 
     return bahtText + satangText;

@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 
         if (search && search.trim()) {
             const term = `%${search.trim()}%`;
-            conditions.push('(name ILIKE ? OR code ILIKE ? OR description ILIKE ?)');
+            conditions.push('(name LIKE ? OR code LIKE ? OR description LIKE ?)');
             params.push(term, term, term);
         }
 

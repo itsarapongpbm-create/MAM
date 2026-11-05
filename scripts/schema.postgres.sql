@@ -4,6 +4,9 @@
 -- ==============================================================================
 
 -- Drop existing tables in reverse dependency order if recreating
+DROP TABLE IF EXISTS internal_transfers CASCADE;
+DROP TABLE IF EXISTS bank_transactions CASCADE;
+DROP TABLE IF EXISTS bank_accounts CASCADE;
 DROP TABLE IF EXISTS email_campaign_logs CASCADE;
 DROP TABLE IF EXISTS email_inbox_cache CASCADE;
 DROP TABLE IF EXISTS gift_set_items CASCADE;
@@ -36,6 +39,7 @@ CREATE TABLE companies (
     address TEXT NOT NULL,
     phone VARCHAR(50),
     email VARCHAR(100),
+    website VARCHAR(255),
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -297,8 +301,8 @@ CREATE TABLE withholding_taxes (
     doc_date VARCHAR(20) NOT NULL,
     form_type VARCHAR(20) DEFAULT 'ภ.ง.ด.53',
     sequence_no VARCHAR(20) DEFAULT '1',
-    payer_tax_id VARCHAR(20) NOT NULL,
-    payer_name VARCHAR(255) NOT NULL,
+    payer_tax_id VARCHAR(20) NOT NULL DEFAULT '0105565160161',
+    payer_name VARCHAR(255) NOT NULL DEFAULT 'บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด',
     payer_address TEXT NOT NULL,
     payee_type VARCHAR(20) DEFAULT 'juristic',
     payee_tax_id VARCHAR(20) NOT NULL,
@@ -311,7 +315,11 @@ CREATE TABLE withholding_taxes (
     tax_amount NUMERIC(14, 2) NOT NULL DEFAULT 0,
     tax_condition VARCHAR(50) DEFAULT 'withheld',
     ref_expense_number VARCHAR(50),
+    items_json TEXT,
     status VARCHAR(20) DEFAULT 'COMPLETED',
+    cancelled_at TIMESTAMPTZ,
+    cancel_reason TEXT,
+    updated_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -359,6 +367,68 @@ CREATE TABLE email_campaign_logs (
     file_name VARCHAR(255),
     sent_by VARCHAR(100),
     sent_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 18. ตารางบัญชีธนาคารและเงินสด (Bank Accounts & Petty Cash)
+CREATE TABLE bank_accounts (
+    id SERIAL PRIMARY KEY,
+    company_id INTEGER NOT NULL DEFAULT 1 REFERENCES companies(id) ON DELETE RESTRICT,
+    account_code VARCHAR(50) UNIQUE,
+    account_name VARCHAR(255) NOT NULL,
+    bank_code VARCHAR(30) NOT NULL,
+    account_number VARCHAR(50),
+    branch_name VARCHAR(150),
+    account_type VARCHAR(30) DEFAULT 'SAVINGS' CHECK(account_type IN ('SAVINGS', 'CURRENT', 'PETTY_CASH', 'PROMPTPAY', 'OTHER')),
+    opening_balance NUMERIC(14, 2) DEFAULT 0,
+    current_balance NUMERIC(14, 2) DEFAULT 0,
+    promptpay_id VARCHAR(50),
+    is_default SMALLINT DEFAULT 0,
+    color VARCHAR(30),
+    status VARCHAR(20) DEFAULT 'ACTIVE' CHECK(status IN ('ACTIVE', 'INACTIVE')),
+    notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 19. ตารางรายการเคลื่อนไหวเงินเข้า-ออก (Bank & Cash Transactions Ledger)
+CREATE TABLE bank_transactions (
+    id SERIAL PRIMARY KEY,
+    company_id INTEGER NOT NULL DEFAULT 1 REFERENCES companies(id) ON DELETE RESTRICT,
+    account_id INTEGER NOT NULL REFERENCES bank_accounts(id) ON DELETE CASCADE,
+    transaction_date VARCHAR(20) NOT NULL,
+    transaction_time VARCHAR(20),
+    type VARCHAR(30) NOT NULL CHECK(type IN ('INCOME', 'EXPENSE', 'TRANSFER_IN', 'TRANSFER_OUT', 'ADJUST')),
+    amount NUMERIC(14, 2) NOT NULL DEFAULT 0,
+    fee NUMERIC(14, 2) DEFAULT 0,
+    balance_after NUMERIC(14, 2) DEFAULT 0,
+    channel VARCHAR(30) DEFAULT 'TRANSFER',
+    ref_doc_type VARCHAR(30),
+    ref_doc_id INTEGER,
+    ref_number VARCHAR(100),
+    payer_payee_name VARCHAR(255),
+    description TEXT,
+    slip_url TEXT,
+    is_reconciled SMALLINT DEFAULT 0,
+    reconciled_at TIMESTAMPTZ,
+    created_by VARCHAR(100) DEFAULT 'Admin',
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 20. ตารางบันทึกการโอนเงินระหว่างบัญชีภายใน (Internal Fund Transfers)
+CREATE TABLE internal_transfers (
+    id SERIAL PRIMARY KEY,
+    company_id INTEGER NOT NULL DEFAULT 1 REFERENCES companies(id) ON DELETE RESTRICT,
+    transfer_number VARCHAR(50) UNIQUE NOT NULL,
+    from_account_id INTEGER NOT NULL REFERENCES bank_accounts(id) ON DELETE CASCADE,
+    to_account_id INTEGER NOT NULL REFERENCES bank_accounts(id) ON DELETE CASCADE,
+    amount NUMERIC(14, 2) NOT NULL,
+    fee NUMERIC(14, 2) DEFAULT 0,
+    transfer_date VARCHAR(20) NOT NULL,
+    transfer_time VARCHAR(20),
+    slip_url TEXT,
+    note TEXT,
+    created_by VARCHAR(100) DEFAULT 'Admin',
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Indexes for optimal performance
