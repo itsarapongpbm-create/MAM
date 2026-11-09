@@ -476,6 +476,29 @@ async function createTables(db) {
             FOREIGN KEY(to_account_id) REFERENCES bank_accounts(id)
         );
     `);
+
+    // 21. ตารางใบสั่งจัดกระเช้าและรวมซื้อวัตถุดิบ (Hamper Batch Orders & Consolidated Sourcing)
+    await db.runAsync(`
+        CREATE TABLE IF NOT EXISTS hamper_batch_orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_id INTEGER NOT NULL DEFAULT 1,
+            order_number TEXT UNIQUE NOT NULL,
+            customer_name TEXT,
+            event_name TEXT,
+            order_date TEXT,
+            due_date TEXT,
+            status TEXT DEFAULT 'PENDING',
+            total_hampers INTEGER DEFAULT 0,
+            total_sales REAL DEFAULT 0,
+            total_cost REAL DEFAULT 0,
+            items_json TEXT,
+            sourcing_json TEXT,
+            remarks TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(company_id) REFERENCES companies(id)
+        );
+    `);
 }
 
 module.exports = {

@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ใบออเดอร์ & รวมซื้อวัตถุดิบกระเช้า (BOM Sourcing) | MAM DESIGN AND SERVICE</title>
+    <link rel="icon" href="../assets/images/mam-logo.png" type="image/png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../assets/css/auth.css?v=30">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=30">
+    <link rel="stylesheet" href="../assets/css/inventory.css">
+    <link rel="stylesheet" href="../assets/css/theme.css?v=31">
+
+    <style>
+        :root {
+            --mam-wine: #7D0A0A;
+            --mam-wine-dark: #5b0707;
+            --mam-wine-light: #fff1f2;
+            --mam-wine-border: #fecdd3;
+            --slate-900: #0f172a;
+            --slate-700: #334155;
+            --slate-500: #64748b;
+            --slate-300: #cbd5e1;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+        }
+
+        body {
+            font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: var(--slate-900);
+            margin: 0;
+            padding: 0;
+        }
+
+        .tab-nav-bar {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .tab-btn:hover {
+            color: var(--mam-wine);
+        }
+
+        .tab-btn.active {
+            color: var(--mam-wine);
+            font-weight: 700;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--mam-wine);
+        }
+
+        .corp-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+        }
+
+        .corp-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--slate-900);
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        @media (max-width: 1024px) {
+            .form-grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .form-grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--slate-700);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            height: 38px;
+            padding: 0 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 13.5px;
+            color: var(--slate-900);
+            background: #ffffff;
+            outline: none;
+            box-sizing: border-box;
+            font-family: inherit;
+            transition: border-color 0.15s ease;
+        }
+
+        .form-textarea {
+            height: 70px;
+            padding: 8px 12px;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--mam-wine);
+            box-shadow: 0 0 0 2px rgba(125, 10, 10, 0.1);
+        }
+
+        /* Order Hampers Table */
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .order-table th {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--slate-700);
+            font-size: 12px;
+        }
+
+        .order-table td {
+            border-bottom: 1px solid #f1f5f9;
+            padding: 10px 12px;
+            vertical-align: middle;
+        }
+
+        .order-table tr:hover td {
+            background: #fafafa;
+        }
+
+        /* Stepper input */
+        .stepper-wrap {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .stepper-btn {
+            width: 28px;
+            height: 32px;
+            background: #f8fafc;
+            border: none;
+            color: var(--slate-700);
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            transition: background 0.15s ease;
+        }
+
+        .stepper-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .stepper-input {
+            width: 52px;
+            height: 32px;
+            border: none;
+            text-align: center;
+            font-weight: 700;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 13.5px;
+            color: var(--slate-900);
+            outline: none;
+        }
+
+        /* Corporate Status Badges */
+        .corp-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 11.5px;
+            font-weight: 600;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .corp-badge-green {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .corp-badge-red {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+        }
+
+        .corp-badge-slate {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .corp-badge-blue {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
+
+        .corp-badge-wine {
+            background: #fff1f2;
+            color: #7D0A0A;
+            border: 1px solid #fecdd3;
+        }
+
+        /* KPI Metric Banner */
+        .metric-banner {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .metric-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            padding: 14px 18px;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+        }
+
+        .metric-box-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .metric-box-val {
+            font-size: 20px;
+            font-weight: 800;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            color: var(--slate-900);
+        }
+
+        .metric-box-note {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* Sourcing Hairline Table */
+        .sourcing-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .sourcing-table th {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 8px 10px;
+            font-weight: 700;
+            color: var(--slate-900);
+            font-size: 11.5px;
+            text-align: left;
+        }
+
+        .sourcing-table td {
+            border: 1px solid #e2e8f0;
+            padding: 8px 10px;
+            vertical-align: middle;
+        }
+
+        .sourcing-table tr.row-shortage {
+            background: #fff8f8;
+        }
+
+        .sourcing-table tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Modal Styles */
+        .corp-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .corp-modal-content {
+            background: #ffffff;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 820px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+            overflow: hidden;
+        }
+
+        .corp-modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+        }
+
+        .corp-modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .corp-modal-footer {
+            padding: 14px 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            background: #f8fafc;
+        }
+
+        /* Bottom Floating Dock */
+        .bottom-action-dock {
+            position: sticky;
+            bottom: 20px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(8px);
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
+            z-index: 100;
+            margin-top: 24px;
+        }
+
+        /* Hamper picker card */
+        .picker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 14px;
+            max-height: 55vh;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .picker-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            padding: 12px;
+            background: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .picker-card:hover {
+            border-color: var(--mam-wine);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(125, 10, 10, 0.08);
+        }
+
+        .picker-thumb {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+    <!-- Global Header -->
+    <header class="top-navbar" id="globalTopNavbar">
+        <div class="nav-left">
+            <button class="menu-toggle-btn" id="sidebarToggleBtn" type="button" aria-label="Toggle Sidebar">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <a href="../dashboard/index.html" class="brand-logo" title="MAM DESIGN AND SERVICE">
+                <img src="/assets/images/mam-logo.png" alt="MAM Logo" class="brand-logo-img">
+                <span class="brand-text">MAM DESIGN &amp; SERVICE</span>
+            </a>
+            <div class="nav-breadcrumb">
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-item">สต็อกสินค้า (Inventory)</span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-item active">ใบออเดอร์ &amp; รวมซื้อของ (BOM Sourcing)</span>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <!-- Notification Bell -->
+            <button class="icon-button" id="topbarNotificationBtn" title="การแจ้งเตือน">
+                <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="notification-badge" id="topbarNotificationBadge">3</span>
+            </button>
+
+            <!-- User Menu -->
+            <div class="user-profile-menu">
+                <button class="user-avatar-btn" id="userMenuBtn" type="button" aria-expanded="false" title="โปรไฟล์ผู้ใช้งาน">
+                    <img src="https://ui-avatars.com/api/?name=Itsarapong+Po&background=7D0A0A&color=fff&size=64" alt="User Avatar" class="user-avatar-img" id="topbarUserAvatar">
+                    <span class="user-display-name" id="topbarUserDisplayName">คุณอิศรพงศ์ โพธิ์งาม</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div class="user-dropdown-menu" id="userDropdownContent">
+                    <div class="user-dropdown-header">
+                        <strong id="dropdownUserFullName">Itsarapong P.</strong>
+                        <small id="dropdownUserEmail">itsarapong@mamdesign.co.th</small>
+                    </div>
+                    <a href="/settings/users.html" class="dropdown-item">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>จัดการผู้ใช้งานและสิทธิ์</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="/auth/login.html" class="dropdown-item text-danger" id="topbarLogoutBtn">
+                        <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>ออกจากระบบ (Logout)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar-nav" id="sidebarNav">
+            <nav class="sidebar-menu">
+                <div class="menu-section-title">เมนูหลัก</div>
+                <a href="../dashboard/index.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <rect x="3" y="3" width="7" height="9"></rect>
+                        <rect x="14" y="3" width="7" height="5"></rect>
+                        <rect x="14" y="12" width="7" height="9"></rect>
+                        <rect x="3" y="16" width="7" height="5"></rect>
+                    </svg>
+                    <span>ภาพรวมธุรกิจ</span>
+                </a>
+
+                <!-- Dropdown: เอกสารการขาย -->
+                <div class="menu-dropdown-group" id="salesDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="salesDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            <span>เอกสารการขาย</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../documents/quotations.html" class="submenu-item">
+                            <span>• ใบเสนอราคา</span>
+                        </a>
+                        <a href="../documents/billing-notes.html" class="submenu-item">
+                            <span>• ใบวางบิล</span>
+                        </a>
+                        <a href="../documents/invoices.html" class="submenu-item">
+                            <span>• ใบกำกับภาษี</span>
+                        </a>
+                        <a href="../documents/receipts.html" class="submenu-item">
+                            <span>• ใบเสร็จรับเงิน</span>
+                        </a>
+                        <a href="../documents/cash-sales.html" class="submenu-item">
+                            <span>• ขายสด / บิลเงินสด</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dropdown: จัดซื้อ (Purchases) -->
+                <div class="menu-dropdown-group" id="purchaseDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="purchaseDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <span>จัดซื้อ (Purchases)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../documents/purchase-orders.html" class="submenu-item">
+                            <span>• ใบสั่งซื้อ (PO)</span>
+                        </a>
+                        <a href="../expenses/expenses.html" class="submenu-item">
+                            <span>• ค่าใช้จ่าย (Expenses)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="../withholding-tax/withholding-tax.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>ภาษีหัก ณ ที่จ่าย (50 ทวิ)</span>
+                </a>
+
+                <!-- Dropdown: สต็อกสินค้าและกระเช้า -->
+                <div class="menu-dropdown-group open" id="inventoryDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle active" id="inventoryDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                            <span>สต็อกสินค้า (Inventory)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="inventory.html" class="submenu-item">
+                            <span>• ขนม / โบว์ / ตะกร้า</span>
+                        </a>
+                        <a href="gift-sets.html" class="submenu-item">
+                            <span>• Gift Set ตามกระเช้า</span>
+                        </a>
+                        <a href="gift-set-builder.html" class="submenu-item">
+                            <span>• จัด Gift Set ใหม่</span>
+                        </a>
+                        <a href="gift-set-orders.html" class="submenu-item active">
+                            <span>• ใบออเดอร์ &amp; รวมซื้อของ</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dropdown: สมุดรายชื่อ (Contacts) -->
+                <div class="menu-dropdown-group" id="contactsDropdownGroup">
+                    <button type="button" class="menu-dropdown-toggle" id="contactsDropdownToggle">
+                        <div class="menu-toggle-content">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span>สมุดรายชื่อ (Contacts)</span>
+                        </div>
+                        <svg class="dropdown-chevron" viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.5" fill="none">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div class="menu-dropdown-list">
+                        <a href="../contacts/customers.html" class="submenu-item">
+                            <span>• ลูกค้า (Customers)</span>
+                        </a>
+                        <a href="../contacts/vendors.html" class="submenu-item">
+                            <span>• ผู้ขาย / คู่ค้า (Vendors)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="menu-section-title">การตั้งค่าระบบ</div>
+                <a href="../settings/users.html" class="menu-item">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>จัดการสิทธิ์ผู้ใช้งาน</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Dashboard Content -->
+        <main class="dashboard-content" id="dashboardContent" style="padding: 24px 32px 60px 32px; max-width: 1400px; margin: 0 auto;">
+            <!-- Page Header -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h1 class="page-title" style="margin: 0 0 6px 0; font-size: 24px; font-weight: 800; color: #0f172a;">
+                        ใบออเดอร์ &amp; รวมซื้อวัตถุดิบกระเช้า (BOM Sourcing)
+                    </h1>
+                    <p class="page-subtitle" style="margin: 0; font-size: 13.5px; color: #64748b;">
+                        เลือกรวมหลายกระเช้าในออเดอร์เดียว &bull; ระเบิดสูตร BOM รวมจำนวนวัตถุดิบและขนมที่ต้องซื้อ &bull; หักลบสต็อกคลัง &bull; พิมพ์ใบรวมซื้อของ
+                    </p>
+                </div>
+
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <a href="gift-sets.html" class="btn-secondary" style="height: 38px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; font-weight: 600; font-size: 13px; border-radius: 8px; border: 1px solid #cbd5e1; color: #334155; background: #fff; text-decoration: none;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        <span>แคตตาล็อกกระเช้า</span>
+                    </a>
+                    <button type="button" class="btn-primary" onclick="resetOrderForm()" style="height: 38px; padding: 0 16px; display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; font-weight: 600; font-size: 13.5px; cursor: pointer; color: #fff; background: #7D0A0A; border: none;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span>สร้างออเดอร์ใหม่</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Navigation Bar -->
+            <div class="tab-nav-bar">
+                <button type="button" class="tab-btn active" id="tabBtnOrder" onclick="switchTab('order')">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span>สร้าง / จัดการใบออเดอร์ (Order Workspace)</span>
+                </button>
+                <button type="button" class="tab-btn" id="tabBtnHistory" onclick="switchTab('history')">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>ประวัติใบออเดอร์ทั้งหมด (Order History)</span>
+                    <span id="historyCountBadge" class="corp-badge corp-badge-slate" style="margin-left: 4px; font-size: 11px;">0</span>
+                </button>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- TAB 1: ORDER WORKSPACE & SOURCING -->
+            <!-- ========================================== -->
+            <div id="tabOrderContent">
+                <!-- Section 1: Order Information Header Box -->
+                <div class="corp-card">
+                    <div class="corp-card-title">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="#7D0A0A" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                            <span>ข้อมูลใบสั่งทำ / ออเดอร์ (Order Header)</span>
+                            <span id="activeOrderBadge" class="corp-badge corp-badge-blue">แบบร่างใหม่ (NEW)</span>
+                        </div>
+                        <input type="hidden" id="currentOrderId" value="">
+                    </div>
+
+                    <div class="form-grid-4">
+                        <div class="form-field">
+                            <label class="form-label">เลขที่ใบออเดอร์ *</label>
+                            <div style="display: flex; gap: 6px;">
+                                <input type="text" id="orderNumberInput" class="form-input" style="font-family: monospace; font-weight: 700; color: #7D0A0A;" placeholder="ORD-20261109-001">
+                                <button type="button" onclick="generateNextOrderNumber()" class="btn-secondary" style="height: 38px; padding: 0 10px; font-size: 11.5px; border-radius: 7px; border: 1px solid #cbd5e1; background: #f8fafc; cursor: pointer; white-space: nowrap;" title="สุ่มเลขที่ใหม่">Auto</button>
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="form-label">ชื่อลูกค้า / องค์กร / ผู้ติดต่อ *</label>
+                            <input type="text" id="customerNameInput" class="form-input" placeholder="เช่น บริษัท เอสซีจี แพคเกจจิ้ง จำกัด (มหาชน)">
+                        </div>
+
+                        <div class="form-field">
+                            <label class="form-label">ชื่องาน / แคมเปญ / โครงการ</label>
+                            <input type="text" id="eventNameInput" class="form-input" placeholder="เช่น กระเช้าของขวัญปีใหม่ 2026 (VIP)">
+                        </div>
+
+                        <div class="form-field">
+                            <label class="form-label">สถานะออเดอร์</label>
+                            <select id="orderStatusSelect" class="form-select">
+                                <option value="PENDING">รอยืนยัน / กำลังจัดเตรียม (PENDING)</option>
+                                <option value="CONFIRMED">ยืนยันแล้ว / รอจัดซื้อ (CONFIRMED)</option>
+                                <option value="ASSEMBLED">ประกอบและตัดสต็อกแล้ว (ASSEMBLED)</option>
+                                <option value="CANCELLED">ยกเลิก (CANCELLED)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="form-label">วันที่สั่งทำ (Order Date)</label>
+                            <input type="date" id="orderDateInput" class="form-input">
+                        </div>
+
+                        <div class="form-field">
+                            <label class="form-label">กำหนดส่งมอบ (Due Date)</label>
+                            <input type="date" id="dueDateInput" class="form-input">
+                        </div>
+
+                        <div class="form-field" style="grid-column: span 2;">
+                            <label class="form-label">หมายเหตุการผลิต / ข้อความกำกับ</label>
+                            <input type="text" id="orderRemarksInput" class="form-input" placeholder="เช่น ติดสติกเกอร์การ์ดอวยพร MAM ผูกโบว์สีทองทุกชุด">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Selected Hampers in Order -->
+                <div class="corp-card">
+                    <div class="corp-card-title">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="#7D0A0A" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            <span>ชุดกระเช้าของขวัญที่ลูกค้าสั่งทำ (Ordered Hampers)</span>
+                        </div>
+                        <button type="button" class="btn-primary" onclick="openHamperPickerModal()" style="height: 34px; padding: 0 14px; font-size: 12.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; border-radius: 6px; background: #7D0A0A; border: none; color: #fff; cursor: pointer;">
+                            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>+ เพิ่มชุดกระเช้าลงในออเดอร์</span>
+                        </button>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="order-table" id="selectedHampersTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px; text-align: center;">#</th>
+                                    <th style="width: 50px; text-align: center;">รูป</th>
+                                    <th style="width: 110px;">รหัสชุด</th>
+                                    <th>ชื่อชุดกระเช้าของขวัญ / ธีม</th>
+                                    <th style="width: 130px; text-align: right;">ราคาขายต่อชุด</th>
+                                    <th style="width: 150px; text-align: center;">จำนวนสั่งทำ</th>
+                                    <th style="width: 140px; text-align: right;">ยอดขายรวม</th>
+                                    <th style="width: 60px; text-align: center;">จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="selectedHampersTbody">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 30px; color: #94a3b8;">
+                                        ยังไม่มีชุดกระเช้าในออเดอร์นี้ กรุณากดปุ่ม <strong>"+ เพิ่มชุดกระเช้าลงในออเดอร์"</strong> ด้านบน
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot id="selectedHampersTfoot" style="display: none;">
+                                <tr style="background: #f8fafc; font-weight: 700; border-top: 1.5px solid #cbd5e1;">
+                                    <td colspan="5" style="text-align: right; padding: 10px 14px; color: #334155;">
+                                        รวมยอดสั่งทำกระเช้าทั้งหมด:
+                                    </td>
+                                    <td style="text-align: center; padding: 10px; font-family: monospace; font-size: 15px; color: #7D0A0A;" id="orderHampersTotalQty">
+                                        0 ชุด
+                                    </td>
+                                    <td style="text-align: right; padding: 10px 14px; font-family: monospace; font-size: 15px; color: #0f172a;" id="orderHampersTotalSales">
+                                        ฿ 0.00
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 3: Metric Banner -->
+                <div class="metric-banner" id="sourcingMetricBanner">
+                    <div class="metric-box">
+                        <div class="metric-box-label">จำนวนกระเช้าสั่งทำรวม</div>
+                        <div class="metric-box-val" id="metricTotalHampers" style="color: #7D0A0A;">0 ชุด</div>
+                        <div class="metric-box-note" id="metricDistinctHampers">0 แบบกระเช้า</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-box-label">จำนวนวัตถุดิบ/ขนมที่ต้องใช้รวม</div>
+                        <div class="metric-box-val" id="metricTotalPieces" style="color: #0f172a;">0 ชิ้น</div>
+                        <div class="metric-box-note" id="metricDistinctSKUs">0 รายการ SKU</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-box-label">รายการที่ต้องซื้อเพิ่ม (ขาดสต็อก)</div>
+                        <div class="metric-box-val" id="metricShortageItems" style="color: #b91c1c;">0 รายการ</div>
+                        <div class="metric-box-note" id="metricShortagePieces">ขาด 0 ชิ้น</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-box-label">งบประมาณที่ต้องซื้อเพิ่มรวม</div>
+                        <div class="metric-box-val" id="metricShortageBudget" style="color: #15803d;">฿ 0.00</div>
+                        <div class="metric-box-note">คำนวณจากราคาทุนอ้างอิง</div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Consolidated Sourcing / BOM Aggregation Table -->
+                <div class="corp-card">
+                    <div class="corp-card-title">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="#7D0A0A" stroke-width="2" fill="none"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                            <span>รายการวัตถุดิบรวมที่ต้องหยิบและซื้อ (Consolidated Sourcing &amp; Picking List)</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <label style="font-size: 12px; color: #475569; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="checkbox" id="filterShortageOnly" onchange="renderSourcingTable()">
+                                <span>แสดงเฉพาะรายการที่ต้องซื้อเพิ่ม</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="sourcing-table" id="sourcingTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 32px; text-align: center;">#</th>
+                                    <th style="width: 44px; text-align: center;">รูป</th>
+                                    <th style="width: 86px; text-align: center;">รหัส SKU</th>
+                                    <th>รายการวัตถุดิบ / ขนม / บรรจุภัณฑ์</th>
+                                    <th style="width: 170px;">ใช้ในกระเช้าใดบ้าง</th>
+                                    <th style="width: 90px; text-align: center;">รวมต้องใช้</th>
+                                    <th style="width: 86px; text-align: center;">สต็อกคลัง</th>
+                                    <th style="width: 110px; text-align: center;">ต้องซื้อเพิ่ม</th>
+                                    <th style="width: 96px; text-align: right;">ทุนอ้างอิง</th>
+                                    <th style="width: 110px; text-align: right;">งบซื้อเพิ่ม</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sourcingTbody">
+                                <tr>
+                                    <td colspan="10" style="text-align: center; padding: 35px; color: #94a3b8;">
+                                        เมื่อเลือกกระเช้าในออเดอร์ด้านบนแล้ว ระบบจะระเบิดสูตร BOM และรวมยอดที่ต้องซื้อให้ทันที
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot id="sourcingTfoot" style="display: none;">
+                                <tr style="background: #f1f5f9; font-weight: 700; border-top: 1.5px solid #0f172a;">
+                                    <td colspan="5" style="text-align: right; padding: 8px 12px; color: #0f172a;" id="sourcingTotalItemsLabel">
+                                        รวมทั้งสิ้น 0 รายการ:
+                                    </td>
+                                    <td style="text-align: center; padding: 8px; font-family: monospace; font-size: 13.5px;" id="sourcingTotalPiecesReq">
+                                        0 ชิ้น
+                                    </td>
+                                    <td style="text-align: center; padding: 8px; color: #64748b;">-</td>
+                                    <td style="text-align: center; padding: 8px; font-family: monospace; font-size: 13.5px; color: #b91c1c;" id="sourcingTotalShortagePieces">
+                                        0 ชิ้น
+                                    </td>
+                                    <td style="text-align: right; padding: 8px; color: #64748b;">-</td>
+                                    <td style="text-align: right; padding: 8px 12px; font-family: monospace; font-size: 14px; color: #15803d;" id="sourcingTotalShortageBudget">
+                                        ฿ 0.00
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bottom Floating Action Dock -->
+                <div class="bottom-action-dock">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 12.5px; color: #475569;">
+                            ออเดอร์: <strong id="dockOrderNumber" style="font-family: monospace; color: #7D0A0A;">-</strong>
+                        </span>
+                        <span style="color: #cbd5e1;">|</span>
+                        <span style="font-size: 12.5px; color: #475569;">
+                            กระเช้า: <strong id="dockHamperCount" style="color: #0f172a;">0 ชุด</strong>
+                        </span>
+                        <span style="color: #cbd5e1;">|</span>
+                        <span style="font-size: 12.5px; color: #475569;">
+                            ต้องซื้อเพิ่ม: <strong id="dockShortageCount" style="color: #b91c1c;">0 รายการ</strong>
+                        </span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button type="button" class="btn-secondary" onclick="printConsolidatedSlip()" style="height: 38px; padding: 0 14px; font-size: 13px; font-weight: 600; border-radius: 7px; border: 1px solid #cbd5e1; background: #fff; color: #0f172a; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                            <span>พิมพ์ใบรวมซื้อของ (A4)</span>
+                        </button>
+
+                        <button type="button" class="btn-primary" onclick="saveBatchOrder()" id="btnSaveOrder" style="height: 38px; padding: 0 16px; font-size: 13.5px; font-weight: 700; border-radius: 7px; background: #7D0A0A; border: none; color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                            <span>บันทึกใบออเดอร์</span>
+                        </button>
+
+                        <button type="button" class="btn-secondary" onclick="confirmBatchAssemble()" id="btnAssembleBatch" style="height: 38px; padding: 0 14px; font-size: 13px; font-weight: 700; border-radius: 7px; border: 1px solid #bbf7d0; background: #f0fdf4; color: #15803d; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;" title="ตัดสต็อกวัตถุดิบและรับเข้ากระเช้าสำเร็จรูป">
+                            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            <span>ประกอบกระเช้า &amp; ตัดสต็อกจริง</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- TAB 2: ORDER HISTORY -->
+            <!-- ========================================== -->
+            <div id="tabHistoryContent" style="display: none;">
+                <div class="corp-card">
+                    <div class="corp-card-title">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="#7D0A0A" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>รายการประวัติใบสั่งทำและรวมซื้อของ (Order History)</span>
+                        </div>
+                        <button type="button" class="btn-secondary" onclick="fetchBatchOrdersHistory()" style="height: 32px; padding: 0 12px; font-size: 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">
+                            รีเฟรชข้อมูล
+                        </button>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="order-table" id="historyTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px; text-align: center;">#</th>
+                                    <th style="width: 140px;">เลขที่ออเดอร์</th>
+                                    <th style="width: 110px;">วันที่สั่ง / กำหนดส่ง</th>
+                                    <th>ลูกค้า / ชื่องาน</th>
+                                    <th style="width: 180px;">กระเช้าในออเดอร์</th>
+                                    <th style="width: 120px; text-align: right;">ยอดขายรวม</th>
+                                    <th style="width: 110px; text-align: center;">สถานะ</th>
+                                    <th style="width: 150px; text-align: center;">การจัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTbody">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 30px; color: #94a3b8;">
+                                        กำลังโหลดประวัติออเดอร์...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Hamper Picker -->
+    <div class="corp-modal" id="hamperPickerModal">
+        <div class="corp-modal-content">
+            <div class="corp-modal-header">
+                <div>
+                    <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: #0f172a;">เลือกชุดกระเช้าของขวัญ (Select Gift Set)</h3>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 2px;">คลิกที่ชุดกระเช้าเพื่อเพิ่มลงในใบสั่งทำ</div>
+                </div>
+                <button type="button" onclick="closeHamperPickerModal()" style="border: none; background: none; font-size: 20px; cursor: pointer; color: #94a3b8;">&times;</button>
+            </div>
+            <div style="padding: 12px 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                <input type="text" id="pickerSearchInput" oninput="filterPickerHampers()" placeholder="ค้นหารหัสกระเช้า เช่น HMP-001 หรือชื่อชุด..." style="width: 100%; height: 38px; border: 1px solid #cbd5e1; border-radius: 7px; padding: 0 12px; font-size: 13.5px; box-sizing: border-box; outline: none;">
+            </div>
+            <div class="corp-modal-body">
+                <div class="picker-grid" id="pickerGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            <div class="corp-modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeHamperPickerModal()" style="height: 36px; padding: 0 14px; font-size: 13px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer;">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // State
+        let allGiftSets = [];         // Loaded catalog of 61 sets from /api/gift-sets
+        let selectedHampers = [];     // Array of { set_id, code, name, theme, image_url, selling_price, cost_price, quantity }
+        let currentSourcingItems = []; // Live calculated BOM aggregation
+        let fullBOMCache = {};         // Cache of BOM items per hamper id
+        let batchOrdersHistory = [];
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            initDateDefaults();
+            await loadGiftSetsCatalog();
+            await generateNextOrderNumber();
+            await fetchBatchOrdersHistory();
+            renderSelectedHampers();
+        });
+
+        function initDateDefaults() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const todayStr = `${yyyy}-${mm}-${dd}`;
+
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 3);
+            const dueYyyy = dueDate.getFullYear();
+            const dueMm = String(dueDate.getMonth() + 1).padStart(2, '0');
+            const dueDd = String(dueDate.getDate()).padStart(2, '0');
+            const dueStr = `${dueYyyy}-${dueMm}-${dueDd}`;
+
+            const ordDateInput = document.getElementById('orderDateInput');
+            const dueDateInput = document.getElementById('dueDateInput');
+            if (ordDateInput && !ordDateInput.value) ordDateInput.value = todayStr;
+            if (dueDateInput && !dueDateInput.value) dueDateInput.value = dueStr;
+        }
+
+        async function loadGiftSetsCatalog() {
+            try {
+                const res = await fetch('/api/gift-sets');
+                if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลชุดกระเช้าได้');
+                allGiftSets = await res.json();
+            } catch (err) {
+                console.error('Error loading gift sets catalog:', err);
+            }
+        }
+
+        async function generateNextOrderNumber() {
+            try {
+                const res = await fetch('/api/gift-sets/batch-orders/next-number');
+                const data = await res.json();
+                if (data.next_number) {
+                    const el = document.getElementById('orderNumberInput');
+                    if (el) el.value = data.next_number;
+                    updateDockDisplay();
+                }
+            } catch (err) {
+                const ymd = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+                const el = document.getElementById('orderNumberInput');
+                if (el) el.value = `ORD-${ymd}-001`;
+                updateDockDisplay();
+            }
+        }
+
+        function switchTab(tab) {
+            const tabOrder = document.getElementById('tabOrderContent');
+            const tabHistory = document.getElementById('tabHistoryContent');
+            const btnOrder = document.getElementById('tabBtnOrder');
+            const btnHistory = document.getElementById('tabBtnHistory');
+
+            if (tab === 'history') {
+                tabOrder.style.display = 'none';
+                tabHistory.style.display = 'block';
+                btnOrder.classList.remove('active');
+                btnHistory.classList.add('active');
+                fetchBatchOrdersHistory();
+            } else {
+                tabOrder.style.display = 'block';
+                tabHistory.style.display = 'none';
+                btnOrder.classList.add('active');
+                btnHistory.classList.remove('active');
+            }
+        }
+
+        // ==========================================
+        // HAMPER SELECTION & QUANTITY STEPPER
+        // ==========================================
+
+        function openHamperPickerModal() {
+            document.getElementById('pickerSearchInput').value = '';
+            renderPickerGrid(allGiftSets);
+            document.getElementById('hamperPickerModal').style.display = 'flex';
+        }
+
+        function closeHamperPickerModal() {
+            document.getElementById('hamperPickerModal').style.display = 'none';
+        }
+
+        function filterPickerHampers() {
+            const q = (document.getElementById('pickerSearchInput')?.value || '').toLowerCase().trim();
+            if (!q) {
+                renderPickerGrid(allGiftSets);
+                return;
+            }
+            const filtered = allGiftSets.filter(s =>
+                (s.code && s.code.toLowerCase().includes(q)) ||
+                (s.name && s.name.toLowerCase().includes(q)) ||
+                (s.theme && s.theme.toLowerCase().includes(q))
+            );
+            renderPickerGrid(filtered);
+        }
+
+        function renderPickerGrid(sets) {
+            const grid = document.getElementById('pickerGrid');
+            if (!grid) return;
+
+            if (sets.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: #94a3b8;">ไม่พบชุดกระเช้าที่ตรงกับคำค้นหา</div>`;
+                return;
+            }
+
+            grid.innerHTML = sets.map(s => {
+                const img = s.image_url || '/assets/images/default-hamper.png';
+                const price = Number(s.selling_price) || 0;
+                const isSelected = selectedHampers.some(h => h.set_id === s.id);
+                return `
+                    <div class="picker-card" onclick="addHamperToOrder(${s.id})" style="${isSelected ? 'border-color: #7D0A0A; background: #fff5f5;' : ''}">
+                        <img src="${img}" class="picker-thumb" alt="${escapeHtml(s.name)}" onerror="this.onerror=null; this.src='/assets/images/default-hamper.png';">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <span style="font-family: monospace; font-weight: 800; color: #7D0A0A; font-size: 13px;">${escapeHtml(s.code)}</span>
+                            <span class="corp-badge corp-badge-slate">${escapeHtml(s.theme || 'มาตรฐาน')}</span>
+                        </div>
+                        <div style="font-size: 13px; font-weight: 700; color: #0f172a; line-height: 1.3;">${escapeHtml(s.name)}</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 6px; border-top: 1px dashed #e2e8f0;">
+                            <span style="font-weight: 800; font-family: monospace; font-size: 14px; color: #0f172a;">฿ ${price.toLocaleString('th-TH')}</span>
+                            <span style="font-size: 11.5px; font-weight: 600; color: ${isSelected ? '#7D0A0A' : '#0284c7'};">
+                                ${isSelected ? '✓ เลือกแล้ว (+1)' : '+ เลือกชุดนี้'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function addHamperToOrder(setId) {
+            const set = allGiftSets.find(s => s.id === setId);
+            if (!set) return;
+
+            const existing = selectedHampers.find(h => h.set_id === setId);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                selectedHampers.push({
+                    set_id: set.id,
+                    code: set.code,
+                    name: set.name,
+                    theme: set.theme || 'มาตรฐาน',
+                    image_url: set.image_url || '/assets/images/default-hamper.png',
+                    selling_price: Number(set.selling_price) || 0,
+                    cost_price: Number(set.cost_price) || 0,
+                    quantity: 1
+                });
+            }
+
+            renderSelectedHampers();
+            await recalculateSourcing();
+            closeHamperPickerModal();
+        }
+
+        function removeHamperFromOrder(index) {
+            selectedHampers.splice(index, 1);
+            renderSelectedHampers();
+            recalculateSourcing();
+        }
+
+        function updateHamperQty(index, newQty) {
+            const qty = Math.max(1, parseInt(newQty, 10) || 1);
+            if (selectedHampers[index]) {
+                selectedHampers[index].quantity = qty;
+            }
+            renderSelectedHampers();
+            recalculateSourcing();
+        }
+
+        function stepHamperQty(index, delta) {
+            if (!selectedHampers[index]) return;
+            const current = selectedHampers[index].quantity || 1;
+            const next = Math.max(1, current + delta);
+            updateHamperQty(index, next);
+        }
+
+        function renderSelectedHampers() {
+            const tbody = document.getElementById('selectedHampersTbody');
+            const tfoot = document.getElementById('selectedHampersTfoot');
+            if (!tbody) return;
+
+            if (selectedHampers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 30px; color: #94a3b8;">
+                            ยังไม่มีชุดกระเช้าในออเดอร์นี้ กรุณากดปุ่ม <strong>"+ เพิ่มชุดกระเช้าลงในออเดอร์"</strong> ด้านบน
+                        </td>
+                    </tr>
+                `;
+                if (tfoot) tfoot.style.display = 'none';
+                updateDockDisplay();
+                return;
+            }
+
+            let totalQty = 0;
+            let totalSales = 0;
+
+            tbody.innerHTML = selectedHampers.map((h, idx) => {
+                const subtotal = h.selling_price * h.quantity;
+                totalQty += h.quantity;
+                totalSales += subtotal;
+
+                return `
+                    <tr>
+                        <td style="text-align: center; color: #64748b; font-weight: 600;">${idx + 1}</td>
+                        <td style="text-align: center;">
+                            <img src="${h.image_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; display: block; margin: 0 auto;" onerror="this.onerror=null; this.src='/assets/images/default-hamper.png';">
+                        </td>
+                        <td style="font-family: monospace; font-weight: 800; color: #7D0A0A; font-size: 13px;">${escapeHtml(h.code)}</td>
+                        <td>
+                            <div style="font-weight: 700; color: #0f172a; font-size: 13px;">${escapeHtml(h.name)}</div>
+                            <div style="font-size: 11px; color: #64748b; margin-top: 1px;">ธีม: ${escapeHtml(h.theme)}</div>
+                        </td>
+                        <td style="text-align: right; font-family: monospace; font-size: 13.5px; font-weight: 700; color: #0f172a;">
+                            ฿ ${h.selling_price.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+                        </td>
+                        <td style="text-align: center;">
+                            <div class="stepper-wrap">
+                                <button type="button" class="stepper-btn" onclick="stepHamperQty(${idx}, -1)">&minus;</button>
+                                <input type="number" class="stepper-input" min="1" value="${h.quantity}" onchange="updateHamperQty(${idx}, this.value)">
+                                <button type="button" class="stepper-btn" onclick="stepHamperQty(${idx}, 1)">&plus;</button>
+                            </div>
+                        </td>
+                        <td style="text-align: right; font-family: monospace; font-size: 14px; font-weight: 800; color: #7D0A0A;">
+                            ฿ ${subtotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+                        </td>
+                        <td style="text-align: center;">
+                            <button type="button" onclick="removeHamperFromOrder(${idx})" title="ลบรายการนี้" style="border: none; background: none; color: #ef4444; cursor: pointer; padding: 4px; border-radius: 4px;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            if (tfoot) {
+                tfoot.style.display = 'table-footer-group';
+                document.getElementById('orderHampersTotalQty').textContent = `${totalQty} ชุด`;
+                document.getElementById('orderHampersTotalSales').textContent = `฿ ${totalSales.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+            }
+
+            updateDockDisplay();
+        }
+
+        // ==========================================
+        // SOURCING & BOM AGGREGATION ENGINE
+        // ==========================================
+
+        async function recalculateSourcing() {
+            if (selectedHampers.length === 0) {
+                currentSourcingItems = [];
+                renderSourcingTable();
+                updateMetricBanner({
+                    total_hampers: 0,
+                    distinct_hampers: 0,
+                    total_pieces: 0,
+                    distinct_skus: 0,
+                    shortage_items: 0,
+                    shortage_pieces: 0,
+                    shortage_budget: 0
+                });
+                return;
+            }
+
+            try {
+                // Call calculate-sourcing API
+                const payload = {
+                    hampers: selectedHampers.map(h => ({
+                        gift_set_id: h.set_id,
+                        quantity: h.quantity
+                    }))
+                };
+
+                const res = await fetch('/api/gift-sets/batch-orders/calculate-sourcing', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error('เกิดข้อผิดพลาดในการคำนวณวัตถุดิบ');
+                const data = await res.json();
+
+                currentSourcingItems = data.sourcing_items || [];
+                renderSourcingTable();
+
+                const hSum = data.hampers_summary || {};
+                const sSum = data.sourcing_summary || {};
+
+                updateMetricBanner({
+                    total_hampers: hSum.total_hampers || 0,
+                    distinct_hampers: selectedHampers.length,
+                    total_pieces: sSum.total_pieces_required || 0,
+                    distinct_skus: sSum.total_distinct_items || 0,
+                    shortage_items: sSum.shortage_items_count || 0,
+                    shortage_pieces: sSum.total_shortage_pieces || 0,
+                    shortage_budget: sSum.total_shortage_budget || 0
+                });
+            } catch (err) {
+                console.error('Error recalculating sourcing:', err);
+            }
+        }
+
+        function updateMetricBanner(stats) {
+            document.getElementById('metricTotalHampers').textContent = `${stats.total_hampers} ชุด`;
+            document.getElementById('metricDistinctHampers').textContent = `${stats.distinct_hampers} แบบกระเช้า`;
+            document.getElementById('metricTotalPieces').textContent = `${stats.total_pieces.toLocaleString('th-TH')} ชิ้น`;
+            document.getElementById('metricDistinctSKUs').textContent = `${stats.distinct_skus} รายการ SKU`;
+            document.getElementById('metricShortageItems').textContent = `${stats.shortage_items} รายการ`;
+            document.getElementById('metricShortagePieces').textContent = `ขาด ${stats.shortage_pieces.toLocaleString('th-TH')} ชิ้น`;
+            document.getElementById('metricShortageBudget').textContent = `฿ ${stats.shortage_budget.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+
+            updateDockDisplay(stats);
+        }
+
+        function updateDockDisplay(stats) {
+            const ordNo = document.getElementById('orderNumberInput')?.value || '-';
+            const dockOrd = document.getElementById('dockOrderNumber');
+            if (dockOrd) dockOrd.textContent = ordNo;
+
+            const totalHampers = selectedHampers.reduce((acc, h) => acc + (h.quantity || 0), 0);
+            const dockHampers = document.getElementById('dockHamperCount');
+            if (dockHampers) dockHampers.textContent = `${totalHampers} ชุด (${selectedHampers.length} แบบ)`;
+
+            const shortageCount = currentSourcingItems.filter(it => it.is_shortage).length;
+            const dockShortage = document.getElementById('dockShortageCount');
+            if (dockShortage) dockShortage.textContent = `${shortageCount} รายการ`;
+        }
+
+        function renderSourcingTable() {
+            const tbody = document.getElementById('sourcingTbody');
+            const tfoot = document.getElementById('sourcingTfoot');
+            if (!tbody) return;
+
+            if (currentSourcingItems.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 35px; color: #94a3b8;">
+                            เมื่อเลือกกระเช้าในออเดอร์ด้านบนแล้ว ระบบจะระเบิดสูตร BOM และรวมยอดที่ต้องซื้อให้ทันที
+                        </td>
+                    </tr>
+                `;
+                if (tfoot) tfoot.style.display = 'none';
+                return;
+            }
+
+            const filterOnlyShortage = document.getElementById('filterShortageOnly')?.checked || false;
+            let displayItems = currentSourcingItems;
+            if (filterOnlyShortage) {
+                displayItems = displayItems.filter(it => it.is_shortage);
+            }
+
+            if (displayItems.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align: center; padding: 30px; color: #15803d; font-weight: 600;">
+                            ✓ ยอดเยี่ยม! วัตถุดิบทุกรายการมีสต็อกในคลังเพียงพอทั้งหมด ไม่มีรายการที่ต้องซื้อเพิ่ม
+                        </td>
+                    </tr>
+                `;
+                if (tfoot) tfoot.style.display = 'none';
+                return;
+            }
+
+            let totalReqPieces = 0;
+            let totalShortagePieces = 0;
+            let totalShortageBudget = 0;
+
+            tbody.innerHTML = displayItems.map((it, idx) => {
+                totalReqPieces += it.total_required_qty;
+                totalShortagePieces += it.shortage_qty;
+                totalShortageBudget += it.shortage_budget;
+
+                const isShort = it.is_shortage;
+                const statusBadge = isShort
+                    ? `<span class="corp-badge corp-badge-red">⚠️ ซื้อเพิ่ม ${it.shortage_qty} ${escapeHtml(it.unit)}</span>`
+                    : `<span class="corp-badge corp-badge-green">✓ ในคลังพอ (เหลือ ${it.current_stock - it.total_required_qty})</span>`;
+
+                const hampersBadges = (it.hampers_used_in || []).map(hu =>
+                    `<span class="corp-badge corp-badge-slate" style="font-size: 10.5px; margin: 1px;">${escapeHtml(hu.hamper_code)} &times;${hu.total_required}</span>`
+                ).join(' ');
+
+                return `
+                    <tr class="${isShort ? 'row-shortage' : ''}">
+                        <td style="text-align: center; color: #64748b; font-weight: 600; font-size: 11.5px;">${idx + 1}</td>
+                        <td style="text-align: center;">
+                            <img src="${it.image_url}" style="width: 38px; height: 38px; object-fit: cover; border-radius: 5px; border: 1px solid #cbd5e1; display: block; margin: 0 auto;" onerror="this.onerror=null; this.src='/assets/images/default-hamper.png';">
+                        </td>
+                        <td style="text-align: center; font-family: monospace; font-weight: 800; color: #7D0A0A; font-size: 12px; white-space: nowrap;">
+                            ${escapeHtml(it.product_code)}
+                        </td>
+                        <td>
+                            <div style="font-weight: 700; color: #0f172a; line-height: 1.25;">${escapeHtml(it.item_name)}</div>
+                            <div style="font-size: 10.5px; color: #64748b; margin-top: 2px;">หมวด: ${escapeHtml(it.category || 'ทั่วไป')}</div>
+                        </td>
+                        <td>${hampersBadges}</td>
+                        <td style="text-align: center; font-family: monospace; font-weight: 700; font-size: 13px; color: #0f172a;">
+                            ${it.total_required_qty} <span style="font-size: 10.5px; font-weight: 500; color: #64748b;">${escapeHtml(it.unit)}</span>
+                        </td>
+                        <td style="text-align: center; font-family: monospace; font-size: 12.5px; color: #475569;">
+                            ${it.current_stock}
+                        </td>
+                        <td style="text-align: center;">${statusBadge}</td>
+                        <td style="text-align: right; font-family: monospace; font-size: 12px; color: #475569;">
+                            ฿ ${it.unit_cost.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </td>
+                        <td style="text-align: right; font-family: monospace; font-weight: 700; font-size: 12.5px; color: ${isShort ? '#b91c1c' : '#94a3b8'};">
+                            ฿ ${it.shortage_budget.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            if (tfoot) {
+                tfoot.style.display = 'table-footer-group';
+                document.getElementById('sourcingTotalItemsLabel').textContent = `รวมแสดง ${displayItems.length} รายการ:`;
+                document.getElementById('sourcingTotalPiecesReq').textContent = `${totalReqPieces.toLocaleString('th-TH')} ชิ้น`;
+                document.getElementById('sourcingTotalShortagePieces').textContent = `${totalShortagePieces.toLocaleString('th-TH')} ชิ้น`;
+                document.getElementById('sourcingTotalShortageBudget').textContent = `฿ ${totalShortageBudget.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+            }
+        }
+
+        // ==========================================
+        // SAVE BATCH ORDER & ASSEMBLE
+        // ==========================================
+
+        async function saveBatchOrder() {
+            if (selectedHampers.length === 0) {
+                alert('กรุณาเลือกชุดกระเช้าในออเดอร์อย่างน้อย 1 รายการ');
+                return;
+            }
+
+            const orderNo = (document.getElementById('orderNumberInput')?.value || '').trim();
+            const customerName = (document.getElementById('customerNameInput')?.value || '').trim() || 'ลูกค้าทั่วไป';
+            const eventName = (document.getElementById('eventNameInput')?.value || '').trim() || 'เทศกาลปีใหม่ 2026';
+            const orderDate = document.getElementById('orderDateInput')?.value || '';
+            const dueDate = document.getElementById('dueDateInput')?.value || '';
+            const status = document.getElementById('orderStatusSelect')?.value || 'PENDING';
+            const remarks = document.getElementById('orderRemarksInput')?.value || '';
+            const existingId = document.getElementById('currentOrderId')?.value || null;
+
+            const totalHampers = selectedHampers.reduce((acc, h) => acc + (h.quantity || 0), 0);
+            const totalSales = selectedHampers.reduce((acc, h) => acc + (h.selling_price * h.quantity), 0);
+            const totalCost = currentSourcingItems.reduce((acc, it) => acc + (it.total_required_qty * it.unit_cost), 0);
+
+            const payload = {
+                order_number: orderNo,
+                customer_name: customerName,
+                event_name: eventName,
+                order_date: orderDate,
+                due_date: dueDate,
+                status: status,
+                total_hampers: totalHampers,
+                total_sales: totalSales,
+                total_cost: totalCost,
+                items: selectedHampers,
+                sourcing: currentSourcingItems,
+                remarks: remarks
+            };
+
+            const btnSave = document.getElementById('btnSaveOrder');
+            if (btnSave) btnSave.disabled = true;
+
+            try {
+                let res;
+                if (existingId) {
+                    res = await fetch(`/api/gift-sets/batch-orders/${existingId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                } else {
+                    res = await fetch('/api/gift-sets/batch-orders', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                }
+
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.error || 'บันทึกไม่สำเร็จ');
+                }
+
+                const result = await res.json();
+                if (result.id) document.getElementById('currentOrderId').value = result.id;
+                if (result.order_number) document.getElementById('orderNumberInput').value = result.order_number;
+
+                document.getElementById('activeOrderBadge').className = 'corp-badge corp-badge-green';
+                document.getElementById('activeOrderBadge').textContent = 'บันทึกแล้ว (SAVED)';
+
+                if (typeof window.showToast === 'function') {
+                    window.showToast({
+                        type: 'success',
+                        title: 'บันทึกใบออเดอร์สำเร็จ',
+                        message: `บันทึกใบออเดอร์ [${result.order_number || orderNo}] เรียบร้อยแล้ว`,
+                        duration: 3500
+                    });
+                } else {
+                    alert(`บันทึกใบออเดอร์ [${result.order_number || orderNo}] สำเร็จ!`);
+                }
+
+                await fetchBatchOrdersHistory();
+            } catch (err) {
+                alert(`เกิดข้อผิดพลาด: ${err.message}`);
+            } finally {
+                if (btnSave) btnSave.disabled = false;
+            }
+        }
+
+        async function confirmBatchAssemble() {
+            const currentId = document.getElementById('currentOrderId')?.value;
+            if (!currentId) {
+                alert('กรุณากด "บันทึกใบออเดอร์" ก่อนทำการสั่งประกอบและตัดสต็อก');
+                return;
+            }
+
+            const totalHampers = selectedHampers.reduce((acc, h) => acc + (h.quantity || 0), 0);
+            const totalSKUs = currentSourcingItems.length;
+
+            const confirmMsg = `ยืนยันการสั่งประกอบกระเช้าทั้งหมดตามใบออเดอร์นี้หรือไม่?\n\n` +
+                `• ยอดรวมกระเช้าที่จะรับเข้าสต็อก: ${totalHampers} ชุด (${selectedHampers.length} แบบ)\n` +
+                `• วัตถุดิบที่จะถูกตัดสต็อกจริง: ${totalSKUs} รายการ\n\n` +
+                `*หมายเหตุ: เมื่อกดสั่งประกอบแล้ว ระบบจะบันทึกประวัติการเบิก-รับสินค้า และไม่สามารถแก้ไขได้อีก`;
+
+            if (!confirm(confirmMsg)) return;
+
+            const btnAssemble = document.getElementById('btnAssembleBatch');
+            if (btnAssemble) btnAssemble.disabled = true;
+
+            try {
+                const res = await fetch(`/api/gift-sets/batch-orders/${currentId}/assemble`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error || 'การสั่งประกอบไม่สำเร็จ');
+                }
+
+                const data = await res.json();
+                document.getElementById('orderStatusSelect').value = 'ASSEMBLED';
+                document.getElementById('activeOrderBadge').className = 'corp-badge corp-badge-green';
+                document.getElementById('activeOrderBadge').textContent = 'ประกอบแล้ว (ASSEMBLED)';
+
+                if (typeof window.showToast === 'function') {
+                    window.showToast({
+                        type: 'success',
+                        title: 'ประกอบและตัดสต็อกสำเร็จ',
+                        message: data.message,
+                        duration: 4500
+                    });
+                } else {
+                    alert(data.message);
+                }
+
+                await fetchBatchOrdersHistory();
+            } catch (err) {
+                alert(`เกิดข้อผิดพลาด: ${err.message}`);
+            } finally {
+                if (btnAssemble) btnAssemble.disabled = false;
+            }
+        }
+
+        function resetOrderForm() {
+            document.getElementById('currentOrderId').value = '';
+            document.getElementById('customerNameInput').value = '';
+            document.getElementById('eventNameInput').value = '';
+            document.getElementById('orderRemarksInput').value = '';
+            document.getElementById('orderStatusSelect').value = 'PENDING';
+            document.getElementById('activeOrderBadge').className = 'corp-badge corp-badge-blue';
+            document.getElementById('activeOrderBadge').textContent = 'แบบร่างใหม่ (NEW)';
+            selectedHampers = [];
+            currentSourcingItems = [];
+            initDateDefaults();
+            generateNextOrderNumber();
+            renderSelectedHampers();
+            renderSourcingTable();
+            switchTab('order');
+        }
+
+        // ==========================================
+        // BATCH ORDER HISTORY
+        // ==========================================
+
+        async function fetchBatchOrdersHistory() {
+            try {
+                const res = await fetch('/api/gift-sets/batch-orders');
+                if (!res.ok) throw new Error('โหลดประวัติไม่สำเร็จ');
+                batchOrdersHistory = await res.json();
+
+                const badge = document.getElementById('historyCountBadge');
+                if (badge) badge.textContent = batchOrdersHistory.length;
+
+                renderHistoryTable();
+            } catch (err) {
+                console.error('Error fetching batch orders:', err);
+            }
+        }
+
+        function renderHistoryTable() {
+            const tbody = document.getElementById('historyTbody');
+            if (!tbody) return;
+
+            if (batchOrdersHistory.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 30px; color: #94a3b8;">
+                            ยังไม่มีประวัติใบออเดอร์ในระบบ
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = batchOrdersHistory.map((ord, idx) => {
+                const hampersSummary = (ord.items || []).map(h => `${escapeHtml(h.code)} (&times;${h.quantity})`).join(', ');
+                const statusBadge = ord.status === 'ASSEMBLED'
+                    ? `<span class="corp-badge corp-badge-green">ประกอบแล้ว</span>`
+                    : ord.status === 'CONFIRMED'
+                    ? `<span class="corp-badge corp-badge-blue">ยืนยันแล้ว</span>`
+                    : `<span class="corp-badge corp-badge-slate">${escapeHtml(ord.status || 'PENDING')}</span>`;
+
+                return `
+                    <tr>
+                        <td style="text-align: center; color: #64748b; font-weight: 600;">${idx + 1}</td>
+                        <td style="font-family: monospace; font-weight: 800; color: #7D0A0A; font-size: 13px;">
+                            ${escapeHtml(ord.order_number)}
+                        </td>
+                        <td style="font-size: 12px; color: #334155;">
+                            <div>${escapeHtml(ord.order_date || '-')}</div>
+                            <div style="font-size: 11px; color: #64748b;">ส่ง: ${escapeHtml(ord.due_date || '-')}</div>
+                        </td>
+                        <td>
+                            <div style="font-weight: 700; color: #0f172a; font-size: 13px;">${escapeHtml(ord.customer_name || '-')}</div>
+                            <div style="font-size: 11px; color: #64748b; margin-top: 1px;">${escapeHtml(ord.event_name || '')}</div>
+                        </td>
+                        <td style="font-size: 12px; color: #334155;">
+                            <div style="font-weight: 700;">${ord.total_hampers || 0} ชุด</div>
+                            <div style="font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;">
+                                ${hampersSummary || '-'}
+                            </div>
+                        </td>
+                        <td style="text-align: right; font-family: monospace; font-weight: 700; color: #0f172a; font-size: 13px;">
+                            ฿ ${(Number(ord.total_sales) || 0).toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+                        </td>
+                        <td style="text-align: center;">${statusBadge}</td>
+                        <td style="text-align: center;">
+                            <div style="display: flex; gap: 4px; justify-content: center;">
+                                <button type="button" onclick="loadOrderToWorkspace(${ord.id})" title="เปิดดู/แก้ไขในหน้าทำงาน" style="padding: 4px 8px; font-size: 11.5px; border-radius: 5px; border: 1px solid #cbd5e1; background: #fff; color: #0284c7; cursor: pointer; font-weight: 600;">
+                                    เปิดดู
+                                </button>
+                                <button type="button" onclick="printOrderSlipById(${ord.id})" title="พิมพ์ใบรวมซื้อของ" style="padding: 4px 8px; font-size: 11.5px; border-radius: 5px; border: 1px solid #cbd5e1; background: #fff; color: #15803d; cursor: pointer; font-weight: 600;">
+                                    พิมพ์
+                                </button>
+                                <button type="button" onclick="deleteBatchOrder(${ord.id})" title="ลบออเดอร์นี้" style="padding: 4px 6px; font-size: 11.5px; border-radius: 5px; border: 1px solid #fecaca; background: #fff; color: #dc2626; cursor: pointer;">
+                                    &times;
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function loadOrderToWorkspace(orderId) {
+            try {
+                const res = await fetch(`/api/gift-sets/batch-orders/${orderId}`);
+                if (!res.ok) throw new Error('ไม่พบข้อมูลออเดอร์นี้');
+                const ord = await res.json();
+
+                document.getElementById('currentOrderId').value = ord.id;
+                document.getElementById('orderNumberInput').value = ord.order_number;
+                document.getElementById('customerNameInput').value = ord.customer_name || '';
+                document.getElementById('eventNameInput').value = ord.event_name || '';
+                document.getElementById('orderDateInput').value = ord.order_date || '';
+                document.getElementById('dueDateInput').value = ord.due_date || '';
+                document.getElementById('orderStatusSelect').value = ord.status || 'PENDING';
+                document.getElementById('orderRemarksInput').value = ord.remarks || '';
+
+                selectedHampers = (ord.items || []).map(h => ({
+                    set_id: h.set_id || h.id || h.gift_set_id,
+                    code: h.code,
+                    name: h.name,
+                    theme: h.theme || 'มาตรฐาน',
+                    image_url: h.image_url || '/assets/images/default-hamper.png',
+                    selling_price: Number(h.selling_price) || 0,
+                    cost_price: Number(h.cost_price) || 0,
+                    quantity: Number(h.quantity) || 1
+                }));
+
+                currentSourcingItems = ord.sourcing || [];
+
+                document.getElementById('activeOrderBadge').className = ord.status === 'ASSEMBLED' ? 'corp-badge corp-badge-green' : 'corp-badge corp-badge-slate';
+                document.getElementById('activeOrderBadge').textContent = `โหลดออเดอร์ [${ord.order_number}]`;
+
+                renderSelectedHampers();
+                renderSourcingTable();
+                await recalculateSourcing();
+                switchTab('order');
+            } catch (err) {
+                alert(`เกิดข้อผิดพลาด: ${err.message}`);
+            }
+        }
+
+        async function deleteBatchOrder(orderId) {
+            if (!confirm('ยืนยันการลบใบออเดอร์นี้ออกจากระบบ?')) return;
+            try {
+                const res = await fetch(`/api/gift-sets/batch-orders/${orderId}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error('ลบไม่สำเร็จ');
+                if (typeof window.showToast === 'function') {
+                    window.showToast({ type: 'success', title: 'ลบเรียบร้อยแล้ว', message: 'ลบใบออเดอร์สำเร็จ' });
+                }
+                await fetchBatchOrdersHistory();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        async function printOrderSlipById(orderId) {
+            const ord = batchOrdersHistory.find(o => o.id === orderId);
+            if (!ord) return;
+            printConsolidatedSlipInternal(ord.order_number, ord.customer_name, ord.event_name, ord.order_date, ord.due_date, ord.items || [], ord.sourcing || []);
+        }
+
+        // ==========================================
+        // CORPORATE A4 SOURCING SLIP PRINTING
+        // ==========================================
+
+        function printConsolidatedSlip() {
+            if (currentSourcingItems.length === 0) {
+                alert('ยังไม่มีรายการวัตถุดิบ กรุณาเลือกกระเช้าก่อนพิมพ์');
+                return;
+            }
+
+            const orderNo = document.getElementById('orderNumberInput')?.value || 'ORD-PREVIEW';
+            const customerName = document.getElementById('customerNameInput')?.value || 'ลูกค้าทั่วไป';
+            const eventName = document.getElementById('eventNameInput')?.value || 'เทศกาลปีใหม่ 2026';
+            const orderDate = document.getElementById('orderDateInput')?.value || '';
+            const dueDate = document.getElementById('dueDateInput')?.value || '';
+
+            printConsolidatedSlipInternal(orderNo, customerName, eventName, orderDate, dueDate, selectedHampers, currentSourcingItems);
+        }
+
+        function printConsolidatedSlipInternal(orderNo, customerName, eventName, orderDate, dueDate, hampers, sourcing) {
+            const printWin = window.open('', '_blank', 'width=940,height=1000');
+            const nowStr = new Date().toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'medium' });
+
+            const totalHampersCount = hampers.reduce((acc, h) => acc + (h.quantity || 0), 0);
+            const hampersListSummary = hampers.map(h => `${h.code} ${h.name} (${h.quantity} ชุด)`).join(' &bull; ');
+
+            let totalReqPieces = 0;
+            let totalShortagePieces = 0;
+            let totalRefBudget = 0;
+
+            const rowsHtml = sourcing.map((it, idx) => {
+                totalReqPieces += (it.total_required_qty || 0);
+                totalShortagePieces += (it.shortage_qty || 0);
+                const lineBudget = (it.shortage_qty || 0) * (it.unit_cost || 0);
+                totalRefBudget += lineBudget;
+
+                const shortageText = it.is_shortage
+                    ? `<span style="font-weight: 800; color: #b91c1c; font-size: 12.5px;">${it.shortage_qty}</span> <span style="font-size: 9.5px; color: #b91c1c;">${escapeHtml(it.unit)}</span>`
+                    : `<span style="color: #15803d; font-size: 10px; font-weight: 700;">✓ สต็อกพอ</span>`;
+
+                const hampersTag = (it.hampers_used_in || []).map(hu => `${hu.hamper_code} (${hu.total_required})`).join(', ');
+
+                return `
+                    <tr>
+                        <td style="text-align: center; padding: 4px 2px; vertical-align: middle;">
+                            <div style="width: 14px; height: 14px; border: 1.5px solid #475569; margin: 0 auto; background: #fff;"></div>
+                        </td>
+                        <td style="text-align: center; color: #475569; font-weight: 600; padding: 4px 2px; font-size: 11px; vertical-align: middle;">${idx + 1}</td>
+                        <td style="text-align: center; padding: 3px; vertical-align: middle;">
+                            <img src="${it.image_url || '/assets/images/default-hamper.png'}" alt="${escapeHtml(it.item_name)}" style="width: 38px; height: 38px; object-fit: cover; border: 1px solid #cbd5e1; background: #fff; display: block; margin: 0 auto;" onerror="this.onerror=null; this.src='/assets/images/default-hamper.png';">
+                        </td>
+                        <td style="text-align: center; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: 700; color: #7D0A0A; padding: 4px 6px; font-size: 11px; white-space: nowrap; vertical-align: middle;">
+                            ${escapeHtml(it.product_code || '-')}
+                        </td>
+                        <td style="padding: 4px 8px; vertical-align: middle;">
+                            <div style="font-size: 11.5px; font-weight: 700; color: #0f172a; line-height: 1.25;">${escapeHtml(it.item_name)}</div>
+                            <div style="font-size: 9.5px; color: #64748b; margin-top: 1px; line-height: 1.2;">ใช้ใน: ${escapeHtml(hampersTag || '-')}</div>
+                        </td>
+                        <td style="text-align: center; padding: 4px 6px; white-space: nowrap; vertical-align: middle; font-family: ui-monospace, monospace; font-weight: 800; font-size: 12px;">
+                            ${it.total_required_qty} <span style="font-size: 10px; font-weight: 600; color: #475569;">${escapeHtml(it.unit)}</span>
+                        </td>
+                        <td style="text-align: center; color: #475569; padding: 4px 6px; font-family: ui-monospace, monospace; font-size: 11px; vertical-align: middle;">
+                            ${it.current_stock || 0}
+                        </td>
+                        <td style="text-align: center; padding: 4px 6px; white-space: nowrap; vertical-align: middle; background: ${it.is_shortage ? '#fff5f5' : '#ffffff'};">
+                            ${shortageText}
+                        </td>
+                        <td style="text-align: right; color: #0f172a; padding: 4px 8px; font-family: ui-monospace, monospace; font-size: 11px; white-space: nowrap; vertical-align: middle;">
+                            ฿ ${(it.unit_cost || 0).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </td>
+                        <td style="text-align: center; padding: 4px 6px; vertical-align: middle;">
+                            <div style="font-size: 10.5px; color: #94a3b8; font-family: monospace; letter-spacing: 1px; text-align: left; padding-left: 6px;">
+                                ฿ ....................
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            const html = `
+                <!DOCTYPE html>
+                <html lang="th">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>ใบรวมซื้อและหยิบวัตถุดิบ (CONSOLIDATED SOURCING SLIP) - ${escapeHtml(orderNo)}</title>
+                    <style>
+                        @page {
+                            size: A4 portrait;
+                            margin: 7mm 8mm 7mm 8mm;
+                        }
+                        * {
+                            box-sizing: border-box;
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+                        body {
+                            font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                            font-size: 11px;
+                            color: #0f172a;
+                            background: #ffffff;
+                            margin: 0;
+                            padding: 0;
+                            line-height: 1.3;
+                        }
+                        .page-container {
+                            width: 100%;
+                            max-width: 210mm;
+                            margin: 0 auto;
+                        }
+                        .btn-print {
+                            background: #15803d;
+                            color: #ffffff;
+                            border: 1px solid #166534;
+                            padding: 6px 14px;
+                            font-size: 12px;
+                            font-weight: 700;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 5px;
+                            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+                        }
+                        .btn-close {
+                            background: #ffffff;
+                            color: #475569;
+                            border: 1px solid #cbd5e1;
+                            padding: 6px 12px;
+                            font-size: 12px;
+                            font-weight: 600;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 4px;
+                        }
+                        @media print {
+                            .no-print { display: none !important; }
+                            body { padding: 0 !important; }
+                        }
+                        .header-row {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            border-bottom: 1.5px solid #0f172a;
+                            padding-bottom: 6px;
+                            margin-bottom: 6px;
+                        }
+                        .brand-title {
+                            font-size: 14.5px;
+                            font-weight: 800;
+                            color: #0f172a;
+                            margin: 0;
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                        }
+                        .doc-title {
+                            font-size: 14px;
+                            font-weight: 800;
+                            color: #7D0A0A;
+                            text-align: right;
+                            margin: 0;
+                        }
+                        .spec-table-box {
+                            border: 1px solid #cbd5e1;
+                            margin-bottom: 8px;
+                            padding: 6px 12px;
+                            background: #ffffff;
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 4px 16px;
+                            font-size: 10.5px;
+                        }
+                        table.slip-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-size: 10.5px;
+                            margin-bottom: 6px;
+                            border: 1px solid #94a3b8;
+                        }
+                        table.slip-table th {
+                            background: #f1f5f9;
+                            border: 1px solid #94a3b8;
+                            color: #0f172a;
+                            font-weight: 700;
+                            padding: 5px 4px;
+                            font-size: 10.5px;
+                        }
+                        table.slip-table td {
+                            border: 1px solid #cbd5e1;
+                        }
+                        table.slip-table tr:nth-child(even) td {
+                            background: #fafbfc;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="page-container">
+                        <!-- Header -->
+                        <div class="header-row">
+                            <div>
+                                <h1 class="brand-title">
+                                    <img src="/assets/images/mam-logo.png" alt="MAM" style="height: 22px; width: auto; object-fit: contain;" onerror="this.style.display='none'">
+                                    <span>บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</span>
+                                </h1>
+                                <div style="font-size: 9.5px; color: #475569; margin-top: 1px; letter-spacing: 0.2px;">MAM DESIGN AND SERVICE CO., LTD. &bull; ERP SOURCING &amp; PRODUCTION</div>
+                            </div>
+                            <div>
+                                <div class="doc-title">ใบรวมซื้อและหยิบวัตถุดิบ (CONSOLIDATED SOURCING SLIP)</div>
+                                <div style="font-size: 9.5px; color: #475569; text-align: right; margin-top: 1px;">
+                                    <strong>เลขที่ออเดอร์:</strong> <span style="font-family: monospace; font-weight: 800; color: #7D0A0A;">${escapeHtml(orderNo)}</span> | วันที่: ${nowStr}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order & Hampers Meta Box -->
+                        <div class="spec-table-box">
+                            <div><strong style="color:#475569;">ลูกค้า / องค์กร:</strong> <span style="font-weight: 700; color: #0f172a;">${escapeHtml(customerName)}</span></div>
+                            <div><strong style="color:#475569;">ชื่องาน / แคมเปญ:</strong> <span style="color: #0f172a;">${escapeHtml(eventName)}</span></div>
+                            <div><strong style="color:#475569;">กำหนดส่งมอบ:</strong> <span style="color: #0f172a;">${escapeHtml(dueDate || '-')}</span></div>
+                            <div><strong style="color:#475569;">ยอดสั่งทำกระเช้ารวม:</strong> <span style="font-weight: 800; color: #7D0A0A;">${totalHampersCount} ชุด</span> (${hampers.length} แบบ)</div>
+                            <div style="grid-column: span 2; border-top: 1px dashed #cbd5e1; padding-top: 3px; margin-top: 1px;">
+                                <strong style="color:#475569;">ชุดกระเช้าในออเดอร์นี้:</strong>
+                                <span style="color: #0f172a;">${hampersListSummary || '-'}</span>
+                            </div>
+                        </div>
+
+                        <!-- Table: Visual Consolidated Purchasing & Picking List -->
+                        <table class="slip-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 26px; text-align: center;">เช็ค</th>
+                                    <th style="width: 22px; text-align: center;">#</th>
+                                    <th style="width: 44px; text-align: center;">รูปถ่าย</th>
+                                    <th style="width: 80px; text-align: center;">รหัส SKU</th>
+                                    <th style="text-align: left;">รายการวัตถุดิบ / ขนม / บรรจุภัณฑ์</th>
+                                    <th style="width: 78px; text-align: center;">รวมต้องใช้</th>
+                                    <th style="width: 65px; text-align: center;">สต็อกคลัง</th>
+                                    <th style="width: 86px; text-align: center;">ต้องซื้อเพิ่ม</th>
+                                    <th style="width: 84px; text-align: right;">ทุนอ้างอิง</th>
+                                    <th style="width: 105px; text-align: center;">ราคาซื้อจริง (จดมือ)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rowsHtml}
+                            </tbody>
+                            <tfoot>
+                                <tr style="background: #f1f5f9; font-weight: 700; border-top: 1.5px solid #0f172a;">
+                                    <td colspan="5" style="padding: 5px 8px; text-align: right; color: #0f172a; font-size: 10.5px;">
+                                        รวมทั้งสิ้น ${sourcing.length} รายการ (ตามยอดสั่งผลิต ${totalHampersCount} ชุด):
+                                    </td>
+                                    <td style="text-align: center; padding: 5px; font-size: 11px; font-weight: 800; color: #0f172a; font-family: ui-monospace, monospace;">
+                                        ${totalReqPieces} ชิ้น
+                                    </td>
+                                    <td style="text-align: center; color: #64748b;">-</td>
+                                    <td style="text-align: center; padding: 5px; font-size: 11px; font-weight: 800; color: #b91c1c; font-family: ui-monospace, monospace;">
+                                        ${totalShortagePieces} ชิ้น
+                                    </td>
+                                    <td style="text-align: right; padding: 5px 8px; font-size: 11px; font-weight: 800; color: #15803d; font-family: ui-monospace, monospace;">
+                                        ฿ ${totalRefBudget.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </td>
+                                    <td style="text-align: center; padding: 5px 6px; font-size: 9.5px; color: #475569;">
+                                        รวมจ่ายจริง: ฿ ..........
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <!-- Minimal Notes Strip -->
+                        <div style="margin-top: 6px; padding: 6px 10px; border: 1px solid #cbd5e1; font-size: 10px; color: #334155; background: #ffffff; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 4px; flex-grow: 1;">
+                                <strong>หมายเหตุเพิ่มเติม:</strong>
+                                <span style="color: #cbd5e1; letter-spacing: 1px;">____________________________________________________________________________________________________</span>
+                            </div>
+                        </div>
+
+                        <!-- Footer Meta -->
+                        <div style="margin-top: 5px; display: flex; justify-content: space-between; font-size: 9px; color: #64748b;">
+                            <div>MAM DESIGN AND SERVICE CO., LTD. &bull; ERP SOURCING &amp; PRODUCTION SYSTEM</div>
+                            <div>พิมพ์เมื่อ: ${nowStr}</div>
+                        </div>
+
+                        <!-- Bottom-Right Floating Action Controls (Hidden when Print) -->
+                        <div class="no-print" style="position: fixed; bottom: 20px; right: 24px; z-index: 9999; display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(6px); padding: 6px 8px; border-radius: 8px; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.18); border: 1px solid #cbd5e1;">
+                            <button type="button" class="btn-close" onclick="window.close()" title="ปิดหน้าต่างนี้">
+                                <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                <span>ปิดหน้าต่าง</span>
+                            </button>
+                            <button type="button" class="btn-print" onclick="window.print()" title="สั่งพิมพ์เอกสาร A4">
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                <span>สั่งพิมพ์เอกสาร</span>
+                            </button>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            printWin.document.write(html);
+            printWin.document.close();
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+    </script>
+    <script src="../assets/js/modules/doc-toast.js"></script>
+    <script src="/assets/js/global-navbar.js"></script>
+</body>
+</html>
