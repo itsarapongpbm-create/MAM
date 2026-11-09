@@ -31,12 +31,21 @@
             --slate-50: #f8fafc;
         }
 
-        body {
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body, button, input, select, textarea, table, th, td {
             font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
             background-color: #f8fafc;
             color: var(--slate-900);
             margin: 0;
             padding: 0;
+            line-height: 1.45;
         }
 
         .tab-nav-bar {
@@ -760,9 +769,9 @@
                             <svg viewBox="0 0 24 24" width="18" height="18" stroke="#7D0A0A" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                             <span>ชุดกระเช้าของขวัญที่ลูกค้าสั่งทำ (Ordered Hampers)</span>
                         </div>
-                        <button type="button" class="btn-primary" onclick="openHamperPickerModal()" style="height: 34px; padding: 0 14px; font-size: 12.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; border-radius: 6px; background: #7D0A0A; border: none; color: #fff; cursor: pointer;">
+                        <button type="button" class="btn-primary" onclick="openHamperPickerModal()" style="height: 34px; padding: 0 14px; font-size: 12.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; border-radius: 6px; background: #7D0A0A; border: none; color: #fff; cursor: pointer;">
                             <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            <span>+ เพิ่มชุดกระเช้าลงในออเดอร์</span>
+                            <span>เพิ่มชุดกระเช้าลงในออเดอร์</span>
                         </button>
                     </div>
 
@@ -783,7 +792,7 @@
                             <tbody id="selectedHampersTbody">
                                 <tr>
                                     <td colspan="8" style="text-align: center; padding: 30px; color: #94a3b8;">
-                                        ยังไม่มีชุดกระเช้าในออเดอร์นี้ กรุณากดปุ่ม <strong>"+ เพิ่มชุดกระเช้าลงในออเดอร์"</strong> ด้านบน
+                                        ยังไม่มีชุดกระเช้าในออเดอร์นี้ กรุณากดปุ่ม <strong>"เพิ่มชุดกระเช้าลงในออเดอร์"</strong> ด้านบน
                                     </td>
                                 </tr>
                             </tbody>
@@ -1127,7 +1136,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 6px; border-top: 1px dashed #e2e8f0;">
                             <span style="font-weight: 800; font-family: monospace; font-size: 14px; color: #0f172a;">฿ ${price.toLocaleString('th-TH')}</span>
                             <span style="font-size: 11.5px; font-weight: 600; color: ${isSelected ? '#7D0A0A' : '#0284c7'};">
-                                ${isSelected ? '✓ เลือกแล้ว (+1)' : '+ เลือกชุดนี้'}
+                                ${isSelected ? '✓ เลือกแล้ว (+1)' : 'เลือกชุดนี้'}
                             </span>
                         </div>
                     </div>
@@ -1191,7 +1200,7 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="8" style="text-align: center; padding: 30px; color: #94a3b8;">
-                            ยังไม่มีชุดกระเช้าในออเดอร์นี้ กรุณากดปุ่ม <strong>"+ เพิ่มชุดกระเช้าลงในออเดอร์"</strong> ด้านบน
+                            ยังไม่มีชุดกระเช้าในออเดอร์นี้ กรุณากดปุ่ม <strong>"เพิ่มชุดกระเช้าลงในออเดอร์"</strong> ด้านบน
                         </td>
                     </tr>
                 `;
@@ -1768,41 +1777,41 @@
                 totalRefBudget += lineBudget;
 
                 const shortageText = it.is_shortage
-                    ? `<span style="font-weight: 800; color: #b91c1c; font-size: 12.5px;">${it.shortage_qty}</span> <span style="font-size: 9.5px; color: #b91c1c;">${escapeHtml(it.unit)}</span>`
-                    : `<span style="color: #15803d; font-size: 10px; font-weight: 700;">✓ สต็อกพอ</span>`;
+                    ? `<span style="font-weight: 800; color: #b91c1c; font-size: 11.5px; font-family: 'Inter', monospace;">${it.shortage_qty}</span> <span style="font-size: 9px; font-weight: 600; color: #b91c1c;">${escapeHtml(it.unit)}</span>`
+                    : `<span style="color: #15803d; font-size: 9.5px; font-weight: 700;">✓ สต็อกพอ</span>`;
 
                 const hampersTag = (it.hampers_used_in || []).map(hu => `${hu.hamper_code} (${hu.total_required})`).join(', ');
 
                 return `
                     <tr>
-                        <td style="text-align: center; padding: 4px 2px; vertical-align: middle;">
-                            <div style="width: 14px; height: 14px; border: 1.5px solid #475569; margin: 0 auto; background: #fff;"></div>
+                        <td style="text-align: center; padding: 3px 2px; vertical-align: middle;">
+                            <div style="width: 13px; height: 13px; border: 1.5px solid #475569; margin: 0 auto; background: #fff;"></div>
                         </td>
-                        <td style="text-align: center; color: #475569; font-weight: 600; padding: 4px 2px; font-size: 11px; vertical-align: middle;">${idx + 1}</td>
-                        <td style="text-align: center; padding: 3px; vertical-align: middle;">
-                            <img src="${it.image_url || '/assets/images/default-hamper.png'}" alt="${escapeHtml(it.item_name)}" style="width: 38px; height: 38px; object-fit: cover; border: 1px solid #cbd5e1; background: #fff; display: block; margin: 0 auto;" onerror="this.onerror=null; this.src='/assets/images/default-hamper.png';">
+                        <td style="text-align: center; color: #475569; font-weight: 600; padding: 3px 2px; font-size: 10px; vertical-align: middle; font-family: 'Inter', monospace;">${idx + 1}</td>
+                        <td style="text-align: center; padding: 2px; vertical-align: middle;">
+                            <img src="${it.image_url || '/assets/images/default-hamper.png'}" alt="${escapeHtml(it.item_name)}" style="width: 32px; height: 32px; object-fit: cover; border: 1px solid #cbd5e1; background: #fff; display: block; margin: 0 auto; border-radius: 3px;" onerror="this.onerror=null; this.src='/assets/images/default-hamper.png';">
                         </td>
-                        <td style="text-align: center; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: 700; color: #7D0A0A; padding: 4px 6px; font-size: 11px; white-space: nowrap; vertical-align: middle;">
+                        <td style="text-align: center; font-family: 'Inter', ui-monospace, monospace; font-weight: 700; color: #7D0A0A; padding: 3px 4px; font-size: 10.5px; white-space: nowrap; vertical-align: middle;">
                             ${escapeHtml(it.product_code || '-')}
                         </td>
-                        <td style="padding: 4px 8px; vertical-align: middle;">
-                            <div style="font-size: 11.5px; font-weight: 700; color: #0f172a; line-height: 1.25;">${escapeHtml(it.item_name)}</div>
-                            <div style="font-size: 9.5px; color: #64748b; margin-top: 1px; line-height: 1.2;">ใช้ใน: ${escapeHtml(hampersTag || '-')}</div>
+                        <td style="padding: 3px 6px; vertical-align: middle;">
+                            <div style="font-size: 10.5px; font-weight: 700; color: #0f172a; line-height: 1.25;">${escapeHtml(it.item_name)}</div>
+                            ${hampersTag ? `<div style="font-size: 9px; color: #64748b; margin-top: 1px; line-height: 1.2;">ใช้ใน: ${escapeHtml(hampersTag)}</div>` : ''}
                         </td>
-                        <td style="text-align: center; padding: 4px 6px; white-space: nowrap; vertical-align: middle; font-family: ui-monospace, monospace; font-weight: 800; font-size: 12px;">
-                            ${it.total_required_qty} <span style="font-size: 10px; font-weight: 600; color: #475569;">${escapeHtml(it.unit)}</span>
+                        <td style="text-align: center; padding: 3px 4px; white-space: nowrap; vertical-align: middle; font-family: 'Inter', monospace; font-weight: 800; font-size: 11px;">
+                            ${it.total_required_qty} <span style="font-size: 9.5px; font-weight: 600; color: #475569;">${escapeHtml(it.unit)}</span>
                         </td>
-                        <td style="text-align: center; color: #475569; padding: 4px 6px; font-family: ui-monospace, monospace; font-size: 11px; vertical-align: middle;">
+                        <td style="text-align: center; color: #475569; padding: 3px 4px; font-family: 'Inter', monospace; font-size: 10.5px; vertical-align: middle;">
                             ${it.current_stock || 0}
                         </td>
-                        <td style="text-align: center; padding: 4px 6px; white-space: nowrap; vertical-align: middle; background: ${it.is_shortage ? '#fff5f5' : '#ffffff'};">
+                        <td style="text-align: center; padding: 3px 4px; white-space: nowrap; vertical-align: middle; background: ${it.is_shortage ? '#fff5f5' : '#ffffff'};">
                             ${shortageText}
                         </td>
-                        <td style="text-align: right; color: #0f172a; padding: 4px 8px; font-family: ui-monospace, monospace; font-size: 11px; white-space: nowrap; vertical-align: middle;">
+                        <td style="text-align: right; color: #0f172a; padding: 3px 6px; font-family: 'Inter', monospace; font-size: 10.5px; white-space: nowrap; vertical-align: middle;">
                             ฿ ${(it.unit_cost || 0).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </td>
-                        <td style="text-align: center; padding: 4px 6px; vertical-align: middle;">
-                            <div style="font-size: 10.5px; color: #94a3b8; font-family: monospace; letter-spacing: 1px; text-align: left; padding-left: 6px;">
+                        <td style="text-align: center; padding: 3px 4px; vertical-align: middle;">
+                            <div style="font-size: 10px; color: #94a3b8; font-family: 'Inter', monospace; letter-spacing: 0.5px; text-align: left; padding-left: 4px;">
                                 ฿ ....................
                             </div>
                         </td>
@@ -1816,28 +1825,33 @@
                 <head>
                     <meta charset="UTF-8">
                     <title>ใบรวมซื้อและหยิบวัตถุดิบ (CONSOLIDATED SOURCING SLIP) - ${escapeHtml(orderNo)}</title>
+                    <!-- Google Fonts for Prompt and Inter -->
+                    <link rel="preconnect" href="https://fonts.googleapis.com">
+                    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
                     <style>
                         @page {
                             size: A4 portrait;
-                            margin: 7mm 8mm 7mm 8mm;
+                            margin: 8mm 8mm 8mm 8mm;
                         }
                         * {
                             box-sizing: border-box;
                             -webkit-print-color-adjust: exact;
                             print-color-adjust: exact;
                         }
-                        body {
-                            font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                            font-size: 11px;
-                            color: #0f172a;
-                            background: #ffffff;
+                        html, body {
                             margin: 0;
                             padding: 0;
+                            background: #ffffff;
+                            color: #0f172a;
+                            font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                            font-size: 10px;
                             line-height: 1.3;
+                            -webkit-font-smoothing: antialiased;
                         }
                         .page-container {
                             width: 100%;
-                            max-width: 210mm;
+                            max-width: 100%;
                             margin: 0 auto;
                         }
                         .btn-print {
@@ -1847,12 +1861,13 @@
                             padding: 6px 14px;
                             font-size: 12px;
                             font-weight: 700;
-                            border-radius: 5px;
+                            border-radius: 6px;
                             cursor: pointer;
                             display: inline-flex;
                             align-items: center;
                             gap: 5px;
                             box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+                            font-family: 'Prompt', sans-serif;
                         }
                         .btn-close {
                             background: #ffffff;
@@ -1861,11 +1876,12 @@
                             padding: 6px 12px;
                             font-size: 12px;
                             font-weight: 600;
-                            border-radius: 5px;
+                            border-radius: 6px;
                             cursor: pointer;
                             display: inline-flex;
                             align-items: center;
                             gap: 4px;
+                            font-family: 'Prompt', sans-serif;
                         }
                         @media print {
                             .no-print { display: none !important; }
@@ -1876,39 +1892,41 @@
                             justify-content: space-between;
                             align-items: center;
                             border-bottom: 1.5px solid #0f172a;
-                            padding-bottom: 6px;
+                            padding-bottom: 5px;
                             margin-bottom: 6px;
                         }
                         .brand-title {
-                            font-size: 14.5px;
+                            font-size: 14px;
                             font-weight: 800;
                             color: #0f172a;
                             margin: 0;
                             display: flex;
                             align-items: center;
                             gap: 8px;
+                            font-family: 'Prompt', sans-serif;
                         }
                         .doc-title {
-                            font-size: 14px;
+                            font-size: 13.5px;
                             font-weight: 800;
                             color: #7D0A0A;
                             text-align: right;
                             margin: 0;
+                            font-family: 'Prompt', sans-serif;
                         }
                         .spec-table-box {
-                            border: 1px solid #cbd5e1;
-                            margin-bottom: 8px;
-                            padding: 6px 12px;
+                            border: 1px solid #94a3b8;
+                            margin-bottom: 6px;
+                            padding: 5px 10px;
                             background: #ffffff;
                             display: grid;
                             grid-template-columns: 1fr 1fr;
-                            gap: 4px 16px;
-                            font-size: 10.5px;
+                            gap: 3px 14px;
+                            font-size: 10px;
                         }
                         table.slip-table {
                             width: 100%;
                             border-collapse: collapse;
-                            font-size: 10.5px;
+                            font-size: 10px;
                             margin-bottom: 6px;
                             border: 1px solid #94a3b8;
                         }
@@ -1917,8 +1935,9 @@
                             border: 1px solid #94a3b8;
                             color: #0f172a;
                             font-weight: 700;
-                            padding: 5px 4px;
-                            font-size: 10.5px;
+                            padding: 4px 3px;
+                            font-size: 10px;
+                            font-family: 'Prompt', sans-serif;
                         }
                         table.slip-table td {
                             border: 1px solid #cbd5e1;
@@ -1937,12 +1956,12 @@
                                     <img src="/assets/images/mam-logo.png" alt="MAM" style="height: 22px; width: auto; object-fit: contain;" onerror="this.style.display='none'">
                                     <span>บริษัท เอ็มเอเอ็ม ดีไซน์แอนด์เซอร์วิส จำกัด</span>
                                 </h1>
-                                <div style="font-size: 9.5px; color: #475569; margin-top: 1px; letter-spacing: 0.2px;">MAM DESIGN AND SERVICE CO., LTD. &bull; ERP SOURCING &amp; PRODUCTION</div>
+                                <div style="font-size: 9px; color: #475569; margin-top: 1px; letter-spacing: 0.2px;">MAM DESIGN AND SERVICE CO., LTD. &bull; ERP SOURCING &amp; PRODUCTION</div>
                             </div>
                             <div>
                                 <div class="doc-title">ใบรวมซื้อและหยิบวัตถุดิบ (CONSOLIDATED SOURCING SLIP)</div>
-                                <div style="font-size: 9.5px; color: #475569; text-align: right; margin-top: 1px;">
-                                    <strong>เลขที่ออเดอร์:</strong> <span style="font-family: monospace; font-weight: 800; color: #7D0A0A;">${escapeHtml(orderNo)}</span> | วันที่: ${nowStr}
+                                <div style="font-size: 9px; color: #475569; text-align: right; margin-top: 1px;">
+                                    <strong>เลขที่ออเดอร์:</strong> <span style="font-family: 'Inter', monospace; font-weight: 800; color: #7D0A0A;">${escapeHtml(orderNo)}</span> | วันที่: ${nowStr}
                                 </div>
                             </div>
                         </div>
@@ -1952,7 +1971,7 @@
                             <div><strong style="color:#475569;">ลูกค้า / องค์กร:</strong> <span style="font-weight: 700; color: #0f172a;">${escapeHtml(customerName)}</span></div>
                             <div><strong style="color:#475569;">ชื่องาน / แคมเปญ:</strong> <span style="color: #0f172a;">${escapeHtml(eventName)}</span></div>
                             <div><strong style="color:#475569;">กำหนดส่งมอบ:</strong> <span style="color: #0f172a;">${escapeHtml(dueDate || '-')}</span></div>
-                            <div><strong style="color:#475569;">ยอดสั่งทำกระเช้ารวม:</strong> <span style="font-weight: 800; color: #7D0A0A;">${totalHampersCount} ชุด</span> (${hampers.length} แบบ)</div>
+                            <div><strong style="color:#475569;">ยอดสั่งทำกระเช้ารวม:</strong> <span style="font-weight: 800; color: #7D0A0A; font-family: 'Inter', monospace;">${totalHampersCount}</span> <strong style="color:#7D0A0A;">ชุด</strong> (${hampers.length} แบบ)</div>
                             <div style="grid-column: span 2; border-top: 1px dashed #cbd5e1; padding-top: 3px; margin-top: 1px;">
                                 <strong style="color:#475569;">ชุดกระเช้าในออเดอร์นี้:</strong>
                                 <span style="color: #0f172a;">${hampersListSummary || '-'}</span>
@@ -1963,16 +1982,16 @@
                         <table class="slip-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 26px; text-align: center;">เช็ค</th>
-                                    <th style="width: 22px; text-align: center;">#</th>
-                                    <th style="width: 44px; text-align: center;">รูปถ่าย</th>
-                                    <th style="width: 80px; text-align: center;">รหัส SKU</th>
-                                    <th style="text-align: left;">รายการวัตถุดิบ / ขนม / บรรจุภัณฑ์</th>
-                                    <th style="width: 78px; text-align: center;">รวมต้องใช้</th>
-                                    <th style="width: 65px; text-align: center;">สต็อกคลัง</th>
-                                    <th style="width: 86px; text-align: center;">ต้องซื้อเพิ่ม</th>
-                                    <th style="width: 84px; text-align: right;">ทุนอ้างอิง</th>
-                                    <th style="width: 105px; text-align: center;">ราคาซื้อจริง (จดมือ)</th>
+                                    <th style="width: 24px; text-align: center;">เช็ค</th>
+                                    <th style="width: 20px; text-align: center;">#</th>
+                                    <th style="width: 36px; text-align: center;">รูป</th>
+                                    <th style="width: 68px; text-align: center;">รหัส SKU</th>
+                                    <th style="text-align: left; padding-left: 6px;">รายการวัตถุดิบ / ขนม / บรรจุภัณฑ์</th>
+                                    <th style="width: 68px; text-align: center;">รวมต้องใช้</th>
+                                    <th style="width: 54px; text-align: center;">สต็อกคลัง</th>
+                                    <th style="width: 76px; text-align: center;">ต้องซื้อเพิ่ม</th>
+                                    <th style="width: 72px; text-align: right; padding-right: 6px;">ทุนอ้างอิง</th>
+                                    <th style="width: 90px; text-align: center;">ราคาซื้อจริง (จดมือ)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1980,20 +1999,20 @@
                             </tbody>
                             <tfoot>
                                 <tr style="background: #f1f5f9; font-weight: 700; border-top: 1.5px solid #0f172a;">
-                                    <td colspan="5" style="padding: 5px 8px; text-align: right; color: #0f172a; font-size: 10.5px;">
-                                        รวมทั้งสิ้น ${sourcing.length} รายการ (ตามยอดสั่งผลิต ${totalHampersCount} ชุด):
+                                    <td colspan="5" style="padding: 4px 8px; text-align: right; color: #0f172a; font-size: 10px; font-family: 'Prompt', sans-serif;">
+                                        รวมทั้งสิ้น ${sourcing.length} รายการ (ตามยอดสั่งทำ ${totalHampersCount} ชุด):
                                     </td>
-                                    <td style="text-align: center; padding: 5px; font-size: 11px; font-weight: 800; color: #0f172a; font-family: ui-monospace, monospace;">
+                                    <td style="text-align: center; padding: 4px; font-size: 11px; font-weight: 800; color: #0f172a; font-family: 'Inter', monospace;">
                                         ${totalReqPieces} ชิ้น
                                     </td>
-                                    <td style="text-align: center; color: #64748b;">-</td>
-                                    <td style="text-align: center; padding: 5px; font-size: 11px; font-weight: 800; color: #b91c1c; font-family: ui-monospace, monospace;">
+                                    <td style="text-align: center; color: #64748b; font-size: 10px;">-</td>
+                                    <td style="text-align: center; padding: 4px; font-size: 11px; font-weight: 800; color: #b91c1c; font-family: 'Inter', monospace;">
                                         ${totalShortagePieces} ชิ้น
                                     </td>
-                                    <td style="text-align: right; padding: 5px 8px; font-size: 11px; font-weight: 800; color: #15803d; font-family: ui-monospace, monospace;">
+                                    <td style="text-align: right; padding: 4px 6px; font-size: 10.5px; font-weight: 800; color: #15803d; font-family: 'Inter', monospace;">
                                         ฿ ${totalRefBudget.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                     </td>
-                                    <td style="text-align: center; padding: 5px 6px; font-size: 9.5px; color: #475569;">
+                                    <td style="text-align: center; padding: 4px; font-size: 9px; color: #475569; font-family: 'Prompt', sans-serif;">
                                         รวมจ่ายจริง: ฿ ..........
                                     </td>
                                 </tr>
@@ -2001,7 +2020,7 @@
                         </table>
 
                         <!-- Minimal Notes Strip -->
-                        <div style="margin-top: 6px; padding: 6px 10px; border: 1px solid #cbd5e1; font-size: 10px; color: #334155; background: #ffffff; display: flex; align-items: center; justify-content: space-between;">
+                        <div style="margin-top: 5px; padding: 5px 8px; border: 1px solid #cbd5e1; font-size: 9.5px; color: #334155; background: #ffffff; display: flex; align-items: center; justify-content: space-between;">
                             <div style="display: flex; align-items: center; gap: 4px; flex-grow: 1;">
                                 <strong>หมายเหตุเพิ่มเติม:</strong>
                                 <span style="color: #cbd5e1; letter-spacing: 1px;">____________________________________________________________________________________________________</span>
@@ -2009,13 +2028,13 @@
                         </div>
 
                         <!-- Footer Meta -->
-                        <div style="margin-top: 5px; display: flex; justify-content: space-between; font-size: 9px; color: #64748b;">
+                        <div style="margin-top: 5px; display: flex; justify-content: space-between; font-size: 8.5px; color: #64748b;">
                             <div>MAM DESIGN AND SERVICE CO., LTD. &bull; ERP SOURCING &amp; PRODUCTION SYSTEM</div>
                             <div>พิมพ์เมื่อ: ${nowStr}</div>
                         </div>
 
                         <!-- Bottom-Right Floating Action Controls (Hidden when Print) -->
-                        <div class="no-print" style="position: fixed; bottom: 20px; right: 24px; z-index: 9999; display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(6px); padding: 6px 8px; border-radius: 8px; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.18); border: 1px solid #cbd5e1;">
+                        <div class="no-print" style="position: fixed; bottom: 18px; right: 20px; z-index: 9999; display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(8px); padding: 6px 10px; border-radius: 8px; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.18); border: 1px solid #cbd5e1;">
                             <button type="button" class="btn-close" onclick="window.close()" title="ปิดหน้าต่างนี้">
                                 <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                                 <span>ปิดหน้าต่าง</span>

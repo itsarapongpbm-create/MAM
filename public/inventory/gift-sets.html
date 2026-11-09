@@ -1477,28 +1477,33 @@
                 <head>
                     <meta charset="UTF-8">
                     <title>ใบหยิบสินค้าและประกอบกระเช้า (PICKING LIST) - ${escapeHtml(s.code)}</title>
+                    <!-- Google Fonts for Prompt and Inter -->
+                    <link rel="preconnect" href="https://fonts.googleapis.com">
+                    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
                     <style>
                         @page {
                             size: A4 portrait;
-                            margin: 7mm 8mm 7mm 8mm;
+                            margin: 8mm 8mm 8mm 8mm;
                         }
                         * {
                             box-sizing: border-box;
                             -webkit-print-color-adjust: exact;
                             print-color-adjust: exact;
                         }
-                        body {
-                            font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                            font-size: 11px;
-                            color: #0f172a;
-                            background: #ffffff;
+                        html, body {
                             margin: 0;
                             padding: 0;
+                            background: #ffffff;
+                            color: #0f172a;
+                            font-family: 'Prompt', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                            font-size: 10px;
                             line-height: 1.3;
+                            -webkit-font-smoothing: antialiased;
                         }
                         .page-container {
                             width: 100%;
-                            max-width: 210mm;
+                            max-width: 100%;
                             margin: 0 auto;
                         }
                         .btn-print {
