@@ -477,20 +477,55 @@ router.post('/batch-orders/:id/assemble', async (req, res) => {
             return res.status(400).json({ error: 'ไม่พบรายการวัตถุดิบรวมในออเดอร์นี้' });
         }
 
-        const userName = req.headers['x-user-name'] || 'Admin (Batch Order)';
+        // ตรวจสอบสต็อกวัตถุดิบก่อนตัด (ถ้าไม่ได้ส่ง allow_negative: true)
+        const allowNegative = Boolean(req.body && (req.body.allow_negative === true || req.body.allow_negative === 'true'));
+        if (!allowNegative) {
+            const shortages = [];
+            const reqByProdId = new Map();
+            for (const row of sourcing) {
+                const deductQty = Number(row.total_required_qty) || 0;
+                if (deductQty <= 0) continue;
+                let prod = null;
+                if (row.product_id) {
+                    prod = await db.getAsync("SELECT * FROM products WHERE id = ?", [row.product_id]);
+                }
+                if (!prod && row.product_code) {
+                    prod = await db.getAsync("SELECT * FROM products WHERE code = ?", [row.product_code]);
+                }
+                if (prod) {
+                    const prevReq = reqByProdId.get(prod.id)?.reqQty || 0;
+                    reqByProdId.set(prod.id, {
+                        prod,
+                        row,
+                        reqQty: prevReq + deductQty
+                    });
+                }
+            }
+            for (const { prod, row, reqQty } of reqByProdId.values()) {
+                const availQty = Number(prod.quantity_on_hand) || 0;
+                if (availQty < reqQty) {
+                    shortages.push(`[${prod.code}] ${prod.name || row.item_name} (ต้องการ ${reqQty} แต่มี ${availQty} ${prod.unit || row.unit || 'ชิ้น'})`);
+                }
+            }
+            if (shortages.length > 0) {
+                return res.status(400).json({
+                    error: `สต็อกวัตถุดิบไม่เพียงพอสำหรับการประกอบตามใบออเดอร์ [${order.order_number}]:\n- ${shortages.join('\n- ')}`,
+                    shortages
+                });
+            }
+        }
+
+        const userName = req.headers['x-user-name'] || (req.body && req.body.user_name) || 'Admin (Batch Order)';
         const asmDocNo = `ASM-${order.order_number}`;
 
-        await db.runAsync('BEGIN TRANSACTION');
+        const deductedCount = await db.withTransaction(async () => {
+            let count = 0;
 
-        try {
-            let deductedCount = 0;
-
-            // 1. ตัดสต็อกวัตถุดิบตามที่คำนวณใน sourcing_json
+            // 1. ตัดสต็อกวัตถุดิบตามที่คำนวณใน sourcing_json (อ่านยอดสดในลูปเสมอ)
             for (const row of sourcing) {
                 const deductQty = Number(row.total_required_qty) || 0;
                 if (deductQty <= 0) continue;
 
-                // ค้นหาสินค้าวัตถุดิบ
                 let prod = null;
                 if (row.product_id) {
                     prod = await db.getAsync("SELECT * FROM products WHERE id = ?", [row.product_id]);
@@ -523,7 +558,7 @@ router.post('/batch-orders/:id/assemble', async (req, res) => {
                         userName
                     ]);
 
-                    deductedCount++;
+                    count++;
                 }
             }
 
@@ -579,17 +614,14 @@ router.post('/batch-orders/:id/assemble', async (req, res) => {
             // 3. ปรับสถานะใบออเดอร์เป็น ASSEMBLED
             await db.runAsync("UPDATE hamper_batch_orders SET status = 'ASSEMBLED', updated_at = CURRENT_TIMESTAMP WHERE id = ?", [order.id]);
 
-            await db.runAsync('COMMIT');
+            return count;
+        });
 
-            res.json({
-                message: `ประกอบกระเช้าตามใบออเดอร์ [${order.order_number}] เรียบร้อยแล้ว (ตัดสต็อกวัตถุดิบ ${deductedCount} รายการ)`,
-                ref_doc_number: asmDocNo,
-                status: 'ASSEMBLED'
-            });
-        } catch (txErr) {
-            await db.runAsync('ROLLBACK');
-            throw txErr;
-        }
+        res.json({
+            message: `ประกอบกระเช้าตามใบออเดอร์ [${order.order_number}] เรียบร้อยแล้ว (ตัดสต็อกวัตถุดิบ ${deductedCount} รายการ)`,
+            ref_doc_number: asmDocNo,
+            status: 'ASSEMBLED'
+        });
     } catch (err) {
         console.error('Error batch assembling gift sets:', err);
         res.status(500).json({ error: err.message });
@@ -871,18 +903,26 @@ router.post(['/:id/assemble', '/:id/produce'], async (req, res) => {
             return res.status(400).json({ error: 'ชุดกระเช้านี้ยังไม่มีรายการวัตถุดิบในสูตร BOM' });
         }
 
-        // ตรวจสอบสต็อกวัตถุดิบทุกชิ้นก่อนตัด
+        // ตรวจสอบสต็อกวัตถุดิบทุกชิ้นก่อนตัด (รวมยอดกรณีมีรหัสสินค้าซ้ำกันใน BOM)
         const shortages = [];
+        const reqByProdId = new Map();
         for (const it of items) {
             if (!it.real_product_id) continue;
             const reqQty = (Number(it.quantity) || 1) * buildQty;
+            const prev = reqByProdId.get(it.real_product_id);
+            reqByProdId.set(it.real_product_id, {
+                it,
+                reqQty: (prev ? prev.reqQty : 0) + reqQty
+            });
+        }
+        for (const { it, reqQty } of reqByProdId.values()) {
             const availQty = Number(it.current_stock) || 0;
             if (availQty < reqQty) {
                 shortages.push(`[${it.product_code}] ${it.item_name} (ต้องการ ${reqQty} แต่มี ${availQty} ${it.product_unit || 'ชิ้น'})`);
             }
         }
 
-        if (shortages.length > 0) {
+        if (shortages.length > 0 && !(req.body && req.body.allow_negative === true)) {
             return res.status(400).json({
                 error: `สต็อกวัตถุดิบไม่เพียงพอสำหรับการประกอบ ${buildQty} ชุด:\n- ${shortages.join('\n- ')}`
             });
@@ -892,14 +932,14 @@ router.post(['/:id/assemble', '/:id/produce'], async (req, res) => {
         const datePrefix = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`;
         const asmDocNo = `ASM-${datePrefix}-${Math.floor(100 + Math.random() * 900)}`;
 
-        await db.runAsync('BEGIN TRANSACTION');
-        try {
-            // 1. ตัดสต็อกวัตถุดิบรายชิ้นตามสูตร BOM
-            let deductedCount = 0;
+        const { deductedCount, newHamperStock } = await db.withTransaction(async () => {
+            // 1. ตัดสต็อกวัตถุดิบรายชิ้นตามสูตร BOM (อ่านยอดสดในลูปเสมอ)
+            let count = 0;
             for (const it of items) {
                 if (!it.real_product_id) continue;
                 const deductQty = (Number(it.quantity) || 1) * buildQty;
-                const prevStock = Number(it.current_stock) || 0;
+                const freshProd = await db.getAsync("SELECT quantity_on_hand, cost_price FROM products WHERE id = ?", [it.real_product_id]);
+                const prevStock = Number(freshProd ? freshProd.quantity_on_hand : it.current_stock) || 0;
                 const newStock = Math.max(0, prevStock - deductQty);
 
                 await db.runAsync(
@@ -916,24 +956,24 @@ router.post(['/:id/assemble', '/:id/produce'], async (req, res) => {
                     it.real_product_id,
                     -deductQty,
                     newStock,
-                    Number(it.live_cost_price || it.unit_cost) || 0,
+                    Number((freshProd && freshProd.cost_price) || it.live_cost_price || it.unit_cost) || 0,
                     asmDocNo,
                     `เบิกวัตถุดิบประกอบชุดกระเช้า [${set.code}] ${set.name} (${buildQty} ชุด)`,
                     userName
                 ]);
-                deductedCount++;
+                count++;
             }
 
             // 2. เพิ่มสต็อกให้สินค้าชุดกระเช้าสำเร็จรูป (HMP-xxx)
             let hamperProd = await db.getAsync("SELECT * FROM products WHERE code = ? LIMIT 1", [set.code]);
-            let newHamperStock = buildQty;
+            let hamperStockAfter = buildQty;
 
             if (hamperProd) {
                 const prevHamperStock = Number(hamperProd.quantity_on_hand) || 0;
-                newHamperStock = prevHamperStock + buildQty;
+                hamperStockAfter = prevHamperStock + buildQty;
                 await db.runAsync(
                     'UPDATE products SET quantity_on_hand = ?, stock_quantity = ? WHERE id = ?',
-                    [newHamperStock, newHamperStock, hamperProd.id]
+                    [hamperStockAfter, hamperStockAfter, hamperProd.id]
                 );
             } else {
                 const desc = items.map(it => `• ${it.item_name} (${it.quantity} ชิ้น)`).join('\n');
@@ -962,26 +1002,23 @@ router.post(['/:id/assemble', '/:id/produce'], async (req, res) => {
             `, [
                 hamperProd.id,
                 buildQty,
-                newHamperStock,
+                hamperStockAfter,
                 Number(set.cost_price) || 0,
                 asmDocNo,
                 `รับเข้าชุดกระเช้าสำเร็จรูป [${set.code}] ${set.name} จากการสั่งประกอบ (${buildQty} ชุด)`,
                 userName
             ]);
 
-            await db.runAsync('COMMIT');
+            return { deductedCount: count, newHamperStock: hamperStockAfter };
+        });
 
-            res.json({
-                message: `ประกอบชุดกระเช้า [${set.code}] จำนวน ${buildQty} ชุดสำเร็จ (ตัดวัตถุดิบ ${deductedCount} รายการ)`,
-                assembled_qty: buildQty,
-                new_hamper_stock: newHamperStock,
-                deducted_items_count: deductedCount,
-                ref_doc_number: asmDocNo
-            });
-        } catch (txErr) {
-            await db.runAsync('ROLLBACK');
-            throw txErr;
-        }
+        res.json({
+            message: `ประกอบชุดกระเช้า [${set.code}] จำนวน ${buildQty} ชุดสำเร็จ (ตัดวัตถุดิบ ${deductedCount} รายการ)`,
+            assembled_qty: buildQty,
+            new_hamper_stock: newHamperStock,
+            deducted_items_count: deductedCount,
+            ref_doc_number: asmDocNo
+        });
     } catch (err) {
         console.error('Error assembling gift set:', err);
         res.status(500).json({ error: err.message });
@@ -996,7 +1033,16 @@ router.delete('/:id', async (req, res) => {
 
         await db.runAsync("DELETE FROM gift_set_items WHERE gift_set_id = ?", [req.params.id]);
         await db.runAsync("DELETE FROM gift_sets WHERE id = ?", [req.params.id]);
-        await db.runAsync("DELETE FROM products WHERE code = ? AND category = 'ชุดกระเช้าของขวัญ'", [set.code]);
+
+        try {
+            await db.runAsync(
+                "UPDATE document_items SET product_id = NULL WHERE product_id IN (SELECT id FROM products WHERE code = ?)",
+                [set.code]
+            );
+            await db.runAsync("DELETE FROM products WHERE code = ? AND category = 'ชุดกระเช้าของขวัญ'", [set.code]);
+        } catch (prodDelErr) {
+            console.warn('Could not delete linked product for gift set:', prodDelErr.message);
+        }
 
         res.json({ message: 'ลบชุดกระเช้าเรียบร้อยแล้ว', code: set.code });
     } catch (err) {

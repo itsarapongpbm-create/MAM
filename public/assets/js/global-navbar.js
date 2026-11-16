@@ -133,13 +133,130 @@
         }
     }
 
+    function openBuiltInCompanyModal() {
+        let modal = document.getElementById('mamGlobalCompanyModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'mamGlobalCompanyModal';
+            modal.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.55);z-index:10050;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);';
+            modal.innerHTML = `
+                <div style="background:#ffffff;border-radius:14px;width:100%;max-width:560px;box-shadow:0 24px 48px rgba(15,23,42,0.25);overflow:hidden;font-family:var(--font-main, \'Prompt\', sans-serif);">
+                    <div style="padding:16px 20px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;background:#f8fafc;">
+                        <h3 style="margin:0;font-size:16px;font-weight:700;color:#0f172a;">ข้อมูลองค์กร (Company Profile)</h3>
+                        <button type="button" id="closeMamCompanyModal" style="background:none;border:none;font-size:20px;color:#64748b;cursor:pointer;line-height:1;">&times;</button>
+                    </div>
+                    <form id="mamGlobalCompanyForm" style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+                        <div>
+                            <label style="display:block;font-size:12.5px;font-weight:600;color:#334155;margin-bottom:4px;">ชื่อบริษัท (ภาษาไทย) *</label>
+                            <input type="text" id="compModalName" required style="width:100%;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13.5px;box-sizing:border-box;">
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:12.5px;font-weight:600;color:#334155;margin-bottom:4px;">ชื่อบริษัท (ภาษาอังกฤษ)</label>
+                            <input type="text" id="compModalNameEn" style="width:100%;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13.5px;box-sizing:border-box;">
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div>
+                                <label style="display:block;font-size:12.5px;font-weight:600;color:#334155;margin-bottom:4px;">เลขประจำตัวผู้เสียภาษี (13 หลัก)</label>
+                                <input type="text" id="compModalTaxId" maxlength="13" style="width:100%;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13.5px;box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:12.5px;font-weight:600;color:#334155;margin-bottom:4px;">สาขา</label>
+                                <input type="text" id="compModalBranch" style="width:100%;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13.5px;box-sizing:border-box;">
+                            </div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div>
+                                <label style="display:block;font-size:12.5px;font-weight:600;color:#334155;margin-bottom:4px;">เบอร์โทรศัพท์</label>
+                                <input type="text" id="compModalPhone" style="width:100%;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13.5px;box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:12.5px;font-weight:600;color:#334155;margin-bottom:4px;">อีเมล</label>
+                                <input type="email" id="compModalEmail" style="width:100%;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13.5px;box-sizing:border-box;">
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:12.5px;font-weight:600;color:#334155;margin-bottom:4px;">ที่อยู่จดทะเบียน</label>
+                            <textarea id="compModalAddress" rows="2" style="width:100%;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font-size:13.5px;box-sizing:border-box;resize:vertical;"></textarea>
+                        </div>
+                        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px;padding-top:12px;border-top:1px solid #e2e8f0;">
+                            <button type="button" id="cancelMamCompanyModal" style="padding:8px 16px;border:1px solid #cbd5e1;background:#ffffff;color:#475569;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;">ยกเลิก</button>
+                            <button type="submit" style="padding:8px 18px;border:none;background:#7D0A0A;color:#ffffff;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;">บันทึกข้อมูลองค์กร</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            const close = () => { modal.style.display = 'none'; };
+            modal.querySelector('#closeMamCompanyModal').addEventListener('click', close);
+            modal.querySelector('#cancelMamCompanyModal').addEventListener('click', close);
+            modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+
+            modal.querySelector('#mamGlobalCompanyForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const payload = {
+                    name: document.getElementById('compModalName').value.trim(),
+                    name_en: document.getElementById('compModalNameEn').value.trim(),
+                    tax_id: document.getElementById('compModalTaxId').value.trim(),
+                    branch: document.getElementById('compModalBranch').value.trim(),
+                    phone: document.getElementById('compModalPhone').value.trim(),
+                    email: document.getElementById('compModalEmail').value.trim(),
+                    address: document.getElementById('compModalAddress').value.trim()
+                };
+                try {
+                    const res = await fetch('/api/company', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!res.ok) throw new Error('บันทึกไม่สำเร็จ');
+                    sessionStorage.setItem('MAM_COMPANY_NAME', payload.name);
+                    const nameEl = document.getElementById('topbarCompanyName');
+                    if (nameEl && payload.name) nameEl.textContent = payload.name;
+                    close();
+                    if (typeof window.showToast === 'function') {
+                        window.showToast('บันทึกสำเร็จ', 'อัปเดตข้อมูลองค์กรเรียบร้อยแล้ว', 'success');
+                    } else {
+                        alert('บันทึกข้อมูลองค์กรเรียบร้อยแล้ว');
+                    }
+                } catch (err) {
+                    alert('เกิดข้อผิดพลาด: ' + err.message);
+                }
+            });
+        }
+
+        modal.style.display = 'flex';
+        fetch('/api/company')
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+                if (!data) return;
+                document.getElementById('compModalName').value = data.name || data.name_th || '';
+                document.getElementById('compModalNameEn').value = data.name_en || '';
+                document.getElementById('compModalTaxId').value = data.tax_id || '';
+                document.getElementById('compModalBranch').value = data.branch || 'สำนักงานใหญ่';
+                document.getElementById('compModalPhone').value = data.phone || '';
+                document.getElementById('compModalEmail').value = data.email || '';
+                document.getElementById('compModalAddress').value = data.address || '';
+            })
+            .catch(() => {});
+    }
+
     function setupTopbarActionButtons() {
         const companyInfoLink = document.getElementById('openCompanyInfoLink');
-        if (companyInfoLink) {
-            const companyModal = document.getElementById('companyInfoModal') || document.getElementById('companyModal');
-            if (!companyModal) {
-                companyInfoLink.setAttribute('href', '/admin-web/settings.html');
-            }
+        if (companyInfoLink && !companyInfoLink.dataset.wired) {
+            companyInfoLink.dataset.wired = '1';
+            companyInfoLink.addEventListener('click', (e) => {
+                const companyModal = document.getElementById('companyInfoModal') || document.getElementById('companyModal');
+                if (companyModal) {
+                    e.preventDefault();
+                    companyModal.style.display = 'flex';
+                    return;
+                }
+                e.preventDefault();
+                const dropdown = document.getElementById('userDropdownContent');
+                if (dropdown) dropdown.classList.remove('show');
+                openBuiltInCompanyModal();
+            });
         }
 
         const notifBtn = document.getElementById('topbarNotificationBtn');

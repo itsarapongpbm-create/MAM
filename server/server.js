@@ -37,7 +37,7 @@ const giftSetRoutes = require('./routes/gift-sets.routes');
 const emailRoutes = require('./routes/email.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const bankingRoutes = require('./routes/banking.routes');
-const { checkStorageHealth } = require('./services/storage.service');
+const { checkStorageHealth, getStorageObject } = require('./services/storage.service');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -104,6 +104,38 @@ app.use('/api/gift-sets', giftSetRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/banking', bankingRoutes);
+
+// Proxy route สำหรับดึงไฟล์รูปภาพ/เอกสารจาก MinIO S3 (รองรับการเข้าถึงผ่าน LAN IP ทุกเครื่อง)
+app.use('/api/storage', async (req, res) => {
+    try {
+        const cleanPath = req.path.replace(/^\/+/, '');
+        const parts = cleanPath.split('/');
+        const bucket = decodeURIComponent(parts[0] || '');
+        const key = parts.slice(1).map(decodeURIComponent).join('/');
+        if (!bucket || !key) {
+            return res.status(400).json({ error: 'Bucket and key are required' });
+        }
+        const obj = await getStorageObject({ bucket, key });
+        res.setHeader('Content-Type', obj.contentType || 'application/octet-stream');
+        if (obj.contentLength) {
+            res.setHeader('Content-Length', String(obj.contentLength));
+        }
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        if (obj.stream && typeof obj.stream.pipe === 'function') {
+            obj.stream.on('error', () => {
+                if (!res.headersSent) res.status(404).end();
+            });
+            obj.stream.pipe(res);
+        } else if (obj.stream && typeof obj.stream.transformToByteArray === 'function') {
+            const bytes = await obj.stream.transformToByteArray();
+            res.send(Buffer.from(bytes));
+        } else {
+            res.status(404).json({ error: 'Object stream unavailable' });
+        }
+    } catch (err) {
+        res.status(404).json({ error: 'File not found', details: err.message });
+    }
+});
 
 // Auto-redirect incorrect nested paths
 app.use('/dashboard/inventory', (req, res) => {

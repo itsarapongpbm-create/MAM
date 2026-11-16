@@ -268,6 +268,9 @@
                         <a href="../inventory/inventory.html" class="submenu-item"><span>• ขนม / โบว์ / ตะกร้า</span></a>
                         <a href="../inventory/gift-sets.html" class="submenu-item"><span>• Gift Set ตามกระเช้า</span></a>
                         <a href="../inventory/gift-set-builder.html" class="submenu-item"><span>• จัด Gift Set ใหม่</span></a>
+                        <a href="../inventory/gift-set-orders.html" class="submenu-item">
+                            <span>• ใบออเดอร์ & รวมซื้อของ</span>
+                        </a>
                     </div>
                 </div>
 
@@ -818,7 +821,7 @@
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; text-align: center; margin: 24px 0;">
                         <div style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">แคตตาล็อกชุดของขวัญ Giftory 2026 (PDF ฉบับเต็ม)</div>
                         <div style="font-size: 12.5px; color: #64748b; margin-bottom: 12px;">รวมภาพกระเช้าพรีเมียม สเปกสินค้า และใบเสนอราคา 61 รายการ</div>
-                        <a href="${driveUrl}" target="_blank" style="background: #7D0A0A; color: #ffffff; padding: 10px 22px; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 13px; display: inline-block;">
+                        <a href="${escapeHtml(driveUrl)}" target="_blank" style="background: #7D0A0A; color: #ffffff; padding: 10px 22px; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 13px; display: inline-block;">
                             คลิกเพื่อเปิดดูแคตตาล็อก Giftory 2026 (Google Drive)
                         </a>
                     </div>
@@ -1078,7 +1081,7 @@
                     content: base64Data,
                     contentType: file.type || 'application/pdf'
                 };
-                document.getElementById('fileUploadLabel').innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> แนบไฟล์: <strong>${file.name}</strong> (${(file.size / (1024*1024)).toFixed(2)} MB)</span>`;
+                document.getElementById('fileUploadLabel').innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> แนบไฟล์: <strong>${escapeHtml(file.name)}</strong> (${(file.size / (1024*1024)).toFixed(2)} MB)</span>`;
                 logToConsole(`[ไฟล์แนบ] แนบไฟล์ ${file.name} เรียบร้อยแล้ว`, 'log-info');
             };
             reader.readAsDataURL(file);
@@ -1102,7 +1105,7 @@
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; text-align: center; margin: 24px 0;">
                         <div style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">แคตตาล็อกชุดของขวัญ Giftory 2026 (PDF ฉบับเต็ม)</div>
                         <div style="font-size: 12.5px; color: #64748b; margin-bottom: 12px;">รวมภาพกระเช้าพรีเมียม สเปกสินค้า และใบเสนอราคา 61 รายการ</div>
-                        <a href="${driveUrl}" target="_blank" style="background: #7D0A0A; color: #ffffff; padding: 10px 22px; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 13px; display: inline-block;">
+                        <a href="${escapeHtml(driveUrl)}" target="_blank" style="background: #7D0A0A; color: #ffffff; padding: 10px 22px; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 13px; display: inline-block;">
                             คลิกเพื่อเปิดดูแคตตาล็อก Giftory 2026 (Google Drive)
                         </a>
                     </div>

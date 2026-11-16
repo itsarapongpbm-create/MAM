@@ -133,21 +133,35 @@ router.post('/accounts', async (req, res) => {
         const {
             account_name,
             bank_code,
+            bank_name,
             account_number,
             branch_name,
             account_type = 'SAVINGS',
-            opening_balance = 0,
+            opening_balance,
+            current_balance,
             promptpay_id,
             is_default = 0,
             color,
             notes
         } = req.body;
 
-        if (!account_name || !bank_code) {
+        const rawBank = String(bank_code || bank_name || '').trim();
+        if (!account_name || !rawBank) {
             return res.status(400).json({ error: 'กรุณากรอกชื่อบัญชีและเลือกธนาคาร' });
         }
 
-        const openBal = parseFloat(opening_balance) || 0;
+        const matchedBank = SUPPORTED_BANKS.find(
+            b => b.code.toUpperCase() === rawBank.toUpperCase() || b.nameTh === rawBank || b.nameEn.toLowerCase() === rawBank.toLowerCase()
+        );
+        const resolvedBankCode = matchedBank ? matchedBank.code : rawBank.toUpperCase();
+
+        const rawAccType = String(account_type || 'SAVINGS').toUpperCase();
+        const resolvedAccountType = rawAccType === 'CASH'
+            ? 'PETTY_CASH'
+            : (['SAVINGS', 'CURRENT', 'PETTY_CASH', 'PROMPTPAY', 'OTHER'].includes(rawAccType) ? rawAccType : 'SAVINGS');
+
+        const rawOpenBal = opening_balance !== undefined ? opening_balance : (current_balance !== undefined ? current_balance : 0);
+        const openBal = parseFloat(rawOpenBal) || 0;
         const defVal = is_default ? 1 : 0;
 
         // ถ้าตั้งเป็น default ให้เคลียร์ default เดิม
@@ -156,11 +170,11 @@ router.post('/accounts', async (req, res) => {
         }
 
         // Gen account_code
-        const countRow = await db.getAsync(`SELECT COUNT(*) as count FROM bank_accounts WHERE bank_code = ?`, [bank_code]);
-        const seq = (countRow?.count || 0) + 1;
-        const account_code = `ACC-${bank_code}-${String(seq).padStart(2, '0')}`;
+        const countRow = await db.getAsync(`SELECT COUNT(*) as count FROM bank_accounts WHERE bank_code = ?`, [resolvedBankCode]);
+        const seq = (Number(countRow?.count) || 0) + 1;
+        const account_code = `ACC-${resolvedBankCode}-${String(seq).padStart(2, '0')}`;
 
-        const bankMeta = SUPPORTED_BANKS.find(b => b.code === bank_code);
+        const bankMeta = SUPPORTED_BANKS.find(b => b.code === resolvedBankCode);
         const cardColor = color || bankMeta?.color || '#334155';
 
         const insertRes = await db.runAsync(`
@@ -170,8 +184,8 @@ router.post('/accounts', async (req, res) => {
                 is_default, color, notes
             ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
-            account_code, account_name, bank_code, account_number || '',
-            branch_name || '', account_type, openBal, openBal, promptpay_id || null,
+            account_code, account_name, resolvedBankCode, account_number || '',
+            branch_name || '', resolvedAccountType, openBal, openBal, promptpay_id || null,
             defVal, cardColor, notes || ''
         ]);
 
@@ -224,6 +238,10 @@ router.put('/accounts/:id', async (req, res) => {
             await db.runAsync(`UPDATE bank_accounts SET is_default = 0 WHERE company_id = 1 AND id != ?`, [id]);
         }
 
+        const resolvedAccType = account_type
+            ? (String(account_type).toUpperCase() === 'CASH' ? 'PETTY_CASH' : String(account_type).toUpperCase())
+            : null;
+
         await db.runAsync(`
             UPDATE bank_accounts
             SET account_name = COALESCE(?, account_name),
@@ -238,7 +256,7 @@ router.put('/accounts/:id', async (req, res) => {
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
         `, [
-            account_name, account_number, branch_name, account_type,
+            account_name, account_number, branch_name, resolvedAccType,
             promptpay_id || null, is_default !== undefined ? (is_default ? 1 : 0) : existing.is_default,
             color, notes, status, id
         ]);
@@ -490,7 +508,7 @@ router.post('/transfers', async (req, res) => {
             FROM internal_transfers 
             WHERE transfer_number LIKE ?
         `, [`TR-${curYmStr}%`]);
-        const seq = (countRow?.count || 0) + 1;
+        const seq = (Number(countRow?.count) || 0) + 1;
         const transfer_number = `TR-${curYmStr}-${String(seq).padStart(4, '0')}`;
 
         const tDate = transfer_date || now.toISOString().split('T')[0];

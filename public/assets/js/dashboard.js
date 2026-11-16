@@ -165,11 +165,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            bank_name: code,
+                            bank_code: code,
                             account_name: title,
                             account_number: accNo || '-',
-                            account_type: code === 'CASH' ? 'CASH' : 'SAVINGS',
-                            current_balance: isNaN(balance) ? 0 : balance
+                            account_type: code === 'CASH' ? 'PETTY_CASH' : 'SAVINGS',
+                            opening_balance: isNaN(balance) ? 0 : balance
                         })
                     });
                     if (!res.ok) {
@@ -652,10 +652,20 @@ document.addEventListener('DOMContentLoaded', () => {
         let html = '';
 
         if (docs.length > 0) {
+            const docTypePageMap = {
+                'QUOTATION': '../documents/quotations.html',
+                'BILLING_NOTE': '../documents/billing-notes.html',
+                'TAX_INVOICE': '../documents/invoices.html',
+                'INVOICE': '../documents/invoices.html',
+                'RECEIPT': '../documents/receipts.html',
+                'CASH_SALE': '../documents/cash-sales.html',
+                'PURCHASE_ORDER': '../documents/purchase-orders.html'
+            };
             html += '<div style="padding: 6px 14px; font-size: 11px; font-weight: 700; color: #64748b; background: #f8fafc; display: flex; align-items: center; gap: 6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> เอกสารการค้า (Documents)</div>';
             docs.forEach(d => {
+                const targetPage = docTypePageMap[d.doc_type] || '../documents/quotations.html';
                 html += `
-                    <a href="../documents/quotations.html?search=${encodeURIComponent(d.doc_number)}" class="search-item">
+                    <a href="${targetPage}?search=${encodeURIComponent(d.doc_number)}" class="search-item">
                         <div>
                             <div class="search-item-title">${escapeHtml(d.doc_number)}</div>
                             <div class="search-item-sub">${escapeHtml(d.customer_name)} &bull; ฿ ${(d.grand_total || 0).toLocaleString('th-TH')}</div>
@@ -670,7 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
             html += '<div style="padding: 6px 14px; font-size: 11px; font-weight: 700; color: #64748b; background: #f8fafc; display: flex; align-items: center; gap: 6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> ลูกค้า / คู่ค้า (Customers)</div>';
             custs.forEach(c => {
                 html += `
-                    <a href="../documents/quotations.html?search=${encodeURIComponent(c.name)}" class="search-item">
+                    <a href="../contacts/customers.html?search=${encodeURIComponent(c.name)}" class="search-item">
                         <div>
                             <div class="search-item-title">${escapeHtml(c.name)}</div>
                             <div class="search-item-sub">โทร: ${escapeHtml(c.phone || '-')} &bull; ${escapeHtml(c.email || '')}</div>

@@ -32,7 +32,8 @@ const tablesToMigrate = [
     { name: 'email_campaign_logs', hasId: true },
     { name: 'bank_accounts', hasId: true },
     { name: 'bank_transactions', hasId: true },
-    { name: 'internal_transfers', hasId: true }
+    { name: 'internal_transfers', hasId: true },
+    { name: 'hamper_batch_orders', hasId: true }
 ];
 
 function querySqlite(db, sql, params = []) {

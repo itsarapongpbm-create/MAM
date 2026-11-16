@@ -39,6 +39,10 @@ function setupEventListeners() {
 
     // Search Box
     const searchInput = document.getElementById('searchExpenseInput');
+    const urlSearch = new URLSearchParams(window.location.search).get('search');
+    if (urlSearch && searchInput) {
+        searchInput.value = urlSearch;
+    }
     if (searchInput) {
         searchInput.addEventListener('input', debounce(() => {
             renderTable();
@@ -178,8 +182,14 @@ function renderTable() {
         }
 
         // Category filter
-        if (selectedCat !== 'ALL' && exp.category !== selectedCat) {
-            return false;
+        if (selectedCat !== 'ALL') {
+            if (selectedCat === 'ต้นทุนสินค้าและบริการ' || selectedCat === 'ต้นทุนสินค้า / วัตถุดิบ') {
+                if (exp.category !== 'ต้นทุนสินค้าและบริการ' && exp.category !== 'ต้นทุนสินค้า / วัตถุดิบ') {
+                    return false;
+                }
+            } else if (exp.category !== selectedCat) {
+                return false;
+            }
         }
 
         // Search text

@@ -116,7 +116,10 @@ async function loadExistingExpense(id, isCopy) {
         if (vendorAddressInput) vendorAddressInput.value = exp.vendor_address || '';
 
         const mainCatSelect = document.getElementById('mainCategorySelect');
-        if (mainCatSelect && exp.category) mainCatSelect.value = exp.category;
+        if (mainCatSelect && exp.category) {
+            const normalizedCat = exp.category === 'ต้นทุนสินค้า / วัตถุดิบ' ? 'ต้นทุนสินค้าและบริการ' : exp.category;
+            mainCatSelect.value = normalizedCat;
+        }
 
         const paymentStatusSelect = document.getElementById('paymentStatus');
         if (paymentStatusSelect && exp.payment_status) paymentStatusSelect.value = exp.payment_status;

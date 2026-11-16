@@ -324,6 +324,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentFilter !== 'ALL') {
             if (currentFilter === 'WAITING') {
                 filtered = filtered.filter(q => ['WAITING', 'WAITING_APPROVAL'].includes(q.status));
+            } else if (currentFilter === 'APPROVED') {
+                filtered = filtered.filter(q => ['APPROVED', 'COMPLETED'].includes(q.status));
             } else if (currentFilter === 'CANCELLED') {
                 filtered = filtered.filter(q => ['CANCELLED', 'REJECTED'].includes(q.status));
             } else {

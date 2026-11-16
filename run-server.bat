@@ -1,4 +1,5 @@
 @echo off
+cd /d "%~dp0"
 title Giftory Server
 echo ======================================================
 echo    Starting Giftory Server on http://localhost:3000

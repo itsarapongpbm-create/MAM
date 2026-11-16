@@ -1152,7 +1152,7 @@
                                 <button type="button" class="btn-secondary" onclick="openBomModal(${s.id})" style="height: 34px; padding: 0 10px; font-size: 12px; font-weight: 600; border-radius: 6px;" title="ดูรายการของในชุด">
                                     <span>ดูของ</span>
                                 </button>
-                                <button type="button" class="btn-primary" onclick="goToQuotation('${s.code}', '${escapeHtml(s.name)}', ${s.selling_price || 0})" style="height: 34px; padding: 0 10px; font-size: 12px; font-weight: 600; border-radius: 6px;" title="ออกใบเสนอราคาด้วยชุดนี้">
+                                <button type="button" class="btn-primary" data-code="${escapeHtml(s.code)}" data-name="${escapeHtml(s.name)}" data-price="${s.selling_price || 0}" onclick="goToQuotation(this.dataset.code, this.dataset.name, Number(this.dataset.price))" style="height: 34px; padding: 0 10px; font-size: 12px; font-weight: 600; border-radius: 6px;" title="ออกใบเสนอราคาด้วยชุดนี้">
                                     <span>ใบเสนอราคา</span>
                                 </button>
                             </div>

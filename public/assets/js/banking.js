@@ -48,6 +48,16 @@
     const manualTxForm = document.getElementById('manualTxForm');
 
     // Formatters
+    const escapeHtml = (str) => {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    };
+
     const formatCurrency = (val) => {
         const num = parseFloat(val) || 0;
         return '฿ ' + num.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -116,8 +126,8 @@
                 <div class="atm-card ${bankClass}" data-id="${acc.id}" onclick="window.BankingApp.filterByAccount(${acc.id})" style="cursor: pointer;" title="คลิกเพื่อกรองรายการเดินบัญชีของบัญชีนี้">
                     <div class="atm-top">
                         <div class="atm-bank-badge">
-                            <span class="bank-pill">${acc.bank_code}</span>
-                            <span class="atm-account-type">${accTypeLabel}</span>
+                            <span class="bank-pill">${escapeHtml(acc.bank_code)}</span>
+                            <span class="atm-account-type">${escapeHtml(accTypeLabel)}</span>
                         </div>
                         ${acc.is_default ? `
                             <span class="atm-default-badge" title="บัญชีหลักสำหรับพิมพ์ในเอกสาร">
@@ -134,11 +144,11 @@
 
                     <div class="atm-bottom">
                         <div class="atm-account-info">
-                            <div class="atm-name" title="${acc.account_name}">${acc.account_name}</div>
+                            <div class="atm-name" title="${escapeHtml(acc.account_name)}">${escapeHtml(acc.account_name)}${acc.branch_name ? ` (${escapeHtml(acc.branch_name)})` : ''}</div>
                             <div class="atm-number">
-                                <span>${maskedNo}</span>
+                                <span>${escapeHtml(maskedNo)}</span>
                                 ${acc.account_number && !isCash ? `
-                                    <button class="btn-copy-acc" title="คัดลอกเลขบัญชี" onclick="event.stopPropagation(); window.BankingApp.copyToClipboard('${acc.account_number}')">
+                                    <button class="btn-copy-acc" title="คัดลอกเลขบัญชี" data-acc="${escapeHtml(acc.account_number)}" onclick="event.stopPropagation(); window.BankingApp.copyToClipboard(this.dataset.acc)">
                                         <svg width="12" height="12" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                     </button>
                                 ` : ''}
@@ -170,7 +180,7 @@
         if (filterAccountSelect) {
             const currentVal = filterAccountSelect.value || 'all';
             filterAccountSelect.innerHTML = `<option value="all">ทุกลำดับบัญชี (ทั้งหมด)</option>` +
-                accounts.map(a => `<option value="${a.id}">${a.bank_code} - ${a.account_name} (${formatCurrency(a.current_balance)})</option>`).join('');
+                accounts.map(a => `<option value="${a.id}">${escapeHtml(a.bank_code)} - ${escapeHtml(a.account_name)} (${formatCurrency(a.current_balance)})</option>`).join('');
             filterAccountSelect.value = currentVal;
         }
 
@@ -179,7 +189,7 @@
         const toSelect = document.getElementById('transferToAccount');
         const manualAccSelect = document.getElementById('manualTxAccount');
 
-        const optHtml = accounts.map(a => `<option value="${a.id}">${a.bank_code} - ${a.account_name} (คงเหลือ ${formatCurrency(a.current_balance)})</option>`).join('');
+        const optHtml = accounts.map(a => `<option value="${a.id}">${escapeHtml(a.bank_code)} - ${escapeHtml(a.account_name)} (คงเหลือ ${formatCurrency(a.current_balance)})</option>`).join('');
 
         if (fromSelect) fromSelect.innerHTML = optHtml;
         if (toSelect) toSelect.innerHTML = optHtml;
@@ -225,9 +235,13 @@
         if (txEmptyState) txEmptyState.style.display = 'none';
 
         transactionsTableBody.innerHTML = transactions.map(tx => {
-            const isPositive = ['INCOME', 'TRANSFER_IN'].includes(tx.type) || (tx.type === 'ADJUST' && tx.amount >= 0);
-            const amountClass = isPositive ? 'amount-in' : 'amount-out';
-            const sign = isPositive ? '+' : '-';
+            const isAdjust = tx.type === 'ADJUST';
+            const isPositive = ['INCOME', 'TRANSFER_IN'].includes(tx.type);
+            const amountClass = isAdjust ? '' : (isPositive ? 'amount-in' : 'amount-out');
+            const sign = isAdjust ? '' : (isPositive ? '+' : '-');
+            const amountDisplay = isAdjust
+                ? `<span style="color: #475569; font-weight: 600;">ยอดคงเหลือใหม่ ฿ ${Number(tx.amount || 0).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`
+                : `${sign}${formatCurrency(tx.amount)}`;
 
             let typeBadgeClass = 'income';
             let typeLabel = 'เงินเข้า';
@@ -236,8 +250,8 @@
             else if (tx.type === 'TRANSFER_OUT') { typeBadgeClass = 'transfer-out'; typeLabel = 'โอนออก'; }
             else if (tx.type === 'ADJUST') { typeBadgeClass = 'adjust'; typeLabel = 'ปรับปรุงยอด'; }
 
-            const timeStr = tx.transaction_time ? ` <span style="font-size: 11px; color: #94a3b8;">${tx.transaction_time}</span>` : '';
-            const refDisplay = tx.ref_number ? `<span style="font-size: 11px; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569; margin-left: 6px;">${tx.ref_number}</span>` : '';
+            const timeStr = tx.transaction_time ? ` <span style="font-size: 11px; color: #94a3b8;">${escapeHtml(tx.transaction_time)}</span>` : '';
+            const refDisplay = tx.ref_number ? `<span style="font-size: 11px; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569; margin-left: 6px;">${escapeHtml(tx.ref_number)}</span>` : '';
 
             return `
                 <tr>
@@ -246,18 +260,18 @@
                         ${timeStr}
                     </td>
                     <td>
-                        <div style="font-weight: 600; font-size: 13px; color: #1e293b;">${tx.account_name || 'บัญชี'}</div>
-                        <div style="font-size: 11.5px; color: #64748b;">${tx.bank_code || ''} ${tx.account_number || ''}</div>
+                        <div style="font-weight: 600; font-size: 13px; color: #1e293b;">${escapeHtml(tx.account_name || 'บัญชี')}</div>
+                        <div style="font-size: 11.5px; color: #64748b;">${escapeHtml(tx.bank_code || '')} ${escapeHtml(tx.account_number || '')}</div>
                     </td>
                     <td>
                         <span class="tx-badge ${typeBadgeClass}">${typeLabel}</span>
                     </td>
                     <td>
-                        <div style="font-weight: 500; color: #0f172a;">${tx.description || '-'} ${refDisplay}</div>
-                        ${tx.payer_payee_name ? `<div style="font-size: 12px; color: #64748b;">คู่ค้า: ${tx.payer_payee_name}</div>` : ''}
+                        <div style="font-weight: 500; color: #0f172a;">${escapeHtml(tx.description || '-')} ${refDisplay}</div>
+                        ${tx.payer_payee_name ? `<div style="font-size: 12px; color: #64748b;">คู่ค้า: ${escapeHtml(tx.payer_payee_name)}</div>` : ''}
                     </td>
                     <td class="text-right ${amountClass}">
-                        ${sign}${formatCurrency(tx.amount)}
+                        ${amountDisplay}
                         ${tx.fee > 0 ? `<div style="font-size: 11px; color: #94a3b8;">ค่าธรรมเนียม ฿${parseFloat(tx.fee).toFixed(2)}</div>` : ''}
                     </td>
                     <td class="text-right" style="font-family: var(--font-numeric); font-weight: 600; color: #334155;">
@@ -265,7 +279,7 @@
                     </td>
                     <td class="text-center">
                         ${tx.slip_url ? `
-                            <button type="button" class="btn-view-slip" onclick="window.BankingApp.viewSlip('${tx.slip_url}', '${tx.description || ''}')" title="ดูหลักฐานสลิป">
+                            <button type="button" class="btn-view-slip" data-url="${escapeHtml(tx.slip_url)}" data-desc="${escapeHtml(tx.description || '')}" onclick="window.BankingApp.viewSlip(this.dataset.url, this.dataset.desc)" title="ดูหลักฐานสลิป">
                                 <svg width="13" height="13" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                                 <span>สลิป</span>
                             </button>

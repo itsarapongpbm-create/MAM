@@ -41,8 +41,8 @@ const approvalActions = (submitRoles) => ({
     approve: { label: 'อนุมัติ', from: ['WAITING', 'WAITING_APPROVAL', 'REJECTED', 'CANCELLED', 'DRAFT'], to: 'APPROVED', roles: ADMIN_ONLY, assignNumber: true },
     reject: { label: 'ไม่อนุมัติ', from: ['WAITING', 'WAITING_APPROVAL', 'APPROVED'], to: 'REJECTED', roles: ADMIN_ONLY, requireReason: true },
     complete: { label: 'ปิดงาน', from: ['APPROVED'], to: 'COMPLETED', roles: BACK_OFFICE },
-    reopen: { label: 'นำกลับมาแก้ไข', from: ['ISSUED', 'APPROVED', 'PAID', 'CANCELLED', 'REJECTED'], to: 'DRAFT', roles: BACK_OFFICE },
-    cancel: { label: 'ยกเลิก', from: ['WAITING', 'WAITING_APPROVAL', 'APPROVED', 'DRAFT', 'ISSUED', 'PARTIAL_PAID', 'PAID'], to: 'CANCELLED', roles: BACK_OFFICE, requireReason: true }
+    reopen: { label: 'นำกลับมาแก้ไข', from: ['WAITING', 'WAITING_APPROVAL', 'ISSUED', 'APPROVED', 'PAID', 'COMPLETED', 'RECEIVED', 'CANCELLED', 'REJECTED'], to: 'DRAFT', roles: BACK_OFFICE },
+    cancel: { label: 'ยกเลิก', from: ['WAITING', 'WAITING_APPROVAL', 'APPROVED', 'DRAFT', 'ISSUED', 'PARTIAL_PAID', 'PAID', 'RECEIVED', 'COMPLETED', 'REJECTED'], to: 'CANCELLED', roles: BACK_OFFICE, requireReason: true }
 });
 
 const DOC_TYPES = Object.freeze({
@@ -62,9 +62,9 @@ const DOC_TYPES = Object.freeze({
         primaryActions: { default: ['issue'] },
         actions: {
             issue: { label: 'ออกใบวางบิล', from: ['DRAFT', 'CANCELLED'], to: 'ISSUED', roles: BACK_OFFICE, assignNumber: true, validate: true },
-            pay: { label: 'บันทึกรับชำระ', from: ['ISSUED', 'PARTIAL_PAID'], to: 'PAID', roles: BACK_OFFICE },
-            reopen: { label: 'เปลี่ยนเป็นรอชำระ', from: ['ISSUED', 'APPROVED', 'PAID', 'CANCELLED', 'REJECTED'], to: 'ISSUED', roles: BACK_OFFICE, assignNumber: true },
-            cancel: { label: 'ยกเลิก', from: ['DRAFT', 'ISSUED', 'PARTIAL_PAID', 'PAID'], to: 'CANCELLED', roles: BACK_OFFICE, requireReason: true }
+            pay: { label: 'บันทึกรับชำระ', from: ['ISSUED', 'WAITING', 'PARTIAL_PAID', 'OVERDUE'], to: 'PAID', roles: BACK_OFFICE },
+            reopen: { label: 'เปลี่ยนเป็นรอชำระ', from: ['ISSUED', 'WAITING', 'APPROVED', 'PAID', 'COMPLETED', 'CANCELLED', 'REJECTED'], to: 'ISSUED', roles: BACK_OFFICE, assignNumber: true },
+            cancel: { label: 'ยกเลิก', from: ['DRAFT', 'WAITING', 'ISSUED', 'PARTIAL_PAID', 'PAID', 'COMPLETED', 'OVERDUE'], to: 'CANCELLED', roles: BACK_OFFICE, requireReason: true }
         }
     },
     TAX_INVOICE: {
@@ -75,9 +75,9 @@ const DOC_TYPES = Object.freeze({
         primaryActions: { default: ['issue'] },
         actions: {
             issue: { label: 'ออกใบกำกับภาษี', from: ['DRAFT', 'CANCELLED'], to: 'ISSUED', roles: BACK_OFFICE, assignNumber: true, validate: true, stock: 'OUT' },
-            pay: { label: 'บันทึกรับชำระ', from: ['ISSUED', 'PARTIAL_PAID'], to: 'PAID', roles: BACK_OFFICE },
-            reopen: { label: 'เปลี่ยนเป็นรอชำระ', from: ['ISSUED', 'APPROVED', 'PAID', 'CANCELLED', 'REJECTED'], to: 'ISSUED', roles: BACK_OFFICE, assignNumber: true, stock: 'OUT' },
-            cancel: { label: 'ยกเลิก', from: ['DRAFT', 'ISSUED', 'PARTIAL_PAID', 'PAID'], to: 'CANCELLED', roles: BACK_OFFICE, requireReason: true, stock: 'RETURN' }
+            pay: { label: 'บันทึกรับชำระ', from: ['ISSUED', 'WAITING', 'PARTIAL_PAID', 'OVERDUE'], to: 'PAID', roles: BACK_OFFICE },
+            reopen: { label: 'เปลี่ยนเป็นรอชำระ', from: ['ISSUED', 'WAITING', 'APPROVED', 'PAID', 'COMPLETED', 'CANCELLED', 'REJECTED'], to: 'ISSUED', roles: BACK_OFFICE, assignNumber: true, stock: 'OUT' },
+            cancel: { label: 'ยกเลิก', from: ['DRAFT', 'WAITING', 'ISSUED', 'PARTIAL_PAID', 'PAID', 'COMPLETED', 'OVERDUE'], to: 'CANCELLED', roles: BACK_OFFICE, requireReason: true, stock: 'RETURN' }
         }
     },
     RECEIPT: {
@@ -90,8 +90,8 @@ const DOC_TYPES = Object.freeze({
         actions: {
             issue: { label: 'บันทึกรับชำระ', from: ['DRAFT', 'CANCELLED'], to: 'PAID', roles: BACK_OFFICE, assignNumber: true, validate: true },
             confirm: { label: 'ยืนยันการรับชำระ', from: ['DRAFT', 'CANCELLED'], to: 'PAID', roles: BACK_OFFICE, assignNumber: true, validate: true },
-            reopen: { label: 'เปลี่ยนเป็นรับชำระแล้ว', from: ['ISSUED', 'APPROVED', 'PAID', 'CANCELLED', 'REJECTED'], to: 'PAID', roles: BACK_OFFICE, assignNumber: true },
-            cancel: { label: 'ยกเลิก', from: ['DRAFT', 'PAID'], to: 'CANCELLED', roles: BACK_OFFICE, requireReason: true }
+            reopen: { label: 'เปลี่ยนเป็นรับชำระแล้ว', from: ['ISSUED', 'WAITING', 'APPROVED', 'PAID', 'CANCELLED', 'REJECTED'], to: 'PAID', roles: BACK_OFFICE, assignNumber: true },
+            cancel: { label: 'ยกเลิก', from: ['DRAFT', 'WAITING', 'ISSUED', 'PAID'], to: 'CANCELLED', roles: BACK_OFFICE, requireReason: true }
         }
     },
     CASH_SALE: {
@@ -102,8 +102,8 @@ const DOC_TYPES = Object.freeze({
         primaryActions: { default: ['issue'] },
         actions: {
             issue: { label: 'บันทึกขายสด', from: ['DRAFT'], to: 'PAID', roles: BACK_OFFICE, assignNumber: true, validate: true, stock: 'OUT' },
-            reopen: { label: 'นำกลับมาแก้ไข', from: ['ISSUED', 'APPROVED', 'PAID', 'CANCELLED', 'REJECTED'], to: 'DRAFT', roles: BACK_OFFICE, stock: 'RETURN' },
-            cancel: { label: 'ยกเลิก', from: ['DRAFT', 'PAID'], to: 'CANCELLED', roles: BACK_OFFICE, requireReason: true, stock: 'RETURN' }
+            reopen: { label: 'นำกลับมาแก้ไข', from: ['ISSUED', 'WAITING', 'APPROVED', 'PAID', 'CANCELLED', 'REJECTED'], to: 'DRAFT', roles: BACK_OFFICE, stock: 'RETURN' },
+            cancel: { label: 'ยกเลิก', from: ['DRAFT', 'WAITING', 'ISSUED', 'PAID'], to: 'CANCELLED', roles: BACK_OFFICE, requireReason: true, stock: 'RETURN' }
         }
     },
     PURCHASE_ORDER: {
@@ -114,7 +114,7 @@ const DOC_TYPES = Object.freeze({
         primaryActions: { [ROLES.ADMIN]: ['submit', 'approve'], default: ['submit'] },
         actions: {
             ...approvalActions(BACK_OFFICE),
-            receive: { label: 'ตรวจรับของ/เข้าสต็อก', from: ['APPROVED'], to: 'COMPLETED', roles: BACK_OFFICE, stock: 'IN' }
+            receive: { label: 'ตรวจรับของ/เข้าสต็อก', from: ['APPROVED', 'WAITING', 'ISSUED'], to: 'COMPLETED', roles: BACK_OFFICE, stock: 'IN' }
         }
     }
 });

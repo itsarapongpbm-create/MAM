@@ -292,6 +292,7 @@
             overlay.addEventListener('click', onBackdropClick);
         });
     };
+    window.showDocActionModal = window.openActionDialog;
 
     function renderQuickTags(tags, inputElem, containerElem) {
         if (!containerElem || !inputElem) return;

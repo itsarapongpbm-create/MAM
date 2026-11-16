@@ -173,14 +173,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (hasRef || isCompleted) {
                 let linksHtml = '';
                 if (hasRef) {
-                    const isBN = po.ref_doc_number.startsWith('BN');
-                    const isINV = po.ref_doc_number.startsWith('INV');
-                    const refUrl = isBN ? `billing-note-new.html?id=${encodeURIComponent(po.ref_doc_number)}` : (isINV ? `invoice-new.html?id=${encodeURIComponent(po.ref_doc_number)}` : `quotation-new.html?id=${encodeURIComponent(po.ref_doc_number)}`);
                     linksHtml += `
-                        <a href="${refUrl}" class="popover-link-item" style="color: #0369a1; text-decoration: none;">
+                        <div class="popover-link-item" style="color: #0369a1; cursor: default;">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                            <span>อ้างอิง: ${escapeHtml(po.ref_doc_number)}</span>
-                        </a>
+                            <span>เลขที่อ้างอิงคู่ค้า: <strong>${escapeHtml(po.ref_doc_number)}</strong></span>
+                        </div>
                     `;
                 }
                 if (isCompleted) {

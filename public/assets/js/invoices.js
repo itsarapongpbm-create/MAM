@@ -95,8 +95,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let filtered = allInvoices;
         if (currentFilter !== 'ALL') {
+            const isPastDue = inv => !['DRAFT', 'PAID', 'CANCELLED'].includes(inv.status) && (inv.status === 'OVERDUE' || (inv.due_date && inv.due_date !== '-' && new Date(inv.due_date) < new Date(new Date().setHours(0, 0, 0, 0))));
             if (currentFilter === 'WAITING') {
-                filtered = filtered.filter(inv => inv.status === 'WAITING' || inv.status === 'PARTIAL_PAID' || inv.status === 'OVERDUE');
+                filtered = filtered.filter(inv => !['DRAFT', 'PAID', 'CANCELLED'].includes(inv.status));
+            } else if (currentFilter === 'OVERDUE') {
+                filtered = filtered.filter(isPastDue);
             } else {
                 filtered = filtered.filter(inv => inv.status === currentFilter);
             }

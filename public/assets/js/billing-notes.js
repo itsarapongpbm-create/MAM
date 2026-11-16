@@ -55,20 +55,32 @@ document.addEventListener('DOMContentLoaded', () => {
             statusKey = 'WAITING';
         }
         let statusText = 'รอชำระ';
+        let statusClass = 'status-waiting';
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
         if (statusKey === 'PAID') {
             statusText = 'ชำระแล้ว';
+            statusClass = 'status-paid';
+        } else if (statusKey === 'PARTIAL_PAID') {
+            statusText = 'ชำระบางส่วน';
+            statusClass = 'status-partial';
         } else if (statusKey === 'CANCELLED') {
             statusText = 'ยกเลิกแล้ว';
+            statusClass = 'status-cancelled';
         } else if (statusKey === 'DRAFT') {
             statusText = 'ฉบับร่าง';
+            statusClass = 'status-draft';
         } else if (d.is_overdue || (d.due_date && d.due_date !== '-' && new Date(d.due_date) < today && statusKey !== 'PAID')) {
             statusKey = 'OVERDUE';
             statusText = 'เกินกำหนด';
+            statusClass = 'status-overdue';
         }
+
+        const grandTotal = Number(d.grand_total) || 0;
+        const paidAmount = Number(d.paid_amount) || 0;
+        const balanceDue = d.balance_due !== undefined && d.balance_due !== null ? Number(d.balance_due) : Math.max(0, grandTotal - paidAmount);
 
         return {
             id: d.id,
@@ -78,9 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
             due_date: d.due_date || '-',
             ref_doc_number: d.ref_doc_number || '',
             customer_name: d.customer_name || '-',
-            grand_total: d.grand_total || 0,
+            grand_total: grandTotal,
+            paid_amount: paidAmount,
+            balance_due: balanceDue,
             status: statusKey,
             status_text: statusText,
+            status_class: statusClass,
             related_documents: d.related_documents || []
         };
     }
@@ -91,8 +106,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let filtered = allBillingNotes;
         if (currentFilter !== 'ALL') {
+            const isPastDue = b => !['DRAFT', 'PAID', 'CANCELLED'].includes(b.status) && (b.status === 'OVERDUE' || (b.due_date && b.due_date !== '-' && new Date(b.due_date) < new Date(new Date().setHours(0, 0, 0, 0))));
             if (currentFilter === 'WAITING') {
-                filtered = filtered.filter(b => b.status === 'WAITING' || b.status === 'OVERDUE');
+                filtered = filtered.filter(b => b.status === 'WAITING' || b.status === 'PARTIAL_PAID' || b.status === 'OVERDUE' || !['DRAFT', 'PAID', 'CANCELLED'].includes(b.status));
+            } else if (currentFilter === 'OVERDUE') {
+                filtered = filtered.filter(isPastDue);
             } else {
                 filtered = filtered.filter(b => b.status === currentFilter);
             }
@@ -123,6 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tableBody.innerHTML = filtered.map((b, idx) => {
             const isBottomRow = filtered.length > 2 && idx >= filtered.length - 2;
             const isPaid = b.status === 'PAID';
+            const isPartial = b.status === 'PARTIAL_PAID';
             const isOverdue = b.status === 'OVERDUE';
             const isCancelled = b.status === 'CANCELLED';
             const isDraft = b.status === 'DRAFT';
@@ -238,9 +257,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     </button>
                 `;
             } else {
-                // WAITING
+                // WAITING or PARTIAL_PAID
                 statusBtnClass = 'split-waiting';
-                statusBtnText = 'รอชำระ';
+                statusBtnText = isPartial ? 'ชำระบางส่วน' : 'รอชำระ';
                 statusMenuItems = `
                     <div class="status-menu-header">ดำเนินการรับชำระ</div>
                     <a href="cash-invoice-new.html?ref=${encodeURIComponent(b.doc_number)}" class="status-menu-item" style="color: #059669; font-weight: 600;">
@@ -475,6 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         allBillingNotes.forEach(bn => {
             const grandTotal = Number(bn.grand_total) || 0;
+            const balanceDue = Math.max(0, bn.balance_due !== undefined && bn.balance_due !== null ? Number(bn.balance_due) : (grandTotal - (Number(bn.paid_amount) || 0)));
             if (bn.status === 'CANCELLED') {
                 cancelledCount++;
                 return;
@@ -490,12 +510,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 paidAmount += grandTotal;
             } else if (bn.status === 'OVERDUE' || (bn.due_date && bn.due_date !== '-' && new Date(bn.due_date) < today)) {
                 overdueCount++;
-                overdueAmount += grandTotal;
+                overdueAmount += balanceDue;
                 waitingCount++;
-                waitingAmount += grandTotal;
+                waitingAmount += balanceDue;
             } else {
                 waitingCount++;
-                waitingAmount += grandTotal;
+                waitingAmount += balanceDue;
             }
         });
 

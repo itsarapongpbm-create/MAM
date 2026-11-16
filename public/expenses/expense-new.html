@@ -275,6 +275,14 @@
     <script src="../assets/js/auth-guard.js"></script>
     <script src="../assets/js/doc-action-modal.js?v=15"></script>
     <script src="../assets/js/expense-editor.js?v=16"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const catEl = document.getElementById('mainCategorySelect');
+            if (catEl && catEl.value === 'ต้นทุนสินค้า / วัตถุดิบ') {
+                catEl.value = 'ต้นทุนสินค้าและบริการ';
+            }
+        });
+    </script>
     <script src="../assets/js/theme-manager.js"></script>
 </body>
 </html>

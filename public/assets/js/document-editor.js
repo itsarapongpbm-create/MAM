@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let currentLoadedDocId = null;
+    let currentLoadedDocStatus = null;
 
     // Setup Searchable Customer / Vendor Dropdown state
     let customerSearchInput = null;
@@ -1200,9 +1201,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const creditDaysVal = parseInt(creditTermsVal.match(/\d+/)?.[0]) || 30;
 
         const docType = getDocType();
+        const rawDocNum = (docNumberInput?.value || '').trim();
+        const isPlaceholderDocNum = !rawDocNum || rawDocNum === '(ฉบับร่าง)' || rawDocNum.includes('ฉบับร่าง') || rawDocNum.includes('สร้างอัตโนมัติ');
+        const cleanedDocNumber = (targetStatus === 'DRAFT' || isPlaceholderDocNum) ? '' : rawDocNum;
         const payload = {
             doc_type: docType,
-            doc_number: targetStatus === 'DRAFT' ? null : (docNumberInput?.value || null),
+            doc_number: cleanedDocNumber,
             issue_date: issueDate,
             due_date: dueDate || validUntil,
             valid_until: validUntil,
@@ -1315,15 +1319,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const btnSaveSubmit = document.getElementById('btnSaveSubmit');
     if (btnSaveSubmit) {
-        btnSaveSubmit.addEventListener('click', () => saveDocument('WAITING_APPROVAL'));
+        btnSaveSubmit.addEventListener('click', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = currentLoadedDocId || urlParams.get('id');
+            if (editId && currentLoadedDocStatus && currentLoadedDocStatus !== 'DRAFT') {
+                saveDocument(currentLoadedDocStatus);
+            } else {
+                saveDocument('WAITING_APPROVAL');
+            }
+        });
     }
 
     if (btnSaveDraft) {
-        btnSaveDraft.addEventListener('click', () => saveDocument('DRAFT'));
+        btnSaveDraft.addEventListener('click', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = currentLoadedDocId || urlParams.get('id');
+            if (editId && currentLoadedDocStatus && currentLoadedDocStatus !== 'DRAFT') {
+                saveDocument(currentLoadedDocStatus);
+            } else {
+                saveDocument('DRAFT');
+            }
+        });
     }
 
     if (btnSaveApprove) {
         btnSaveApprove.addEventListener('click', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = currentLoadedDocId || urlParams.get('id');
+            if (editId && currentLoadedDocStatus && currentLoadedDocStatus !== 'DRAFT') {
+                saveDocument(currentLoadedDocStatus);
+                return;
+            }
             const type = getDocType();
             let targetStatus = 'ISSUED';
             if (type === 'QUOTATION' || type === 'PURCHASE_ORDER') targetStatus = 'WAITING_APPROVAL';
@@ -1430,7 +1456,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     it.quantity || 1,
                     it.unit || 'ชิ้น',
                     newPrice,
-                    it.product_id || null
+                    (pct < 100 || isDeposit) ? null : (it.product_id || null)
                 );
                 const descArea = row.querySelector('.item-desc');
                 if (descArea && it.description) {
@@ -1575,6 +1601,8 @@ document.addEventListener('DOMContentLoaded', () => {
             window._sourceCustomerId = detail.customer_id;
             window._sourceCustomerName = detail.customer_name;
             window._refOriginalDoc = JSON.parse(JSON.stringify(detail));
+            currentLoadedDocId = null;
+            currentLoadedDocStatus = null;
 
             // 1. Set Reference input
             const refInput = document.getElementById('refDocNumberInput') || document.querySelector('input[placeholder*="อ้างอิง"]');
@@ -1696,11 +1724,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isCopy) {
             currentLoadedDocId = null;
+            currentLoadedDocStatus = null;
             const todayStr = new Date().toISOString().split('T')[0];
             const issueEl = document.getElementById('issueDateInput') || document.querySelectorAll('.meta-field-row input[type="date"]')[0];
             if (issueEl) issueEl.value = todayStr;
         } else {
             currentLoadedDocId = doc.id;
+            currentLoadedDocStatus = doc.status || null;
             if (docNumberInput) docNumberInput.value = doc.doc_number || '(ฉบับร่าง)';
             if (doc.issue_date) {
                 const issueEl = document.getElementById('issueDateInput') || document.querySelectorAll('.meta-field-row input[type="date"]')[0];

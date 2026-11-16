@@ -33,7 +33,7 @@ async function maxExistingNo(period) {
         `SELECT MAX(CAST(substr(doc_number, ?) AS INTEGER)) AS mx FROM withholding_taxes WHERE doc_number LIKE ?`,
         [prefix.length + 1, `${prefix}%`]
     );
-    return (row && row.mx) || 0;
+    return Number(row && row.mx) || 0;
 }
 
 // รันเลขที่ถัดไปแบบไม่ซ้ำ แม้มีการลบ/ยกเลิกเอกสาร (ใช้ตาราง document_sequences)

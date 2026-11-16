@@ -471,6 +471,22 @@
             page-break-inside: avoid;
         }
 
+        .signatures-section.no-stamp {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .signatures-section.single-sign {
+            grid-template-columns: 1.25fr 1fr;
+            max-width: 360px;
+            margin-left: auto;
+        }
+
+        .signatures-section.single-sign.no-stamp {
+            grid-template-columns: 1fr;
+            max-width: 240px;
+            margin-left: auto;
+        }
+
         .sig-card {
             border: 1px solid #e2e8f0;
             border-radius: 6px;
@@ -1089,6 +1105,11 @@
                 const showStamp = savedBranding.showCompanyStamp !== false;
                 const showSign = savedBranding.showSellerSign !== false && !!savedBranding.signatureSrc;
                 const showCustomer = savedBranding.showCustomerSign !== false;
+                const sigSectionClasses = [
+                    'signatures-section',
+                    !showCustomer ? 'single-sign' : '',
+                    !showStamp ? 'no-stamp' : ''
+                ].filter(Boolean).join(' ');
 
                 const stampHtml = showStamp ? `<img src="${stampSrc}" class="company-stamp-seal" alt="Official Stamp">` : '';
                 const signHtml = showSign ? `<img src="${savedBranding.signatureSrc}" class="seller-signature-img" alt="Seller Signature">` : '';
@@ -1277,9 +1298,9 @@
                             </section>
 
                             <!-- Signatures Block (3-Column Layout: ผู้สั่งซื้อสินค้า (ซ้าย) | ตราประทับ + บริษัท (กลาง) | ผู้อนุมัติ (ขวา)) -->
-                            <footer class="signatures-section">
+                            <footer class="${sigSectionClasses}">
                                 <!-- 1. ด้านซ้ายมือ: ผู้สั่งซื้อสินค้า -->
-                                <div class="sig-card">
+                                <div class="sig-card" style="${showCustomer ? '' : 'display: none;'}">
                                     <div class="sig-role">${tConfig.sigBuyer || 'ผู้สั่งซื้อสินค้า'}</div>
                                     <div class="sig-space"></div>
                                     <div class="sig-name">(___________________________________________)</div>
@@ -1290,7 +1311,7 @@
                                 </div>
 
                                 <!-- 2. ตรงกลาง: ตราประทับบริษัท + ข้อมูลบริษัทด้านล่างรูป -->
-                                <div class="sig-card sig-card-stamp">
+                                <div class="sig-card sig-card-stamp" style="${showStamp ? '' : 'display: none;'}">
                                     <div class="stamp-center-wrapper">
                                         ${showStamp ? `<img src="${stampSrc}" class="company-stamp-center-img" alt="Official Stamp">` : ''}
                                         <div class="company-stamp-label">${compData.name}</div>

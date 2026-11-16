@@ -41,8 +41,12 @@ router.get('/export/csv', async (req, res) => {
             params.push(status);
         }
         if (category && category !== 'ALL') {
-            query += ' AND category = ?';
-            params.push(category);
+            if (category === 'ต้นทุนสินค้า / วัตถุดิบ' || category === 'ต้นทุนสินค้าและบริการ') {
+                query += " AND category IN ('ต้นทุนสินค้าและบริการ', 'ต้นทุนสินค้า / วัตถุดิบ')";
+            } else {
+                query += ' AND category = ?';
+                params.push(category);
+            }
         }
         if (search) {
             query += ' AND (doc_number LIKE ? OR vendor_name LIKE ? OR ref_doc_number LIKE ? OR remarks LIKE ?)';
@@ -103,8 +107,12 @@ router.get('/', async (req, res) => {
         }
 
         if (category && category !== 'ALL') {
-            query += ' AND category = ?';
-            params.push(category);
+            if (category === 'ต้นทุนสินค้า / วัตถุดิบ' || category === 'ต้นทุนสินค้าและบริการ') {
+                query += " AND category IN ('ต้นทุนสินค้าและบริการ', 'ต้นทุนสินค้า / วัตถุดิบ')";
+            } else {
+                query += ' AND category = ?';
+                params.push(category);
+            }
         }
 
         if (search) {
@@ -180,7 +188,7 @@ router.post('/', async (req, res) => {
             const maxRow = await db.getAsync(
                 `SELECT MAX(CAST(substr(doc_number, 12) AS INTEGER)) as max_num FROM expenses WHERE doc_number LIKE 'EXP-${yearMonth}-%'`
             );
-            const nextSeq = String(((maxRow && maxRow.max_num) || 0) + 1).padStart(3, '0');
+            const nextSeq = String((Number(maxRow && maxRow.max_num) || 0) + 1).padStart(3, '0');
             doc_number = `EXP-${yearMonth}-${nextSeq}`;
         }
 
@@ -323,7 +331,7 @@ router.put('/:id', async (req, res) => {
             wht_rate || 0,
             wht_amount || 0,
             net_total || 0,
-            slip_url || expense.slip_url || '',
+            slip_url !== undefined ? slip_url : (expense.slip_url || ''),
             remarks || '',
             req.params.id
         ]);

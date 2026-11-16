@@ -4,6 +4,7 @@
 -- ==============================================================================
 
 -- Drop existing tables in reverse dependency order if recreating
+DROP TABLE IF EXISTS hamper_batch_orders CASCADE;
 DROP TABLE IF EXISTS internal_transfers CASCADE;
 DROP TABLE IF EXISTS bank_transactions CASCADE;
 DROP TABLE IF EXISTS bank_accounts CASCADE;
@@ -180,6 +181,7 @@ CREATE TABLE documents (
     approved_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
     issued_at TIMESTAMPTZ,
     approved_at TIMESTAMPTZ,
+    paid_at TIMESTAMPTZ,
     cancelled_at TIMESTAMPTZ,
     cancel_reason TEXT,
     updated_at TIMESTAMPTZ,
@@ -431,6 +433,26 @@ CREATE TABLE internal_transfers (
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 21. ตารางใบสั่งจัดกระเช้าและรวมซื้อวัตถุดิบ (Hamper Batch Orders & Consolidated Sourcing)
+CREATE TABLE hamper_batch_orders (
+    id SERIAL PRIMARY KEY,
+    company_id INTEGER NOT NULL DEFAULT 1 REFERENCES companies(id) ON DELETE RESTRICT,
+    order_number VARCHAR(50) UNIQUE NOT NULL,
+    customer_name VARCHAR(255),
+    event_name VARCHAR(255),
+    order_date VARCHAR(20),
+    due_date VARCHAR(20),
+    status VARCHAR(30) DEFAULT 'PENDING',
+    total_hampers INTEGER DEFAULT 0,
+    total_sales NUMERIC(14, 2) DEFAULT 0,
+    total_cost NUMERIC(14, 2) DEFAULT 0,
+    items_json TEXT,
+    sourcing_json TEXT,
+    remarks TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for optimal performance
 CREATE INDEX idx_products_code ON products(code);
 CREATE INDEX idx_products_category ON products(category);
@@ -440,3 +462,4 @@ CREATE INDEX idx_documents_doc_number ON documents(doc_number);
 CREATE INDEX idx_documents_type_status ON documents(doc_type, status);
 CREATE INDEX idx_document_items_doc_id ON document_items(document_id);
 CREATE INDEX idx_stock_movements_prod_id ON stock_movements(product_id);
+CREATE INDEX idx_hamper_batch_orders_no ON hamper_batch_orders(order_number);

@@ -60,20 +60,22 @@ router.get('/:id', async (req, res) => {
 // 3. เพิ่มสินค้าหรือบริการใหม่
 router.post('/', async (req, res) => {
     try {
-        const { name, type, category, description, unit, unit_price, cost_price, min_stock, image_url, vat_rate } = req.body;
+        const { name, type, category, description, unit, unit_price, cost_price, stock_quantity, quantity_on_hand, min_stock, min_stock_level, image_url, vat_rate } = req.body;
         if (!name) return res.status(400).json({ error: 'ชื่อสินค้าเป็นข้อมูลจำเป็น' });
 
         const prefix = (type === 'PRODUCT' ? 'PRD-' : 'SRV-');
         const maxRow = await db.getAsync(`SELECT MAX(CAST(substr(code, 5) AS INTEGER)) as max_num FROM products WHERE code LIKE '${prefix}%'`);
-        const nextNum = ((maxRow && maxRow.max_num) || 0) + 1;
+        const nextNum = (Number(maxRow && maxRow.max_num) || 0) + 1;
         const code = req.body.code || (prefix + String(nextNum).padStart(3, '0'));
+        const initStock = stock_quantity !== undefined ? (Number(stock_quantity) || 0) : (quantity_on_hand !== undefined ? (Number(quantity_on_hand) || 0) : 0);
+        const initMinStock = min_stock !== undefined ? (Number(min_stock) || 5) : (min_stock_level !== undefined ? (Number(min_stock_level) || 5) : 5);
 
         const result = await db.runAsync(`
             INSERT INTO products (
                 company_id, code, name, type, category, description, unit, 
-                unit_price, cost_price, min_stock, min_stock_level, image_url, vat_rate
+                unit_price, cost_price, quantity_on_hand, stock_quantity, min_stock, min_stock_level, image_url, vat_rate
             )
-            VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             code,
             name,
@@ -83,8 +85,10 @@ router.post('/', async (req, res) => {
             unit || 'ชิ้น',
             Number(unit_price) || 0,
             Number(cost_price) || 0,
-            Number(min_stock) || 5,
-            Number(min_stock) || 5,
+            initStock,
+            initStock,
+            initMinStock,
+            initMinStock,
             image_url || null,
             vat_rate !== undefined && vat_rate !== null && vat_rate !== '' ? Number(vat_rate) : 7
         ]);
@@ -113,10 +117,19 @@ router.put('/:id', async (req, res) => {
             unit_price,
             cost_price,
             stock_quantity,
+            quantity_on_hand,
             min_stock,
+            min_stock_level,
             image_url,
             vat_rate
         } = req.body;
+
+        const effStock = stock_quantity !== undefined
+            ? Number(stock_quantity)
+            : (quantity_on_hand !== undefined ? Number(quantity_on_hand) : null);
+        const effMinStock = min_stock !== undefined
+            ? Number(min_stock)
+            : (min_stock_level !== undefined ? Number(min_stock_level) : null);
 
         await db.runAsync(`
             UPDATE products
@@ -127,6 +140,7 @@ router.put('/:id', async (req, res) => {
                 unit_price = COALESCE(?, unit_price),
                 cost_price = COALESCE(?, cost_price),
                 stock_quantity = COALESCE(?, stock_quantity),
+                quantity_on_hand = COALESCE(?, quantity_on_hand),
                 min_stock = COALESCE(?, min_stock),
                 min_stock_level = COALESCE(?, min_stock_level),
                 image_url = COALESCE(?, image_url),
@@ -139,9 +153,10 @@ router.put('/:id', async (req, res) => {
             unit !== undefined ? unit : null,
             unit_price !== undefined ? Number(unit_price) : null,
             cost_price !== undefined ? Number(cost_price) : null,
-            stock_quantity !== undefined ? Number(stock_quantity) : null,
-            min_stock !== undefined ? Number(min_stock) : null,
-            min_stock !== undefined ? Number(min_stock) : null,
+            effStock,
+            effStock,
+            effMinStock,
+            effMinStock,
             image_url !== undefined ? image_url : null,
             vat_rate !== undefined ? Number(vat_rate) : null,
             id

@@ -92,32 +92,32 @@
         }
 
         // 2. Company Logo
-        const logoImgs = document.querySelectorAll('#docCompanyLogo, .company-logo-placeholder img');
+        const logoImgs = document.querySelectorAll('#docCompanyLogo, .company-logo-placeholder img, .company-logo');
         logoImgs.forEach(img => {
             if (b.logoSrc) img.src = b.logoSrc;
             img.style.height = (b.logoHeight || 48) + 'px';
         });
 
         // 3. Customer Signature Toggle
-        const custSignBox = document.getElementById('customerSignatureBox') || document.querySelector('.signatures-grid .sig-card:first-child, .signatures-section .sig-card:first-child');
-        const signGrid = document.getElementById('signaturesGrid') || document.querySelector('.signatures-section, .signatures-grid');
-        if (custSignBox) {
-            custSignBox.style.display = b.showCustomerSign ? 'flex' : 'none';
-        }
+        const custSignBoxes = document.querySelectorAll('#customerSignatureBox, .signatures-grid .sig-card:first-child, .signatures-section .sig-card:first-child');
+        custSignBoxes.forEach(box => {
+            box.style.display = b.showCustomerSign ? 'flex' : 'none';
+        });
 
         // 4. Center Company Stamp Box & Image Toggle
-        const centerStampBox = document.getElementById('centerStampBox') || document.querySelector('.sig-card-stamp');
-        if (centerStampBox) {
-            centerStampBox.style.display = b.showCompanyStamp ? 'flex' : 'none';
-        }
-        const stampImg = document.getElementById('companyStampImg');
-        if (stampImg) {
-            if (b.stampSrc) stampImg.src = b.stampSrc;
-            stampImg.style.display = b.showCompanyStamp ? 'block' : 'none';
-        }
+        const centerStampBoxes = document.querySelectorAll('#centerStampBox, .sig-card-stamp');
+        centerStampBoxes.forEach(box => {
+            box.style.display = b.showCompanyStamp ? 'flex' : 'none';
+        });
+        const stampImgs = document.querySelectorAll('#companyStampImg, .company-stamp-center-img, .company-stamp-seal');
+        stampImgs.forEach(img => {
+            if (b.stampSrc) img.src = b.stampSrc;
+            img.style.display = b.showCompanyStamp ? 'block' : 'none';
+        });
 
         // Update grid columns depending on visibility
-        if (signGrid) {
+        const signGrids = document.querySelectorAll('#signaturesGrid, .signatures-section, .signatures-grid');
+        signGrids.forEach(signGrid => {
             signGrid.classList.remove('single-sign', 'no-stamp');
             if (!b.showCustomerSign && !b.showCompanyStamp) {
                 signGrid.classList.add('single-sign', 'no-stamp');
@@ -126,14 +126,14 @@
             } else if (!b.showCompanyStamp) {
                 signGrid.classList.add('no-stamp');
             }
-        }
+        });
 
         // 5. Seller Signature Image
-        let signImg = document.getElementById('sellerSignatureImg');
-        if (signImg) {
+        const signImgs = document.querySelectorAll('#sellerSignatureImg, .seller-sign-img, .seller-signature-img');
+        signImgs.forEach(signImg => {
             if (b.signatureSrc) signImg.src = b.signatureSrc;
             signImg.style.display = (b.showSellerSign !== false && b.signatureSrc) ? 'block' : 'none';
-        }
+        });
 
         // 6. Bank Account Box Display (print preview & editor)
         const paymentAccountBoxes = document.querySelectorAll('.payment-account-box');

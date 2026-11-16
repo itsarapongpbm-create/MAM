@@ -64,7 +64,7 @@ router.post('/', async (req, res) => {
         let code = inputCode ? inputCode.trim() : '';
         if (!code) {
             const maxRow = await db.getAsync("SELECT MAX(CAST(substr(code, 6) AS INTEGER)) as max_num FROM customers WHERE code LIKE 'CUST-%'");
-            const nextNum = ((maxRow && maxRow.max_num) || 0) + 1;
+            const nextNum = (Number(maxRow && maxRow.max_num) || 0) + 1;
             code = `CUST-${String(nextNum).padStart(3, '0')}`;
         }
 

@@ -33,6 +33,11 @@ function setupEventListeners() {
 
     // 2. Search Input
     const searchInput = document.getElementById('searchInput');
+    const initialSearch = new URLSearchParams(window.location.search).get('search');
+    if (initialSearch) {
+        if (searchInput) searchInput.value = initialSearch;
+        searchQuery = initialSearch.trim().toLowerCase();
+    }
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim().toLowerCase();

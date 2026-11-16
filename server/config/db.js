@@ -6,7 +6,11 @@
 require('./env');
 const fs = require('fs');
 const path = require('path');
+const { AsyncLocalStorage } = require('async_hooks');
 const sqlite3 = require('sqlite3').verbose();
+
+const txStorage = new AsyncLocalStorage();
+let sqliteTxQueue = Promise.resolve();
 
 const defaultDbPath = path.join(__dirname, '..', 'flowaccount.db');
 const DB_PATH = process.env.DB_PATH ? path.resolve(__dirname, '../..', process.env.DB_PATH) : defaultDbPath;
@@ -26,6 +30,7 @@ let pool = null;
 
 if (usePostgres) {
     const { Pool, types } = require('pg');
+    types.setTypeParser(20, val => (val === null ? null : parseInt(val, 10)));
     types.setTypeParser(1700, val => (val === null ? null : parseFloat(val)));
 
     pool = new Pool({
@@ -45,9 +50,13 @@ function convertSql(sql, isPg = usePostgres) {
         return sql.replace(/\bILIKE\b/gi, 'LIKE');
     }
     let i = 0;
-    let converted = sql.replace(/\?/g, () => `$${++i}`);
+    let converted = sql.replace(/'(?:''|[^'])*'|(\?)/g, (match, q) => (q ? `$${++i}` : match));
     converted = converted.replace(/\bLIKE\b/gi, 'ILIKE');
     converted = converted.replace(/DATETIME\('now'\)/gi, 'CURRENT_TIMESTAMP');
+    converted = converted.replace(
+        /CAST\(\s*substr\(([^,]+),\s*([^)]+)\)\s*AS\s+INTEGER\s*\)/gi,
+        (_, col, pos) => `CASE WHEN substr(${col}, CAST(${pos} AS INTEGER)) ~ '^[0-9]+$' THEN CAST(substr(${col}, CAST(${pos} AS INTEGER)) AS INTEGER) ELSE 0 END`
+    );
     converted = converted.replace(/MAX\(\s*last_no\s*(\+\s*1\s*)?,\s*excluded\.last_no\s*\)/gi, (_, plusOne) =>
         `GREATEST(document_sequences.last_no${plusOne ? ' + 1' : ''}, excluded.last_no)`
     );
@@ -69,6 +78,15 @@ function convertSql(sql, isPg = usePostgres) {
     return converted;
 }
 
+function rawSqliteRun(sql, params = []) {
+    return new Promise((resolve, reject) => {
+        sqliteDb.run(sql, params, function (err) {
+            if (err) reject(err);
+            else resolve(this);
+        });
+    });
+}
+
 const db = {
     pool,
     convertSql,
@@ -80,36 +98,43 @@ const db = {
     },
 
     runAsync: async function (sql, params = []) {
+        const activeTx = txStorage.getStore();
+        if (activeTx && /^\s*(BEGIN(\s+TRANSACTION)?|COMMIT|ROLLBACK)\s*;?\s*$/i.test(sql)) {
+            return { lastID: null, changes: 0 };
+        }
+
         if (usePostgres && pool) {
+            const queryTarget = (activeTx && activeTx.client) ? activeTx.client : pool;
             try {
                 const isInsert = /^\s*insert\s+(?:or\s+ignore\s+)?into/i.test(sql);
                 const hasReturning = /\breturning\s+/i.test(sql);
                 const noIdTable = /^\s*insert\s+(?:or\s+ignore\s+)?into\s+"?(document_sequences|email_inbox_cache)"?\b/i.test(sql);
                 const finalSql = convertSql(sql, true);
+                const cleanSql = finalSql.replace(/;?\s*$/, '');
 
                 if (isInsert && !hasReturning && !noIdTable) {
                     try {
-                        const res = await pool.query(`${finalSql} RETURNING id`, params);
+                        const res = await queryTarget.query(`${cleanSql} RETURNING id`, params);
                         return {
                             lastID: res.rows[0] ? res.rows[0].id : null,
                             changes: res.rowCount || 0
                         };
                     } catch (err) {
                         if (err.message && err.message.includes('column "id" does not exist')) {
-                            const fallbackRes = await pool.query(finalSql, params);
+                            const fallbackRes = await queryTarget.query(cleanSql, params);
                             return { lastID: null, changes: fallbackRes.rowCount || 0 };
                         }
                         throw err;
                     }
                 } else {
-                    const res = await pool.query(finalSql, params);
+                    const res = await queryTarget.query(finalSql, params);
                     return {
                         lastID: (res.rows && res.rows[0] && res.rows[0].id) ? res.rows[0].id : null,
                         changes: res.rowCount || 0
                     };
                 }
             } catch (err) {
-                if (err.code === 'ECONNREFUSED' || err.message.includes('connection timeout')) {
+                if (!activeTx && (err.code === 'ECONNREFUSED' || err.message.includes('connection timeout'))) {
                     db.switchToSqlite();
                     return db.runAsync(sql, params);
                 }
@@ -119,21 +144,18 @@ const db = {
 
         // SQLite Execution
         const sqliteSql = convertSql(sql, false);
-        return new Promise((resolve, reject) => {
-            sqliteDb.run(sqliteSql, params, function (err) {
-                if (err) reject(err);
-                else resolve(this);
-            });
-        });
+        return rawSqliteRun(sqliteSql, params);
     },
 
     allAsync: async function (sql, params = []) {
+        const activeTx = txStorage.getStore();
         if (usePostgres && pool) {
+            const queryTarget = (activeTx && activeTx.client) ? activeTx.client : pool;
             try {
-                const res = await pool.query(convertSql(sql, true), params);
+                const res = await queryTarget.query(convertSql(sql, true), params);
                 return res.rows || [];
             } catch (err) {
-                if (err.code === 'ECONNREFUSED' || err.message.includes('connection timeout')) {
+                if (!activeTx && (err.code === 'ECONNREFUSED' || err.message.includes('connection timeout'))) {
                     db.switchToSqlite();
                     return db.allAsync(sql, params);
                 }
@@ -152,12 +174,14 @@ const db = {
     },
 
     getAsync: async function (sql, params = []) {
+        const activeTx = txStorage.getStore();
         if (usePostgres && pool) {
+            const queryTarget = (activeTx && activeTx.client) ? activeTx.client : pool;
             try {
-                const res = await pool.query(convertSql(sql, true), params);
+                const res = await queryTarget.query(convertSql(sql, true), params);
                 return res.rows[0];
             } catch (err) {
-                if (err.code === 'ECONNREFUSED' || err.message.includes('connection timeout')) {
+                if (!activeTx && (err.code === 'ECONNREFUSED' || err.message.includes('connection timeout'))) {
                     db.switchToSqlite();
                     return db.getAsync(sql, params);
                 }
@@ -173,6 +197,55 @@ const db = {
                 else resolve(row);
             });
         });
+    },
+
+    withTransaction: async function (fn) {
+        const existingTx = txStorage.getStore();
+        if (existingTx) {
+            return fn(db);
+        }
+
+        if (usePostgres && pool) {
+            let client;
+            try {
+                client = await pool.connect();
+            } catch (err) {
+                if (err.code === 'ECONNREFUSED' || err.message.includes('connection timeout')) {
+                    db.switchToSqlite();
+                    return db.withTransaction(fn);
+                }
+                throw err;
+            }
+
+            try {
+                await client.query('BEGIN');
+                const result = await txStorage.run({ isPg: true, client }, () => fn(db));
+                await client.query('COMMIT');
+                return result;
+            } catch (err) {
+                try { await client.query('ROLLBACK'); } catch (_) {}
+                throw err;
+            } finally {
+                client.release();
+            }
+        }
+
+        // SQLite serialized transaction
+        const runSqliteTx = async () => {
+            await rawSqliteRun('BEGIN TRANSACTION');
+            try {
+                const result = await txStorage.run({ isPg: false }, () => fn(db));
+                await rawSqliteRun('COMMIT');
+                return result;
+            } catch (err) {
+                try { await rawSqliteRun('ROLLBACK'); } catch (_) {}
+                throw err;
+            }
+        };
+
+        const txPromise = sqliteTxQueue.then(runSqliteTx, runSqliteTx);
+        sqliteTxQueue = txPromise.catch(() => {});
+        return txPromise;
     }
 };
 

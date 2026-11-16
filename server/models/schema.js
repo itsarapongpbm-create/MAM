@@ -46,6 +46,7 @@ function documentsTableSql(tableName = 'documents') {
             approved_by INTEGER,
             issued_at DATETIME,
             approved_at DATETIME,
+            paid_at DATETIME,
             cancelled_at DATETIME,
             cancel_reason TEXT,
             updated_at DATETIME,

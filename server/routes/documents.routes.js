@@ -16,14 +16,24 @@ const {
     publicRegistry
 } = require('../document-types');
 
-// ค้นหาสินค้าในตาราง products จาก product_id, ชื่อสินค้า, รหัส SKU หรือรูปแบบ "[SKU] ชื่อสินค้า"
+// ค้นหาสินค้าในตาราง products จาก product_id, ชื่อสินค้า, รหัส SKU หรือรูปแบบ "[SKU] ชื่อสินค้า" / "ชื่อสินค้า (SKU)"
 async function findProductForLineItem(it, companyId = 1) {
     if (!it) return null;
     if (it.product_id) {
         const byId = await db.getAsync("SELECT * FROM products WHERE id = ? AND type = 'PRODUCT'", [it.product_id]);
         if (byId) return byId;
     }
-    const rawName = String(it.item_name || '').trim();
+
+    const explicitCode = String(it.product_code || it.code || '').trim();
+    if (explicitCode) {
+        const byCode = await db.getAsync(
+            "SELECT * FROM products WHERE code = ? AND company_id = ? AND type = 'PRODUCT'",
+            [explicitCode, companyId]
+        );
+        if (byCode) return byCode;
+    }
+
+    const rawName = String(it.item_name || it.name || '').trim();
     if (!rawName) return null;
 
     let product = await db.getAsync(
@@ -41,16 +51,55 @@ async function findProductForLineItem(it, companyId = 1) {
             "SELECT * FROM products WHERE company_id = ? AND (code = ? OR name = ?) AND type = 'PRODUCT'",
             [companyId, extractedCode, extractedName]
         );
+        if (product) return product;
     }
+
+    // รองรับรูปแบบต่อท้าย "Soft Morning Bag (HMP-001)" หรือ "ชื่อสินค้า (PRD-001)"
+    const trailingSkuMatch = rawName.match(/^(.*?)\s*\(([A-Za-z0-9_-]+)\)\s*$/);
+    if (trailingSkuMatch) {
+        const extractedName = trailingSkuMatch[1].trim();
+        const extractedCode = trailingSkuMatch[2].trim();
+        product = await db.getAsync(
+            "SELECT * FROM products WHERE company_id = ? AND (code = ? OR name = ?) AND type = 'PRODUCT'",
+            [companyId, extractedCode, extractedName]
+        );
+        if (product) return product;
+    }
+
+    // ค้นหาจากตาราง gift_sets หากชื่อตรงกับชุดกระเช้า หรือชื่อใน products มีรหัสต่อท้าย
+    const giftSet = await db.getAsync("SELECT code FROM gift_sets WHERE name = ?", [rawName]);
+    if (giftSet && giftSet.code) {
+        product = await db.getAsync(
+            "SELECT * FROM products WHERE company_id = ? AND code = ? AND type = 'PRODUCT'",
+            [companyId, giftSet.code]
+        );
+        if (product) return product;
+    }
+
+    product = await db.getAsync(
+        "SELECT * FROM products WHERE company_id = ? AND name LIKE ? AND type = 'PRODUCT'",
+        [companyId, `${rawName} (%`]
+    );
     return product || null;
+}
+
+function isDepositLineItem(it) {
+    if (!it) return false;
+    if (it.is_deposit) return true;
+    const rawName = String(it.item_name || it.name || '');
+    return /\((มัดจำ|แบ่งชำระ)\s*\d+(\.\d+)?%\)/.test(rawName);
 }
 
 async function deductStockForItems(items, docNumber, docType = 'TAX_INVOICE', remarks = null, createdBy = 'System', companyId = 1) {
     if (!Array.isArray(items)) return;
     for (const it of items) {
+        if (isDepositLineItem(it)) continue;
+        const rawQty = Number(it.quantity);
+        const deductQty = Number.isFinite(rawQty) ? rawQty : 1;
+        if (deductQty <= 0) continue;
+
         const product = await findProductForLineItem(it, companyId);
         if (product) {
-            const deductQty = parseFloat(it.quantity) || 1;
             const newQty = (Number(product.quantity_on_hand) || 0) - deductQty;
             await db.runAsync(`UPDATE products SET quantity_on_hand = ?, stock_quantity = ? WHERE id = ?`, [newQty, newQty, product.id]);
             await db.runAsync(`
@@ -76,9 +125,13 @@ async function deductStockForItems(items, docNumber, docType = 'TAX_INVOICE', re
 async function returnStockForItems(items, docNumber, docType = 'TAX_INVOICE', remarks = null, createdBy = 'System', companyId = 1) {
     if (!Array.isArray(items)) return;
     for (const it of items) {
+        if (isDepositLineItem(it)) continue;
+        const rawQty = Number(it.quantity);
+        const returnQty = Number.isFinite(rawQty) ? rawQty : 1;
+        if (returnQty <= 0) continue;
+
         const product = await findProductForLineItem(it, companyId);
         if (product) {
-            const returnQty = parseFloat(it.quantity) || 1;
             const newQty = (Number(product.quantity_on_hand) || 0) + returnQty;
             await db.runAsync(`UPDATE products SET quantity_on_hand = ?, stock_quantity = ? WHERE id = ?`, [newQty, newQty, product.id]);
             await db.runAsync(`
@@ -533,7 +586,8 @@ router.post('/', async (req, res) => {
                 `, [
                     documentId, i + 1, resolvedProdId, it.source_item_id || null,
                     it.item_name || 'สินค้า/บริการ', it.description || '',
-                    it.quantity || 1, it.unit || 'ชิ้น', it.unit_price || 0, it.discount || 0,
+                    it.quantity !== undefined && it.quantity !== null && it.quantity !== '' ? Number(it.quantity) : 1,
+                    it.unit || 'ชิ้น', it.unit_price || 0, it.discount || 0,
                     it.vat_rate !== undefined && it.vat_rate !== null && it.vat_rate !== '' ? Number(it.vat_rate) : 7,
                     it.total_amount || 0
                 ]);
@@ -580,10 +634,67 @@ router.post('/', async (req, res) => {
         }
 
         // ถ้าอ้างอิงใบเสนอราคา ให้ปรับสถานะใบเสนอราคาเป็น COMPLETED อัตโนมัติ
+        // และถ้าเป็นการออกใบเสร็จรับเงิน (RECEIPT) ที่อ้างอิง TAX_INVOICE หรือ BILLING_NOTE ให้อัปเดตยอดรับชำระของเอกสารต้นทางด้วย
         if (ref_doc_number) {
+            const cleanRef = String(ref_doc_number).trim();
             await db.runAsync(`
                 UPDATE documents SET status = 'COMPLETED', updated_at = CURRENT_TIMESTAMP WHERE doc_number = ? AND doc_type = 'QUOTATION'
-            `, [String(ref_doc_number).trim()]);
+            `, [cleanRef]);
+
+            if (upperType === 'RECEIPT' && targetStatus !== 'DRAFT') {
+                const refDoc = await db.getAsync(
+                    'SELECT * FROM documents WHERE doc_number = ?',
+                    [cleanRef]
+                );
+                if (
+                    refDoc &&
+                    ['TAX_INVOICE', 'BILLING_NOTE'].includes(refDoc.doc_type) &&
+                    ['ISSUED', 'WAITING', 'PARTIAL_PAID', 'OVERDUE'].includes(refDoc.status)
+                ) {
+                    const payAmt = Number(grand_total) || 0;
+                    const prevPaid = Number(refDoc.paid_amount) || 0;
+                    const newAmountPaid = prevPaid + payAmt;
+                    const refGrandTotal = Number(refDoc.grand_total) || 0;
+                    const newBalanceDue = Math.max(0, refGrandTotal - newAmountPaid);
+                    const newRefStatus = newBalanceDue <= 0.01 ? 'PAID' : 'PARTIAL_PAID';
+
+                    await db.runAsync(`
+                        UPDATE documents
+                        SET paid_amount = ?, balance_due = ?, status = ?,
+                            paid_at = CASE WHEN ? = 'PAID' THEN CURRENT_TIMESTAMP ELSE paid_at END,
+                            updated_at = CURRENT_TIMESTAMP
+                        WHERE id = ?
+                    `, [newAmountPaid, newBalanceDue, newRefStatus, newRefStatus, refDoc.id]);
+
+                    const rawPayMethod = String(credit_terms || '').includes('เงินสด')
+                        ? 'CASH'
+                        : (String(credit_terms || '').includes('เช็ค') ? 'CHEQUE' : 'TRANSFER');
+
+                    await db.runAsync(`
+                        INSERT INTO document_payments (
+                            document_id, paid_date, method, bank_name, ref_no, amount, wht_amount, notes
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    `, [
+                        refDoc.id,
+                        cleanIssueDate,
+                        rawPayMethod,
+                        null,
+                        finalDocNumber || null,
+                        payAmt,
+                        Number(wht_amount) || 0,
+                        `รับชำระเงินตามใบเสร็จรับเงิน ${finalDocNumber || ''}`
+                    ]);
+
+                    await recordStatusLog(
+                        refDoc.id,
+                        'PAYMENT_RECEIVED',
+                        refDoc.status,
+                        newRefStatus,
+                        null,
+                        `รับชำระผ่านใบเสร็จรับเงิน ${finalDocNumber || ''} จำนวน ฿${payAmt.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`
+                    );
+                }
+            }
         }
 
         // บันทึก Status Log
@@ -746,7 +857,8 @@ router.put('/:id', async (req, res) => {
                 `, [
                     doc.id, i + 1, resolvedProdId, it.source_item_id || null,
                     it.item_name || 'สินค้า/บริการ', it.description || '',
-                    it.quantity || 1, it.unit || 'ชิ้น', it.unit_price || 0, it.discount || 0,
+                    it.quantity !== undefined && it.quantity !== null && it.quantity !== '' ? Number(it.quantity) : 1,
+                    it.unit || 'ชิ้น', it.unit_price || 0, it.discount || 0,
                     it.vat_rate !== undefined && it.vat_rate !== null && it.vat_rate !== '' ? Number(it.vat_rate) : 7,
                     it.total_amount || 0
                 ]);
@@ -836,10 +948,13 @@ router.post('/:id/actions/:action', async (req, res) => {
         } else if (actDef.stock === 'IN') {
             // รับสินค้าเข้าสต็อกจากใบสั่งซื้อ (Purchase Order)
             for (const it of items) {
+                const rawQty = Number(it.quantity);
+                const receiveQty = Number.isFinite(rawQty) ? rawQty : 1;
+                if (receiveQty <= 0) continue;
+
                 const product = await findProductForLineItem(it, doc.company_id || 1);
                 if (product) {
-                    const receiveQty = parseFloat(it.quantity) || 1;
-                    const newQty = (product.quantity_on_hand || 0) + receiveQty;
+                    const newQty = (Number(product.quantity_on_hand) || 0) + receiveQty;
                     await db.runAsync(`UPDATE products SET quantity_on_hand = ?, stock_quantity = ? WHERE id = ?`, [newQty, newQty, product.id]);
                     await db.runAsync(`
                         INSERT INTO stock_movements (
@@ -860,7 +975,7 @@ router.post('/:id/actions/:action', async (req, res) => {
                     const now = new Date();
                     const yearMonth = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`;
                     const maxRow = await db.getAsync(`SELECT MAX(CAST(substr(doc_number, 12) AS INTEGER)) as max_num FROM expenses WHERE doc_number LIKE 'EXP-${yearMonth}-%'`);
-                    const nextSeq = String(((maxRow && maxRow.max_num) || 0) + 1).padStart(3, '0');
+                    const nextSeq = String((Number(maxRow && maxRow.max_num) || 0) + 1).padStart(3, '0');
                     const expDocNumber = `EXP-${yearMonth}-${nextSeq}`;
 
                     const expRes = await db.runAsync(`
@@ -869,7 +984,7 @@ router.post('/:id/actions/:action', async (req, res) => {
                             vendor_name, vendor_tax_id, vendor_branch, vendor_address, category,
                             payment_status, payment_method, subtotal, vat_type, vat_rate, vat_amount,
                             wht_type, wht_rate, wht_amount, net_total, remarks
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'ต้นทุนสินค้า / วัตถุดิบ', 'UNPAID', 'TRANSFER', ?, ?, 7, ?, ?, ?, ?, ?, ?)
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'ต้นทุนสินค้าและบริการ', 'UNPAID', 'โอนเงิน', ?, ?, 7, ?, ?, ?, ?, ?, ?)
                     `, [
                         doc.company_id || 1, expDocNumber, now.toISOString().split('T')[0], doc.due_date, docNumber,
                         doc.customer_name || 'ผู้จำหน่าย', doc.customer_tax_id, doc.customer_branch, doc.customer_address,
@@ -887,7 +1002,7 @@ router.post('/:id/actions/:action', async (req, res) => {
                                 expense_id, row_order, description, category, amount, vat_rate, wht_rate, total_amount
                             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                         `, [
-                            expId, i + 1, desc, 'ต้นทุนสินค้า / วัตถุดิบ',
+                            expId, i + 1, desc, 'ต้นทุนสินค้าและบริการ',
                             it.total_amount || ((it.quantity || 1) * (it.unit_price || 0)),
                             it.vat_rate !== undefined ? it.vat_rate : 7,
                             0,
@@ -898,6 +1013,16 @@ router.post('/:id/actions/:action', async (req, res) => {
             } catch (expErr) {
                 console.error('Error auto-creating expense from PO:', expErr);
             }
+        } else if (doc.doc_type === 'PURCHASE_ORDER' && actionKey === 'cancel' && ['RECEIVED', 'COMPLETED'].includes(doc.status)) {
+            // หากยกเลิกใบสั่งซื้อที่ตรวจรับของเข้าสต็อกไปแล้ว ให้หักสต็อกที่เคยรับเข้ากลับคืน
+            await deductStockForItems(
+                items,
+                docNumber,
+                doc.doc_type,
+                `หักสต็อกคืนจากการยกเลิกใบสั่งซื้อที่ตรวจรับแล้ว (${reason || 'ไม่ระบุเหตุผล'})`,
+                'System',
+                doc.company_id || 1
+            );
         }
 
         // อัปเดตสถานะและ Timestamp
@@ -914,7 +1039,7 @@ router.post('/:id/actions/:action', async (req, res) => {
         }
 
         if (nextStatus === 'PAID') {
-            updateSql += ', paid_amount = grand_total, balance_due = 0';
+            updateSql += ', paid_amount = grand_total, balance_due = 0, issued_at = COALESCE(issued_at, CURRENT_TIMESTAMP), paid_at = CURRENT_TIMESTAMP';
         } else if (nextStatus === 'ISSUED' || nextStatus === 'DRAFT') {
             updateSql += ', paid_amount = 0, balance_due = grand_total';
         }
@@ -948,7 +1073,8 @@ router.post('/:id/payments', async (req, res) => {
 
         const {
             paid_date = new Date().toISOString().split('T')[0],
-            method = 'TRANSFER',
+            method,
+            payment_method,
             bank_name,
             ref_no,
             amount,
@@ -956,6 +1082,14 @@ router.post('/:id/payments', async (req, res) => {
             notes,
             auto_create_receipt = false
         } = req.body;
+
+        const rawMethod = payment_method || method || 'TRANSFER';
+        const dbMethod = ['CASH', 'TRANSFER', 'CHEQUE', 'CREDIT_CARD'].includes(String(rawMethod).toUpperCase())
+            ? String(rawMethod).toUpperCase()
+            : (String(rawMethod).includes('เงินสด') ? 'CASH' : (String(rawMethod).includes('เช็ค') ? 'CHEQUE' : 'TRANSFER'));
+        const displayMethod = payment_method || (
+            dbMethod === 'CASH' ? 'เงินสด' : (dbMethod === 'CHEQUE' ? 'เช็คธนาคาร' : 'โอนเงินผ่านธนาคาร')
+        );
 
         const payAmount = parseFloat(amount);
         if (!payAmount || payAmount <= 0) {
@@ -967,7 +1101,7 @@ router.post('/:id/payments', async (req, res) => {
             INSERT INTO document_payments (
                 document_id, paid_date, method, bank_name, ref_no, amount, wht_amount, notes
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        `, [doc.id, paid_date, method, bank_name || null, ref_no || null, payAmount, parseFloat(wht_amount) || 0, notes || null]);
+        `, [doc.id, paid_date, dbMethod, bank_name || null, ref_no || null, payAmount, parseFloat(wht_amount) || 0, notes || null]);
 
         // คำนวณยอดชำระแล้วและยอดคงเหลือ
         const currentPaid = parseFloat(doc.paid_amount || 0);
@@ -984,9 +1118,11 @@ router.post('/:id/payments', async (req, res) => {
 
         await db.runAsync(`
             UPDATE documents 
-            SET paid_amount = ?, balance_due = ?, status = ?, updated_at = CURRENT_TIMESTAMP
+            SET paid_amount = ?, balance_due = ?, status = ?,
+                paid_at = CASE WHEN ? = 'PAID' THEN CURRENT_TIMESTAMP ELSE paid_at END,
+                updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
-        `, [newPaid, balanceDue, newStatus, doc.id]);
+        `, [newPaid, balanceDue, newStatus, newStatus, doc.id]);
 
         await recordStatusLog(
             doc.id, 
@@ -1000,6 +1136,13 @@ router.post('/:id/payments', async (req, res) => {
         let createdReceipt = null;
         if (auto_create_receipt && (doc.doc_type === 'TAX_INVOICE' || doc.doc_type === 'BILLING_NOTE')) {
             const reNumber = await getNextDocNumber(1, 'RECEIPT', paid_date);
+            const ratio = grandTotal > 0 ? Math.min(1, payAmount / grandTotal) : 1;
+            const reVatType = doc.vat_type || 'exclude';
+            const reVatAmount = Math.round(((parseFloat(doc.vat_amount) || 0) * ratio) * 100) / 100;
+            const reSubtotal = reVatType === 'exclude'
+                ? Math.round((payAmount - reVatAmount) * 100) / 100
+                : payAmount;
+
             const reRes = await db.runAsync(`
                 INSERT INTO documents (
                     company_id, doc_type, doc_number, issue_date, ref_doc_number,
@@ -1007,14 +1150,15 @@ router.post('/:id/payments', async (req, res) => {
                     customer_phone, customer_contact,
                     salesperson, subtotal, discount_amount, vat_type, vat_amount,
                     wht_type, wht_rate, wht_amount, grand_total, paid_amount, balance_due,
-                    status, remarks, is_tax_invoice
-                ) VALUES (?, 'RECEIPT', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'PAID', ?, ?)
+                    status, credit_terms, remarks, is_tax_invoice, issued_at, paid_at
+                ) VALUES (?, 'RECEIPT', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 'PAID', ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
             `, [
                 doc.company_id || 1, reNumber, paid_date, doc.doc_number,
                 doc.customer_id, doc.customer_name, doc.customer_tax_id, doc.customer_branch, doc.customer_address,
                 doc.customer_phone || '', doc.customer_contact || '',
-                doc.salesperson, payAmount, 0, 'exclude', 0,
+                doc.salesperson, reSubtotal, 0, reVatType, reVatAmount,
                 doc.wht_type || '0', doc.wht_rate || 0, parseFloat(wht_amount) || 0, payAmount, payAmount,
+                displayMethod,
                 `ออกใบเสร็จรับเงินจากการชำระเอกสาร ${doc.doc_number}`,
                 doc.doc_type === 'BILLING_NOTE' ? 1 : 0
             ]);
@@ -1024,7 +1168,7 @@ router.post('/:id/payments', async (req, res) => {
                 INSERT INTO document_items (
                     document_id, row_order, item_name, description, quantity, unit, unit_price, total_amount
                 ) VALUES (?, 1, ?, ?, 1, 'งวด', ?, ?)
-            `, [newReceiptId, `รับชำระตามเอกสาร ${doc.doc_number}`, `ช่องทาง: ${method} ${ref_no ? `(อ้างอิง: ${ref_no})` : ''}`, payAmount, payAmount]);
+            `, [newReceiptId, `รับชำระตามเอกสาร ${doc.doc_number}`, `ช่องทาง: ${displayMethod} ${ref_no ? `(อ้างอิง: ${ref_no})` : ''}`, reSubtotal, reSubtotal]);
 
             await db.runAsync(`
                 INSERT INTO document_links (source_doc_id, target_doc_id, link_type, amount)
@@ -1208,19 +1352,20 @@ router.patch('/:id/status', async (req, res) => {
     }
 });
 
-// ลบเอกสาร (อนุญาตเฉพาะสถานะร่างที่ยังไม่มีเลขที่เอกสาร)
+// ลบเอกสาร (อนุญาตเฉพาะสถานะร่างหรือยกเลิกแล้ว)
 router.delete('/:id', async (req, res) => {
     try {
         const doc = await db.getAsync('SELECT * FROM documents WHERE id = ?', [req.params.id]);
         if (!doc) return res.status(404).json({ error: 'Document not found' });
 
-        if (doc.status !== 'DRAFT' && doc.doc_number) {
+        if (!['DRAFT', 'CANCELLED'].includes(doc.status) && doc.doc_number) {
             return res.status(400).json({
                 error: `ไม่อนุญาตให้ลบเอกสารที่ออกเลขที่แล้ว (${doc.doc_number}) เนื่องจากเป็นไปตามมาตรฐานการควบคุมเอกสารการค้าและภาษี กรุณาใช้คำสั่ง "ยกเลิก (Cancel)" เอกสารแทน`
             });
         }
 
         await db.runAsync('DELETE FROM document_items WHERE document_id = ?', [req.params.id]);
+        await db.runAsync('DELETE FROM document_payments WHERE document_id = ?', [req.params.id]);
         await db.runAsync('DELETE FROM document_links WHERE source_doc_id = ? OR target_doc_id = ?', [req.params.id, req.params.id]);
         await db.runAsync('DELETE FROM document_status_logs WHERE document_id = ?', [req.params.id]);
         await db.runAsync('DELETE FROM documents WHERE id = ?', [req.params.id]);

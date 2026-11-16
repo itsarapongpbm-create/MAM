@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const paidAmount = paidItems.reduce((acc, d) => acc + (d.grand_total || 0), 0);
         
         const vatTotal = allCashSales.reduce((acc, d) => acc + (d.status !== 'CANCELLED' ? (d.vat_amount || 0) : 0), 0);
+        const draftCount = allCashSales.filter(d => d.status === 'DRAFT').length;
         const cancelledCount = allCashSales.filter(d => d.status === 'CANCELLED').length;
 
         if (kpiTotalCount) kpiTotalCount.textContent = `${total} รายการ`;
@@ -98,6 +99,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (kpiVatSum) kpiVatSum.textContent = `฿ ${vatTotal.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
         if (kpiCancelledCount) kpiCancelledCount.textContent = `${cancelledCount} รายการ`;
         if (cashSaleCountBadge) cashSaleCountBadge.style.display = 'none';
+
+        tabButtons.forEach(btn => {
+            const filter = btn.getAttribute('data-filter') || '';
+            if (filter === 'ALL' || btn.textContent.includes('ทั้งหมด')) {
+                btn.textContent = `ทั้งหมด (${total})`;
+            } else if (filter === 'PAID' || btn.textContent.includes('ชำระแล้ว')) {
+                btn.textContent = `ชำระแล้ว (${paidCount})`;
+            } else if (filter === 'DRAFT' || btn.textContent.includes('ฉบับร่าง')) {
+                btn.textContent = `ฉบับร่าง (${draftCount})`;
+            } else if (filter === 'CANCELLED' || btn.textContent.includes('ยกเลิก')) {
+                btn.textContent = `ยกเลิก (${cancelledCount})`;
+            }
+        });
     }
 
     function renderCashSales() {

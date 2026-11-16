@@ -299,8 +299,26 @@ window.printCertificate = function(id) {
 };
 
 window.cancelCertificate = async function(id, docNumber) {
-    const reason = prompt(`กรุณาระบุเหตุผลการยกเลิกหนังสือรับรอง ${docNumber}:`, 'ออกเอกสารผิดพลาด / มีการยกเลิกบิล');
-    if (!reason || !reason.trim()) return;
+    const cert = allCertificates.find(c => String(c.id) === String(id)) || {};
+    let reason = 'ออกเอกสารผิดพลาด / มีการยกเลิกบิล';
+    const modalFn = window.showDocActionModal || window.openActionDialog;
+    if (typeof modalFn === 'function') {
+        const dialogRes = await modalFn({
+            action: 'cancel',
+            docNum: docNumber,
+            customerName: cert.payee_name || '-',
+            grandTotal: cert.tax_amount || cert.income_amount || 0,
+            docTypeLabel: 'หนังสือรับรองหัก ณ ที่จ่าย',
+            title: 'ยืนยันการยกเลิกหนังสือรับรอง 50 ทวิ',
+            confirmText: 'ยืนยันยกเลิกเอกสาร',
+            defaultReason: reason
+        });
+        if (!dialogRes || !dialogRes.confirmed) return;
+        if (dialogRes.reason) reason = dialogRes.reason;
+    } else {
+        const confirmed = confirm(`ยืนยันการยกเลิกหนังสือรับรอง ${docNumber} หรือไม่?`);
+        if (!confirmed) return;
+    }
 
     try {
         const res = await fetch(`/api/withholding-taxes/${id}/cancel`, {
@@ -315,9 +333,17 @@ window.cancelCertificate = async function(id, docNumber) {
         }
 
         await initWithholdingTax();
-        notify('success', 'ยกเลิกเรียบร้อย', `ยกเลิกหนังสือรับรอง ${docNumber} เรียบร้อยแล้ว`);
+        if (typeof window.showToast === 'function') {
+            window.showToast('ยกเลิกเรียบร้อย', `ยกเลิกหนังสือรับรอง ${docNumber} เรียบร้อยแล้ว`, 'success');
+        } else {
+            notify('success', 'ยกเลิกเรียบร้อย', `ยกเลิกหนังสือรับรอง ${docNumber} เรียบร้อยแล้ว`);
+        }
     } catch (err) {
-        notify('error', 'เกิดข้อผิดพลาดในการยกเลิก', err.message);
+        if (typeof window.showToast === 'function') {
+            window.showToast('เกิดข้อผิดพลาดในการยกเลิก', err.message, 'error');
+        } else {
+            alert('เกิดข้อผิดพลาดในการยกเลิก: ' + err.message);
+        }
     }
 };
 

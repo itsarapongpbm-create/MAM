@@ -165,6 +165,9 @@ async function runColumnMigrations(db) {
     if (!docColNames.includes('customer_contact')) {
         await db.runAsync("ALTER TABLE documents ADD COLUMN customer_contact TEXT");
     }
+    if (!docColNames.includes('paid_at')) {
+        await db.runAsync("ALTER TABLE documents ADD COLUMN paid_at DATETIME");
+    }
 }
 
 module.exports = {
